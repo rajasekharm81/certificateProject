@@ -1,0 +1,45 @@
+.requestForm{
+    display: flex;
+    min-height: 100vh; 
+    align-items: center;
+    flex-direction: column;
+    background-image: url("https://anucde.org/img4.e0531e20a9f75722.jpg");
+    background-size: cover;
+}
+.requestFormContainer{
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0px 0px 10px 0px silver;
+    margin: 50px 0 0 0;
+    padding: 2vw;
+    background-color:white;
+    opacity: .9;
+}
+.degAppliedFor{
+    width: 60vw !important;
+}
+.generalOdReqDataContainer{
+    display: flex;
+    flex-direction: column;
+    padding: 1vw 0px 1vw 0px;
+}
+.radioGroup{
+    display: flex;
+}
+.sec1{
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    align-items: center;
+    justify-content: flex-start;
+}
+.LogoImg{
+    height: 100px;
+    width: 100px;
+    align-self: flex-start;
+    margin:10px 0 0 10px;
+    position: absolute;
+    top: 0;
+}

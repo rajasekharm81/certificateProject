@@ -1,0 +1,29 @@
+.mainContainer{
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    align-items: center;
+     overflow: auto;
+}
+.marksContainer{
+    width: 85vw;
+    overflow: auto;
+    flex-shrink: 0;
+}
+.marksContainer table tr th{
+    border: 1px solid black;
+    max-width: 50px;
+    height: 30px;
+    flex-shrink: 0;
+    overflow: auto;
+}
+.cell{
+    border: 1px solid black;
+    width: 50px;
+    height: 30px;
+    flex-shrink: 0;
+}
+.customOutlinedButton:hover{
+    background-color: #4639ff !important;
+    color: white !important;    
+}
