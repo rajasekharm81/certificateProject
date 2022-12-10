@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 import {Component} from 'react';
 import { Navigate } from 'react-router-dom';
-import { Select,MenuItem,FormControl,InputLabel,TextField,FormLabel,RadioGroup,FormControlLabel,Radio,FormGroup,Checkbox,Button} from '@mui/material';
+import { Select,MenuItem,FormControl,InputLabel,TextField,FormLabel,RadioGroup,FormControlLabel,Radio,FormGroup,Checkbox,Button,Backdrop,CircularProgress} from '@mui/material';
 import {format} from 'date-fns'
 import {BtechCmm, DegreeCmm} from "../Cmm"
 import CeritificateRequest from "../CertificateRequest"
@@ -57,7 +57,8 @@ class Odrequest extends Component{
         collageNameErr:false,
         higherEducationErr:false,
         errorExists:false,
-        NoErrorInOd:false
+        NoErrorInOd:false,
+        isLoading:false
     }   
 
     componentDidMount(){
@@ -68,9 +69,10 @@ class Odrequest extends Component{
         this.timeouter()
     }
 
+
     timeouter=()=>{
         // eslint-disable-next-line no-sequences
-        setTimeout(() => (Cookies.remove("authToken"), this.setState({ isValidUser: false })), 9000000);
+        setTimeout(() => (Cookies.remove("authToken"), this.setState({ isValidUser: false })), 300000);
     }
 
     getStates=async()=>{
@@ -87,6 +89,7 @@ class Odrequest extends Component{
     }
 
     getDistricts=async()=>{
+        this.setState({isLoading:true})
         const token = Cookies.get("authToken")
         const {state}=this.state
         const options = {
@@ -97,7 +100,7 @@ class Odrequest extends Component{
             }
         }
         const districts = await axios(options)
-        this.setState({districtData:districts.data.data})
+        this.setState({districtData:districts.data.data,isLoading:false})
     }
 
     yearCounter=()=>{
@@ -157,6 +160,7 @@ class Odrequest extends Component{
     }
 
     saveOnContinue=()=>{
+        this.setState({isLoading:true})
         const {requestForm,
             degree,
             StudyType,
@@ -206,6 +210,7 @@ class Odrequest extends Component{
                     },
             }
         localStorage.setItem(`${registrationNumber}_BasicData`,JSON.stringify(StudentData))
+        this.setState({isLoading:false})
     }
 
     onContinue=(event)=>{
@@ -612,7 +617,7 @@ class Odrequest extends Component{
     }
 
     initialView=()=>{
-        const{requestForm}=this.state
+        const{requestForm,isLoading}=this.state
         return(
             <div className='requestForm'>
                  <img className='LogoImg' alt="LogoImage" src="https://anucde.org/assets/img/brand/logo.png"/>
@@ -625,19 +630,21 @@ class Odrequest extends Component{
                         </Select>
                     </FormControl>
                 {this.commonRequestForm()}
+                {isLoading?<Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>:null}
             </div>
         )
     }
 
     render(){
-        const{isValidUser,higherEducation}=this.state
+        const{isValidUser}=this.state
         return(
                 isValidUser?this.initialView():<Navigate to="/requests/login"/>
         )
-        
-            
-       
-        
     }
 }
 

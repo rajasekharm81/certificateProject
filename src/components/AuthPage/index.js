@@ -27,12 +27,11 @@ class SigninForm extends React.Component{
     isUserLogedIn=()=>{
       const token = Cookies.get("authToken")
       if(token===undefined){
-        console.log(token)
+        console.log("")
       }else{
         this.setState({validUser:true})
       }
     }
-
 
     verifyUser=async()=>{
       const {otp,enrollNo}=this.state

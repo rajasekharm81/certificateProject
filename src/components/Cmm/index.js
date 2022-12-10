@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import {Component} from 'react';
-import {Box,FormControlLabel,Checkbox,Button,FormGroup,MenuItem,Select,IconButton,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Snackbar,Alert} from '@mui/material';
+import {Box,FormControlLabel,Checkbox,Button,FormGroup,MenuItem,Select,IconButton,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Snackbar,Alert,Backdrop,CircularProgress} from '@mui/material';
 import Fade from '@mui/material/Fade';
 // eslint-disable-next-line no-unused-vars
 import Slide, { SlideProps } from '@mui/material/Slide';
@@ -12,6 +12,10 @@ import "./index.css"
 // eslint-disable-next-line no-unused-vars
 import Cookies from 'js-cookie';
 import axios from 'axios';
+
+
+const tableHeadings = ["Month & Year",1,2,3,4,5,6,7,8,9,'I',"II",'III','IV','V','VI','Sessionals',"Total Marks", "Max Marks"]
+                            
 
 export class BtechCmm extends Component{
     state={y1a:[],
@@ -30,13 +34,16 @@ export class BtechCmm extends Component{
         y4b:[],
         y4c:[],
         y4d:[],
-        memos:[{id:`_doc`,file:null}],
+        memos:[],
         certify:false,
         dropDownCounter:[],
         noOfFiles:1,
         dataSaved:false,
         fileUploadingError:false,
-        filesUploadedSuccessFully:false
+        filesUploadedSuccessFully:false,
+        isLoading:false,
+        networkErr:false,
+        documents:[]
     }
 
     SlideTransition=(SlideProps)=> {
@@ -51,7 +58,24 @@ export class BtechCmm extends Component{
         this.initialData()
         this.fileCounterDisplay()
         this.fileIdGenerator()
+        this.getData()
     }
+
+    getData=()=>{
+        const token = Cookies.get("authToken")
+        const options={
+            url:"https://20.235.87.10/capis/od/get-od-details/",
+            method:"GET",
+            headers:{
+                "Authorization":`Bearer ${token}`,
+                "Accept":"application/json"
+            }
+        }
+        const i = axios(options)
+        console.log(i)
+    }
+
+
 
     initialData=()=>{
         let a1 = []
@@ -135,10 +159,9 @@ export class BtechCmm extends Component{
 // for initilizing file ids
     fileIdGenerator=()=>{
         const {noOfFiles}=this.state
-        const {regNo}=this.props
         let generatedArray=[]
         for(let i=1;i<=noOfFiles;i++){
-            generatedArray.push({id:`${regNo}_doc_${i}`,file:null})
+            generatedArray.push({id:i,file:null})
         }
         this.setState({memos:generatedArray})
     }
@@ -315,30 +338,29 @@ export class BtechCmm extends Component{
     }
 // for updating uploaded documents
     uploadDocs=(event)=>{
-        const {memos}=this.state
-        let updatedMemosArray=[]
-        // eslint-disable-next-line array-callback-return
-        memos.map((each)=>{
-            if(each.id===event.target.id){
-                updatedMemosArray.push({id:event.target.id,file:event.target.files[0]})
-            }
-            else{
-                updatedMemosArray.push(each)
-            }
-            this.setState({memos:updatedMemosArray})
-        })
+       const {memos}=this.state
+       const updatedArray=[]
+       // eslint-disable-next-line array-callback-return, eqeqeq
+       memos.map((each)=>{if(each.id==event.target.id){
+        updatedArray.push({id:event.target.id,file:event.target.files[0]})
+       }else{
+        updatedArray.push(each)
+       }})
+       this.setState({memos:updatedArray})
     }   
+
+    networkErrClose=()=>{
+        this.setState({networkErr:false})
+    }
 // for storing in local storage
     saveData= async()=>{
-        console.log("Clicked")
+        this.setState({isLoading:true})
         const {regNo}=this.props
         const token = Cookies.get("authToken")
-        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d}=this.state
+        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,networkErr}=this.state
         const temp = localStorage.getItem(`${regNo}_BasicData`)
         const basicData =  JSON.parse(temp)
         const details = {...basicData,marks:[y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d]}
-        console.log(details)
-        const upload = JSON.stringify(details)
         const options = {
             url:"https://20.235.87.10/capis/od/original-degree-application/",
             method: 'POST',
@@ -351,28 +373,37 @@ export class BtechCmm extends Component{
         }
         try{
             const r = await axios(options)
-
-            console.log(r)
-
-            this.setState({dataSaved:true})
+            this.setState({dataSaved:true,isLoading:false})
         }catch(e){
             console.log(e)
+            this.setState({isLoading:false,networkErr:true})            
         }
     }
 
 // save documents
 
- saveDocs=()=>{
+    saveDocs= async()=>{
         try{
         const {memos}=this.state
-        const {regNo}=this.props
+        const token = Cookies.get("authToken")
+        let finalDocsList =[]
+        memos.map((each)=>finalDocsList.push(each.file))
+
         const fd = new FormData()
-        // eslint-disable-next-line array-callback-return
-        memos.map((each)=>{
-            fd.append(`${regNo}_memo_${each.id}`,each.file,each.file.name)
-        })
-        localStorage.setItem(`${regNo}_documents`,{id:`${regNo}_Memos`,documents:fd})
+        finalDocsList.map((each)=>fd.append("files",each))
+
+        const options = {
+            url:"https://20.235.87.10/capis/file/od-upload/",
+            method: 'POST',
+            headers: {   
+            'Content-Type': 'multipart/form-data',
+            'Authorization':`Bearer ${token}`
+            },
+          data: fd
+        }
+        const r = await axios(options)
         this.filesUploadedSuccessFullyOpen()
+        console.log(r)
         }catch(e){
             this.fileUploadErrDiologOpen()
         }
@@ -401,10 +432,16 @@ export class BtechCmm extends Component{
     }
 
     render(){
-        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully}=this.state
+        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr}=this.state
         // const {degree,name,regNo,clzName,branch}=this.props
         return(
            <Box className="mainContainer">
+            {isLoading?<Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>:null}
             <h1 style={{alignSelf:"center"}}>Consolidated Marks</h1>
             <div className='marksContainer'>
 {/* First Year Marks section */}
@@ -415,25 +452,7 @@ export class BtechCmm extends Component{
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
-                            <th>Month & Year</th>
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
-                            <th>4</th>
-                            <th>5</th>
-                            <th>6</th>
-                            <th>7</th>
-                            <th>8</th>
-                            <th>9</th>
-                            <th>I</th>
-                            <th>II</th>
-                            <th>III</th>
-                            <th>IV</th>
-                            <th>V</th>
-                            <th>VI</th>
-                            <th>Sessionals</th>
-                            <th>Total Marks</th>
-                            <th>Max Marks</th>
+                           { tableHeadings.map((each)=><th id={`1st${each}`}>{each}</th>)}
                         </tr>
                         <tr>
                             {y1a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
@@ -457,25 +476,7 @@ export class BtechCmm extends Component{
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
-                            <th>Month & Year</th>
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
-                            <th>4</th>
-                            <th>5</th>
-                            <th>6</th>
-                            <th>7</th>
-                            <th>8</th>
-                            <th>9</th>
-                            <th>I</th>
-                            <th>II</th>
-                            <th>III</th>
-                            <th>IV</th>
-                            <th>V</th>
-                            <th>VI</th>
-                            <th>Sessionals</th>
-                            <th>Total Marks</th>
-                            <th>Max Marks</th>
+                           { tableHeadings.map((each)=><th id={`2nd${each}`}>{each}</th>)}
                         </tr>
                         <tr>
                             {y2a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
@@ -499,25 +500,7 @@ export class BtechCmm extends Component{
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
-                            <th>Month & Year</th>
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
-                            <th>4</th>
-                            <th>5</th>
-                            <th>6</th>
-                            <th>7</th>
-                            <th>8</th>
-                            <th>9</th>
-                            <th>I</th>
-                            <th>II</th>
-                            <th>III</th>
-                            <th>IV</th>
-                            <th>V</th>
-                            <th>VI</th>
-                            <th>Sessionals</th>
-                            <th>Total Marks</th>
-                            <th>Max Marks</th>
+                           { tableHeadings.map((each)=><th id={`3rd${each}`}>{each}</th>)}
                         </tr>
                         <tr>
                             {y3a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
@@ -541,25 +524,7 @@ export class BtechCmm extends Component{
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
-                            <th>Month & Year</th>
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
-                            <th>4</th>
-                            <th>5</th>
-                            <th>6</th>
-                            <th>7</th>
-                            <th>8</th>
-                            <th>9</th>
-                            <th>I</th>
-                            <th>II</th>
-                            <th>III</th>
-                            <th>IV</th>
-                            <th>V</th>
-                            <th>VI</th>
-                            <th>Sessionals</th>
-                            <th>Total Marks</th>
-                            <th>Max Marks</th>
+                           { tableHeadings.map((each)=><th id={`4th${each}`}>{each}</th>)}
                         </tr>
                         <tr>
                             {y4a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
@@ -632,6 +597,13 @@ export class BtechCmm extends Component{
                                 Files Uploaded successfully!!!
                             </Alert>
                         </Snackbar>
+{/* error Notification on network err */}
+
+                <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={networkErr} autoHideDuration={3000} onClose={this.networkErrClose}>
+                <Alert onClose={this.networkErrClose} severity="error" sx={{ width: '100%', backgroundColor:"orange", color:"white" }}>
+                    OOPS!!! Network Error Please Try Again
+                </Alert>
+            </Snackbar>
            </Box>
         )
     }
