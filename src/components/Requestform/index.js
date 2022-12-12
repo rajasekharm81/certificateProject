@@ -12,6 +12,7 @@ import {BtechBranchs,Degrees} from "../../basedata/basedata"
 import axios from 'axios';
 import Cookies from 'js-cookie'
 
+
 class Odrequest extends Component{
     state={
         isValidUser:true,
@@ -67,18 +68,61 @@ class Odrequest extends Component{
         this.getStates()
         this.userValidation()
         this.timeouter()
+        this.getStudentData()
     }
 
+    getStudentData=async()=>{
+        const {pinCode}=this.state
+        const token = Cookies.get("authToken")
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}od/get-od-details/`,
+            method:"GET",
+            headers:{
+                "Authorization":`Bearer ${token}`,
+                "Accept":"application/json"
+            }
+        }
+        const studentData = await axios(options)
+        if(studentData!==undefined){
+            const program_details = studentData.data.program_details
+        const address = studentData.data.address
+        const student_details = studentData.data.student_details
+        this.setState({
+                    dependentOf:address.dependentOf,
+                    dependentName:address.dependentName,
+                    street:address.street,
+                    village:address.village,
+                    mandal:address.mandal,
+                    district:address.district,
+                    state:Number(address.state),
+                    pinCode:String(address.pinCode),
+                    studentName:student_details.studentName,
+                    degree: program_details.prog_ID,
+                    studentBranch:program_details.studentBranch_id,
+                    registrationNumber:program_details.registrationNumber,
+                    examMonth:program_details.examMonth,
+                    examYear:program_details.examYear,
+                    studyType:program_details.studyType,
+                    collageName:program_details.collageName,
+                    higherEducation:program_details.higherEducation,
+                    examCenter:program_details.examCenter,
+                    },
+                    this.getDistricts,console.log(pinCode)
+                )
+        }
+        
+    }
 
     timeouter=()=>{
         // eslint-disable-next-line no-sequences
-        setTimeout(() => (Cookies.remove("authToken"), this.setState({ isValidUser: false })), 300000);
+        setTimeout(() => (Cookies.remove("authToken"), this.setState({ isValidUser: false })), 900000);
     }
 
     getStates=async()=>{
-        const token = Cookies.get("authToken")
+        try{
+            const token = Cookies.get("authToken")
         const options = {
-            url:"https://20.235.87.10/capis/list/states/?country_id=1",
+            url:`${process.env.REACT_APP_BASEURL}list/states/?country_id=1`,
             method:"GET",
             headers:{
                  'Authorization': `Bearer ${token}`,
@@ -86,6 +130,18 @@ class Odrequest extends Component{
         }
         const states = await axios(options)
         this.setState({stateData:states.data.data})
+
+        if(states.status===200){
+            console.log('success')
+        }
+        }catch(e){
+           if(e.response.status===401){
+            Cookies.remove("authToken")
+            window.location.reload()
+           }
+        
+        }
+        
     }
 
     getDistricts=async()=>{
@@ -93,7 +149,7 @@ class Odrequest extends Component{
         const token = Cookies.get("authToken")
         const {state}=this.state
         const options = {
-            url:`https://20.235.87.10/capis/list/districts?state_id=${state}`,
+            url:`${process.env.REACT_APP_BASEURL}list/districts?state_id=${state}`,
             method:"GET",
             headers:{
                  'Authorization': `Bearer ${token}`,
@@ -198,7 +254,7 @@ class Odrequest extends Component{
                     studentName:studentName,
                     },
                 program_details:{
-                    prog_ID:requestForm,
+                    prog_ID:degree,
                     studentBranch_id:studentBranch,
                     registrationNumber:registrationNumber,
                     examMonth:examMonth,
@@ -390,6 +446,7 @@ class Odrequest extends Component{
             state,
             pinCode,
             examCenter,
+            registrationNumber,
             degreeErr,
             studentNameErr,
             examYearErr,
@@ -498,10 +555,10 @@ class Odrequest extends Component{
                                                 </Select>
                                         </FormControl>
   
-                                        <TextField size="small" type="number" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={pinCode} error={pinCodeErr} label="Pin Code" variant="outlined" onChange={(event)=>this.setState({pinCode:Number(event.target.value)})} />
+                                        <TextField size="small" type="number" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={pinCode} error={pinCodeErr} label="Pin Code" variant="outlined" onChange={(event)=>this.setState({pinCode:(event.target.value)})} />
                                     </div>                                   
                                     <div>
-                                        <TextField size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value})}} style={{margin:"10px 10px 0vw 0vw"}} id="regID" label="Registration Number" variant="outlined" />
+                                        <TextField size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value})}} value={registrationNumber} style={{margin:"10px 10px 0vw 0vw"}} id="regID" label="Registration Number" variant="outlined" />
 {/* Months section */}
                                         <FormControl size="small" style={{width:"150px", margin:"10px 10px 0 0px"}}>
                                             <InputLabel id="examMonth">Exam Month</InputLabel>
@@ -558,10 +615,10 @@ class Odrequest extends Component{
                                                 //         <MenuItem value="clz2">College 2</MenuItem>
                                                 //     </Select>
                                                 // </FormControl>
-                                                 <TextField size="small" error={collageNameErr} onChange={(event)=>{this.setState({collageName:event.target.value})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="ClzName" label="College Name" variant="outlined" />
+                                                 <TextField size="small" value={collageName} error={collageNameErr} onChange={(event)=>{this.setState({collageName:event.target.value})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="ClzName" label="College Name" variant="outlined" />
                                                 ):null}
 {/* Last Appeared Exam Center */}
-                                        <TextField size="small" error={examCenterErr} onChange={(event)=>{this.setState({examCenter:event.target.value})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="exmCenter" label="Last Appeared Examination Center" variant="outlined" />
+                                        <TextField size="small" error={examCenterErr} value={examCenter} onChange={(event)=>{this.setState({examCenter:event.target.value})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="exmCenter" label="Last Appeared Examination Center" variant="outlined" />
 
 
 {/* Applying For Higher Education */}

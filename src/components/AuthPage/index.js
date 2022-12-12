@@ -3,8 +3,6 @@ import * as React from 'react';
 import { Navigate } from 'react-router-dom';
 import {Box,Button,TextField,Backdrop,CircularProgress,Snackbar,Alert} from '@mui/material';
 import Cookies from "js-cookie"
-
-
 import './index.css'
 import axios from 'axios';
 
@@ -38,7 +36,7 @@ class SigninForm extends React.Component{
       this.setState({isLoading:true})
       try{
         const options = {
-          url : 'https://20.235.87.10/capis/account/verify/',
+          url : `${process.env.REACT_APP_BASEURL}account/verify/`,
           method: 'POST',
           headers: {
             'Accept': 'application/json',
@@ -69,7 +67,7 @@ class SigninForm extends React.Component{
           autoComplete="off"
         >
         <div style={{borderBottom:"1px solid #dddddd", margin:"0px 0px 20px 0px"}}>
-            <h3 style={{color:"#B2B4C4", textAlign:"center"}}>Sign in</h3>
+            <h1 style={{color:"#000000", textAlign:"center"}}>Sign in</h1>
         </div>
         <Box sx={{display: 'flex',backgroundColor:"#e8f0fe",borderRadius:"10px",padding:"0px 10px 0px 0px", alignItems: 'flex-end',height:"50px"}}>
         
@@ -91,12 +89,18 @@ class SigninForm extends React.Component{
         {/* <AiOutlineMobile style={{fontSize:"30px", color:"grey", paddingBottom:"10px",backgroundColor:"white",height:"80%",width:"35px"}} sx={{color: 'action.active'}} /> */}
         <TextField type="number" style={{padding:"0px 0px 0px 0px"}} required id="outlined-mobile-input" label="Mobile Number" variant="standard" value={mobile}
           onChange={(event)=>{
-            this.setState({mobile:event.target.value})
+            this.setState({mobile:String(event.target.value)})
         }}
         onBlur={(event)=>{
             if(event.target.value===""){
                 this.setState({mobileNoErr:true})
-            }else{
+            }if(event.target.value!=="" && event.target.length!==10){
+                this.setState({mobileNoErr:true})
+            }
+            if(event.target.value!=="" && event.target.length===10){
+                this.setState({mobileNoErr:false})
+            }
+            else{
                 this.setState({mobileNoErr:false})
             }
         }
@@ -104,46 +108,20 @@ class SigninForm extends React.Component{
       </Box>
 
       {mobileNoErr? <p className='err'>Required*</p>:null}
-      {/* <Box>
-        <FormControl variant="standard"  style={{margin:".5vw", width:"96%"}}>
-        <InputLabel  id="demo-simple-select-label">Course Name</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          label="Course Name"
-          value={course}
-          onChange={(event)=>{
-            this.setState({course:event.target.value})
-        }
-    }
-        >
-          <MenuItem value={1}>Course 1</MenuItem>
-          <MenuItem value={2}>Course 2</MenuItem>
-          <MenuItem value={3}>Course 3</MenuItem>
-        </Select>
-      </FormControl>
-      </Box>
-       {courseErr? <p className='err'>Required*</p>:null}
-      */}
-     
-     
+    
       <div className='authPageBtnContainer'>
       <Button onClick={()=>{
         const {enrollNo,mobile}=this.state
-        if(enrollNo!=="" & mobile!=="" 
-        // & course!==""
-        ){
-        }
         if(enrollNo===""){
             this.setState({enrollNoErr:true})
         }
         if(mobile===""){
             this.setState({mobileNoErr:true})
         }
-        // if(course===""){
-        //     this.setState({courseErr:true})
-        // }
-        if(enrollNo!=="" && mobile!==""){
+        if(mobile.length!==10){
+          this.setState({mobileNoErr:true})
+        }
+        if(enrollNo!=="" && mobile!=="" && mobile.length===10){
           this.setState({userDetailsEntered:true})
         }
     }} variant="outlined">Submit</Button>
@@ -175,8 +153,10 @@ class SigninForm extends React.Component{
           <Box style={{backgroundColor:"white",boxShadow:"0px 0px 10px 0px grey",padding:"20px", width:"350px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
               <h3>Please Enter OTP</h3>
               <TextField size='small' value={otp} onChange={(event)=>this.setState({otp:event.target.value})} type="number"/>
-              <Button variant='Contained' style={{backgroundColor:"blue", color:"white", marginTop:"20px"}} onClick={this.verifyUser}>Submit otp</Button>
-          </Box>
+             
+                <Button variant='Contained' style={{backgroundColor:"blue", color:"white", margin:"10px"}} onClick={this.verifyUser}>Submit otp</Button>
+                
+               </Box>
         </div>
       )
     }

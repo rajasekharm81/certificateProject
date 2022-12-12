@@ -58,24 +58,45 @@ export class BtechCmm extends Component{
         this.initialData()
         this.fileCounterDisplay()
         this.fileIdGenerator()
-        this.getData()
+        this.getStudentData()
     }
 
-    getData=()=>{
-        const token = Cookies.get("authToken")
-        const options={
-            url:"https://20.235.87.10/capis/od/get-od-details/",
-            method:"GET",
-            headers:{
-                "Authorization":`Bearer ${token}`,
-                "Accept":"application/json"
+    getStudentData=async()=>{
+        try{
+            const {pinCode}=this.state
+            const token = Cookies.get("authToken")
+            const options = {
+                url:`https://20.235.87.10/capis/od/get-od-details/`,
+                method:"GET",
+                headers:{
+                    "Authorization":`Bearer ${token}`,
+                    "Accept":"application/json"
+                }
             }
+            const studentData = await axios(options)
+            const marks = studentData.data.marks
+            this.setState({
+                y1a:marks[0],
+                y1b:marks[1],
+                y1c:marks[2],
+                y1d:marks[3],
+                y2a:marks[4],
+                y2b:marks[5],
+                y2c:marks[6],
+                y2d:marks[7],
+                y3a:marks[8],
+                y3b:marks[9],
+                y3c:marks[10],
+                y3d:marks[11],
+                y4a:marks[12],
+                y4b:marks[13],
+                y4c:marks[14],
+                y4d:marks[15]
+            })
+        }catch(e){
+            console.log("new User")
         }
-        const i = axios(options)
-        console.log(i)
     }
-
-
 
     initialData=()=>{
         let a1 = []
@@ -362,7 +383,7 @@ export class BtechCmm extends Component{
         const basicData =  JSON.parse(temp)
         const details = {...basicData,marks:[y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d]}
         const options = {
-            url:"https://20.235.87.10/capis/od/original-degree-application/",
+            url:`${process.env.REACT_APP_BASEURL}od/original-degree-application/`,
             method: 'POST',
             headers: {
             'Accept': 'application/json',
@@ -393,7 +414,7 @@ export class BtechCmm extends Component{
         finalDocsList.map((each)=>fd.append("files",each))
 
         const options = {
-            url:"https://20.235.87.10/capis/file/od-upload/",
+            url:`${process.env.REACT_APP_BASEURL}file/od-upload/`,
             method: 'POST',
             headers: {   
             'Content-Type': 'multipart/form-data',
@@ -434,6 +455,7 @@ export class BtechCmm extends Component{
     render(){
         const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr}=this.state
         // const {degree,name,regNo,clzName,branch}=this.props
+        console.log(y1a)
         return(
            <Box className="mainContainer">
             {isLoading?<Backdrop
@@ -455,16 +477,16 @@ export class BtechCmm extends Component{
                            { tableHeadings.map((each)=><th id={`1st${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y1a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y1b.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y1c.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y1d.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
 
                     </table>
@@ -479,16 +501,16 @@ export class BtechCmm extends Component{
                            { tableHeadings.map((each)=><th id={`2nd${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y2a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y2b.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y2c.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y2d.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
 
                     </table>
@@ -503,16 +525,16 @@ export class BtechCmm extends Component{
                            { tableHeadings.map((each)=><th id={`3rd${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y3a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y3b.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y3c.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y3d.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
 
                     </table>
@@ -527,16 +549,16 @@ export class BtechCmm extends Component{
                            { tableHeadings.map((each)=><th id={`4th${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y4a.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y4b.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y4c.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y4d.map((each)=><td key={`cell${each.id}`}><input type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                     </table>
             </div>
