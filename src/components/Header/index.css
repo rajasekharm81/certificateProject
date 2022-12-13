@@ -1,0 +1,12 @@
+.headerMainContainer{
+    position:absolute;
+    top:0;
+    display: flex;
+    justify-content: space-between;
+    height: 110px;
+    /* border: 1px solid white; */
+    width: 100%;
+    /* background-color: white; */
+    opacity: .7;
+    justify-content: center;
+}

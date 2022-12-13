@@ -4,23 +4,24 @@ import { Navigate } from 'react-router-dom';
 import {Box,Button,TextField,Backdrop,CircularProgress,Snackbar,Alert} from '@mui/material';
 import Cookies from "js-cookie"
 import './index.css'
-import axios from 'axios';
+import logopng from "../../assects/logopng.png"
+import OTPModule from "../otphandler"
+import axios from "axios"
 
 
 class SigninForm extends React.Component{
     state={enrollNo:"", 
-    mobile:"",
-    enrollNoErr:false, 
-    mobileNoErr:false, 
-    course:"",
-    courseErr:false, 
-    userDetailsEntered:false, 
-    otp:"", 
-    isLoading:false,
-    backErrMsg:"",
-    backErr:false,
-    validUser:false
-  }
+        mobile:"",
+        enrollNoErr:false, 
+        mobileNoErr:false, 
+        course:"",
+        courseErr:false, 
+        userDetailsEntered:true, 
+        isLoading:false,
+        backErrMsg:"",
+        backErr:false,
+        validUser:false,
+      }
 
     isUserLogedIn=()=>{
       const token = Cookies.get("authToken")
@@ -31,38 +32,13 @@ class SigninForm extends React.Component{
       }
     }
 
-    verifyUser=async()=>{
-      const {otp,enrollNo}=this.state
-      this.setState({isLoading:true})
-      try{
-        const options = {
-          url : `${process.env.REACT_APP_BASEURL}account/verify/`,
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json;charset=UTF-8'
-          },
-          data: {
-              enrollment: enrollNo,
-              otp: otp
-          }
-        }
-        const response = await axios(options);  
-        if(response.statusText==="OK"){
-          Cookies.set("authToken",response.data.auth_token, {expires:1})
-          this.setState({isLoading:false,validUser:true})
-        }
-      }
-      catch(e){
-        this.setState({isLoading:false,backErr:true,backErrMsg:e.message})    
-      }
-    }
-
     signInView=()=>{
        const {enrollNo,mobile,enrollNoErr,mobileNoErr}=this.state
  
       return (
-      <div className='AuthPageSignin'>
+        <>
+        <div className='AuthPageSignin'>
+           <img className='authLogo' alt="Logo" src={logopng}/>
         <Box className='AuthpageSigninForm' width="300px" backgroundColor="#f7fafc" component="form" sx={{'& .MuiTextField-root': { m: 1, width: '80%' }}}
           autoComplete="off"
         >
@@ -129,16 +105,49 @@ class SigninForm extends React.Component{
         this.setState({enrollNo:"", mobile:"",enrollNoErr:false, mobileNoErr:false,courseErr:false, course:""})
     }} variant="outlined">Reset</Button>
       </div>
-    </Box>
+      <p style={{textAlign:"center",color:"#502389", fontSize:"14px", paddingTop:"20px"}}>Powered by EDUN!V</p>
+    </Box>  
     </div>
-    
-  )
+        </>
+      )
+    }
+
+    submitted=(oTp)=>{
+      this.verifyUser(oTp)
+    }
+
+    verifyUser=async(oTp)=>{
+      const {enrollNo}=this.state
+      this.setState({isLoading:true})
+      try{
+        const options = {
+          url : `${process.env.REACT_APP_BASEURL}account/verify/`,
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          data: {
+              enrollment: enrollNo,
+              otp: oTp
+          }
+        }
+        const response = await axios(options);  
+        if(response.statusText==="OK"){
+          Cookies.set("authToken",response.data.auth_token, {expires:1})
+          this.setState({isLoading:false,validUser:true})
+        }
+      }
+      catch(e){
+        this.setState({isLoading:false,backErr:true,backErrMsg:e.message})    
+      }
     }
 
     verifyView=()=>{
-      const {otp,isLoading,backErr,backErrMsg}=this.state
+      const {isLoading,backErr,backErrMsg}=this.state
       return(
         <div className='AuthPageSignin'>
+          <img className='authLogo' alt="Logo" src={logopng}/>
          {isLoading?<Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open
@@ -150,13 +159,12 @@ class SigninForm extends React.Component{
           OOPS!!! {backErrMsg}
         </Alert>
       </Snackbar>:null}
-          <Box style={{backgroundColor:"white",boxShadow:"0px 0px 10px 0px grey",padding:"20px", width:"350px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-              <h3>Please Enter OTP</h3>
-              <TextField size='small' value={otp} onChange={(event)=>this.setState({otp:event.target.value})} type="number"/>
-             
-                <Button variant='Contained' style={{backgroundColor:"blue", color:"white", margin:"10px"}} onClick={this.verifyUser}>Submit otp</Button>
-                
-               </Box>
+            <div className='VerifyContianer'>
+              <h3 style={{fontSize:"19px"}}>Please Enter OTP</h3>
+              <div style={{display:"flex", flexDirection:'row'}}>
+                  <OTPModule getotp={this.submitted}/>
+              </div>
+          </div>
         </div>
       )
     }

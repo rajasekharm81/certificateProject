@@ -1,0 +1,42 @@
+.verificationDashMainCont{
+    display: flex;
+    height: 100vh;
+    background-image: url("https://anucde.org/img4.e0531e20a9f75722.jpg");
+    background-size: cover;
+}
+
+.verificationSideNav{
+    width: 20vw;
+    background-color: #FFFFFF;
+    opacity: .9;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.verificationDashContainer{
+    background-color: #f8f8f8;
+    width: 80vw;
+    opacity: .9;
+}
+
+.verificationSideNavButton{
+    width: 90%;
+    height: 40px;
+    border: none;
+    border-radius:10px ;
+    font-weight: bold;
+    color: grey!important;
+}
+
+.activeButton{
+     background-image: linear-gradient(to bottom, #ededf0,#e5e5e7);
+}
+
+.navBarLogo{
+    height: 40px;
+    width: 40px;
+    align-self: flex-start;
+    justify-content: flex-start;
+}
