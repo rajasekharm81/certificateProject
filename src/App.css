@@ -1,5 +1,5 @@
 *{
-  font-family: "San-Serif"!important;
+  font-family: "verdana";
   font-size: 14px;
 }
 
@@ -9,11 +9,6 @@ h1{
 
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {

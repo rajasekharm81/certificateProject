@@ -16,7 +16,7 @@ class SigninForm extends React.Component{
         mobileNoErr:false, 
         course:"",
         courseErr:false, 
-        userDetailsEntered:true, 
+        userDetailsEntered:false, 
         isLoading:false,
         backErrMsg:"",
         backErr:false,
@@ -32,9 +32,32 @@ class SigninForm extends React.Component{
       }
     }
 
+    getotp=async()=>{
+      try{
+      const {enrollNo,mobile}=this.state
+      const options = {
+          url : `${process.env.REACT_APP_BASEURL}account/register/`,
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json;charset=UTF-8'
+          },
+          data: {
+              "enrollment": enrollNo,
+              "mobile": mobile,
+            }
+        }
+        const response = await axios(options); 
+         console.log(response)
+        }catch(e){
+            console.log(e)
+        }
+      
+    }
+
     signInView=()=>{
        const {enrollNo,mobile,enrollNoErr,mobileNoErr}=this.state
- 
+
       return (
         <>
         <div className='AuthPageSignin'>
@@ -49,7 +72,7 @@ class SigninForm extends React.Component{
         
         <TextField style={{padding:"0px 0px 0px 0px"}} required id="outlined-enroll-input" label="Enrollment Number" variant="standard" value={enrollNo}
           onChange={(event)=>{
-            this.setState({enrollNo:event.target.value})
+            this.setState({enrollNo:event.target.value.toUpperCase()})
         }}
           onBlur={(event)=>{
             if(event.target.value===""){
@@ -98,7 +121,7 @@ class SigninForm extends React.Component{
           this.setState({mobileNoErr:true})
         }
         if(enrollNo!=="" && mobile!=="" && mobile.length===10){
-          this.setState({userDetailsEntered:true})
+          this.setState({userDetailsEntered:true},this.getotp)
         }
     }} variant="outlined">Submit</Button>
       <Button onClick={()=>{
@@ -154,15 +177,15 @@ class SigninForm extends React.Component{
         >
           <CircularProgress color="inherit" />
         </Backdrop>:null}
-            {backErr?<Snackbar open autoHideDuration={4000} anchorOrigin={{ vertical:"top", horizontal:"right" }} onClose={()=>this.setState({backErr:false})}>
-        <Alert onClose={()=>this.setState({backErr:false})} severity="error" sx={{ width: '100%' }}>
-          OOPS!!! {backErrMsg}
+            {backErr?<Snackbar open autoHideDuration={4000} anchorOrigin={{ vertical:"center", horizontal:"center" }} onClose={()=>this.setState({backErr:false})}>
+        <Alert onClose={()=>this.setState({backErr:false})} severity="error" sx={{ width: '40vw', background:"orange" }}>
+          <h1>OOPS!!! {backErrMsg}</h1>
         </Alert>
       </Snackbar>:null}
             <div className='VerifyContianer'>
               <h3 style={{fontSize:"19px"}}>Please Enter OTP</h3>
               <div style={{display:"flex", flexDirection:'row'}}>
-                  <OTPModule getotp={this.submitted}/>
+                  <OTPModule resendOpt={this.getotp} getotp={this.submitted}/>
               </div>
           </div>
         </div>
@@ -175,7 +198,7 @@ class SigninForm extends React.Component{
           return(
               <>
                 {userDetailsEntered? this.verifyView():this.signInView()}
-                {validUser?<Navigate to="/requests/odrequest" />:null}
+                {validUser?<Navigate to="/" />:null}
               </>
             )
   }

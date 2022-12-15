@@ -2,10 +2,11 @@
 /* eslint-disable no-unused-vars */
 import {Component} from 'react';
 import { Navigate } from 'react-router-dom';
-import { Select,MenuItem,FormControl,InputLabel,TextField,FormLabel,RadioGroup,FormControlLabel,Radio,FormGroup,Checkbox,Button,Backdrop,CircularProgress} from '@mui/material';
+import { Select,MenuItem,FormControl,InputLabel,TextField,FormLabel,RadioGroup,FormControlLabel,Radio,FormGroup,Checkbox,Button,Backdrop,CircularProgress,Snackbar,Alert} from '@mui/material';
 import {format} from 'date-fns'
 import {BtechCmm, DegreeCmm} from "../Cmm"
 import CeritificateRequest from "../CertificateRequest"
+import logopng from "../../assects/logopng.png"
 import "./index.css"
 
 import {BtechBranchs,Degrees} from "../../basedata/basedata"
@@ -15,8 +16,10 @@ import Cookies from 'js-cookie'
 
 class Odrequest extends Component{
     state={
+        dashBoard:false,
         isValidUser:true,
         requestForm:"",
+        courseCategory:"",
         years:[],
         months:[],
         stateData:[],
@@ -29,7 +32,7 @@ class Odrequest extends Component{
         examYear:"",
         examMonth:"",
         studentBranch:"",
-        higherEducation:"1",
+        higherEducation:"0",
         registrationNumber:"",
         street:"",
         village:"",
@@ -40,7 +43,9 @@ class Odrequest extends Component{
         examCenter:"",
         collageName:'',
         country:"",
+        datasaved:false,
         higherEducationNoteCheck:false,
+        courseCategoryErr:false,
         degreeErr:false,
         studentNameErr:false,
         examYearErr:false,
@@ -74,7 +79,8 @@ class Odrequest extends Component{
     getStudentData=async()=>{
         const {pinCode}=this.state
         const token = Cookies.get("authToken")
-        const options = {
+        try{
+            const options = {
             url:`${process.env.REACT_APP_BASEURL}od/get-od-details/`,
             method:"GET",
             headers:{
@@ -110,6 +116,10 @@ class Odrequest extends Component{
                     this.getDistricts,console.log(pinCode)
                 )
         }
+        }catch(e){
+            console.log(e.message)
+        }
+        
         
     }
 
@@ -132,7 +142,7 @@ class Odrequest extends Component{
         this.setState({stateData:states.data.data})
 
         if(states.status===200){
-            console.log('success')
+            console.log("valid user")
         }
         }catch(e){
            if(e.response.status===401){
@@ -266,7 +276,7 @@ class Odrequest extends Component{
                     },
             }
         localStorage.setItem(`${registrationNumber}_BasicData`,JSON.stringify(StudentData))
-        this.setState({isLoading:false})
+        this.setState({isLoading:false,datasaved:true})
     }
 
     onContinue=(event)=>{
@@ -283,6 +293,7 @@ class Odrequest extends Component{
             higherEducation,
             higherEducationNoteCheck,
             registrationNumber,
+            courseCategory,
             street,
             village,
             mandal,
@@ -391,6 +402,12 @@ class Odrequest extends Component{
         if(examCenter!==""){
             this.setState({examCenterErr:false})
         }
+        if(courseCategory===""){
+            this.setState({courseCategoryErr:true})
+        }
+        if(courseCategory!==""){
+            this.setState({courseCategoryErr:false})
+        }
         if(
         ((StudyType==="0" && collageName !=="") || (StudyType==="1" && collageName==="")) &&
         ((higherEducation==="1" && higherEducationNoteCheck===false) || (higherEducation==="0" && higherEducationNoteCheck===true)) &&
@@ -406,7 +423,8 @@ class Odrequest extends Component{
             district!=="" &&
             state!=="" &&
             pinCodeErr===false &&
-            examCenter!==""
+            examCenter!=="" && 
+            courseCategory!==""
         ){  
             this.setState({NoErrorInOd:true},this.saveOnContinue)
         }
@@ -447,6 +465,7 @@ class Odrequest extends Component{
             pinCode,
             examCenter,
             registrationNumber,
+            courseCategory,
             degreeErr,
             studentNameErr,
             examYearErr,
@@ -465,18 +484,29 @@ class Odrequest extends Component{
             collageNameErr,
             higherEducationErr,
             errorExists,
-            NoErrorInOd
+            NoErrorInOd,
+            courseCategoryErr
         }=this.state
         switch (requestForm){
             case "OD Request":
                 return(
                 <>
                     <div className='requestFormContainer'>
-                        <h2>ACHARYA NAGARJUNA UNIVERSIRY</h2>
+                        <div>
+                            <img src={logopng} alt="logo"/>
+                        </div>
+                        {/* <h2>ACHARYA NAGARJUNA UNIVERSIRY</h2> */}
                         <h5>APPLICATION FOR OBTAINING ORIGINAL DEGREE</h5>
                         <form>
                             <div>
-                                <FormControl size="small" style={{width:"70%",margin:"10px 10px 0px 0px"}}>
+                                <FormControl size="small" style={{width:"30%",margin:"10px 10px 0px 0px"}}>
+                                        <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Course Category</InputLabel>
+                                        <Select error={courseCategoryErr} onChange={(event)=>{this.setState({courseCategory:event.target.value})}} value={courseCategory}>
+                                           <MenuItem value="UG">UG</MenuItem>
+                                           <MenuItem value='PG'>PG</MenuItem>
+                                        </Select>
+                                </FormControl>
+                                <FormControl size="small" style={{width:"40%",margin:"10px 10px 0px 0px"}}>
                                         <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Degree Applied for</InputLabel>
                                         <Select error={degreeErr} onChange={(event)=>{this.setState({degree:event.target.value})}} value={degree}>
                                             {Degrees.map((each)=>(<MenuItem id={`degree${each}`} value={each}>{each}</MenuItem>))}
@@ -501,7 +531,7 @@ class Odrequest extends Component{
                             </div>
                             <FormControl size="small">               
                                 <div className='generalOdReqDataContainer'>
-                                    <TextField size="small" error={studentNameErr} value={studentName} onChange={(event)=>{this.setState({studentName:event.target.value.toUpperCase()})}} style={{margin:".5vw 0vw .2vw 0vw",width:"80%"}} id="odreq-studentName" label="Name of the applicant" variant="outlined" helperText="Please Provide with surname as per University Records"  />
+                                    <TextField size="small" error={studentNameErr} value={studentName} onChange={(event)=>{this.setState({studentName:event.target.value.toUpperCase()})}} style={{margin:".5vw 0vw .2vw 0vw",width:"80%"}} id="odreq-studentName" label="Name of the applicant (As per University Records)" variant="outlined" helperText="Please Provide with surname as per University Records"  />
 {/* address section */}
                                     <div style={{display:"flex", flexWrap:"wrap"}}>
                                         <div style={{display:"flex",alignItems:"flex-end", width:"49%"}}>
@@ -520,14 +550,14 @@ class Odrequest extends Component{
                                                     <MenuItem value="W/O">W/O</MenuItem>
                                                 </Select>
                                         </FormControl>
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"80%"}} value={dependentName} error={dependentNameErr} id="odreq-address" label="name" variant="outlined" onChange={(event)=>{this.setState({dependentName:event.target.value})}} />
+                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"80%"}} value={dependentName} error={dependentNameErr} id="odreq-address" label="Name" variant="outlined" onChange={(event)=>{this.setState({dependentName:event.target.value.toUpperCase()})}} />
                                         </div>
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={street} error={streetErr} label="street" variant="outlined" onChange={(event)=>this.setState({street:event.target.value})} />
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={village} error={villageErr} label="village/City" variant="outlined" onChange={(event)=>this.setState({village:event.target.value})} />
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={mandal} error={mandalErr} label="Mandal" variant="outlined" onChange={(event)=>this.setState({mandal:event.target.value})} />
+                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={street} error={streetErr} label="Street" variant="outlined" onChange={(event)=>this.setState({street:event.target.value.toUpperCase()})} />
+                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={village} error={villageErr} label="Village/City" variant="outlined" onChange={(event)=>this.setState({village:event.target.value.toUpperCase()})} />
+                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={mandal} error={mandalErr} label="Mandal" variant="outlined" onChange={(event)=>this.setState({mandal:event.target.value.toUpperCase()})} />
 {/* states data  */}
                                         <FormControl sx={{ m: "20px 0px 1vw 0vw", width:"150px",fontSize:"6px"  }} size="small">
-                                                <InputLabel style={{backgroundColor:"white"}} id="state-dropDown">state</InputLabel>
+                                                <InputLabel style={{backgroundColor:"white"}} id="state-dropDown">State</InputLabel>
                                                 <Select
                                                     size="small"
                                                     labelId="state-dropDown"
@@ -558,7 +588,7 @@ class Odrequest extends Component{
                                         <TextField size="small" type="number" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={pinCode} error={pinCodeErr} label="Pin Code" variant="outlined" onChange={(event)=>this.setState({pinCode:(event.target.value)})} />
                                     </div>                                   
                                     <div>
-                                        <TextField size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value})}} value={registrationNumber} style={{margin:"10px 10px 0vw 0vw"}} id="regID" label="Registration Number" variant="outlined" />
+                                        <TextField size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value.toUpperCase()})}} value={registrationNumber} style={{margin:"10px 10px 0vw 0vw"}} id="regID" label="Registration Number" variant="outlined" />
 {/* Months section */}
                                         <FormControl size="small" style={{width:"150px", margin:"10px 10px 0 0px"}}>
                                             <InputLabel id="examMonth">Exam Month</InputLabel>
@@ -615,10 +645,10 @@ class Odrequest extends Component{
                                                 //         <MenuItem value="clz2">College 2</MenuItem>
                                                 //     </Select>
                                                 // </FormControl>
-                                                 <TextField size="small" value={collageName} error={collageNameErr} onChange={(event)=>{this.setState({collageName:event.target.value})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="ClzName" label="College Name" variant="outlined" />
+                                                 <TextField size="small" value={collageName} error={collageNameErr} onChange={(event)=>{this.setState({collageName:event.target.value.toUpperCase()})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="ClzName" label="College Name" variant="outlined" />
                                                 ):null}
 {/* Last Appeared Exam Center */}
-                                        <TextField size="small" error={examCenterErr} value={examCenter} onChange={(event)=>{this.setState({examCenter:event.target.value})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="exmCenter" label="Last Appeared Examination Center" variant="outlined" />
+                                        <TextField size="small" error={examCenterErr} value={examCenter} onChange={(event)=>{this.setState({examCenter:event.target.value.toUpperCase()})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="exmCenter" label="Last Appeared Examination Center" variant="outlined" />
 
 
 {/* Applying For Higher Education */}
@@ -678,6 +708,8 @@ class Odrequest extends Component{
         return(
             <div className='requestForm'>
                  <img className='LogoImg' alt="LogoImage" src="https://anucde.org/assets/img/brand/logo.png"/>
+                 {/* <img className='LogoutImg' alt="LogoImage" src="https://anucde.org/assets/img/brand/logo.png"/> */}
+                 <Button onClick={()=>this.setState({dashBoard:true})} variant="contained" className="dashBordBtn">Back to Dashboard</Button>  
                 <h1>Request Forms</h1>
                 <FormControl style={{width:"40vw"}}>
                     <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Requesting For</InputLabel>
@@ -697,10 +729,22 @@ class Odrequest extends Component{
         )
     }
 
+    docSavedAlertClosed=()=>{
+        this.setState({datasaved:false})
+    }
+
     render(){
-        const{isValidUser}=this.state
+        const{isValidUser,dashBoard,datasaved,higherEducation}=this.state
         return(
-                isValidUser?this.initialView():<Navigate to="/requests/login"/>
+            <>
+                {dashBoard?<Navigate to="/"/>:null}
+                {isValidUser?this.initialView():<Navigate to="/requests/login"/>}
+                <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={datasaved} autoHideDuration={3000} onClose={this.docSavedAlertClosed}>
+                    <Alert onClose={this.docSavedAlertClosed} severity="success" sx={{ width: '100%', backgroundColor:"lightGreen", color:"white" }}>
+                        Data saved... Please Fill Consolidated Marks Sheets  
+                    </Alert>
+                </Snackbar>
+            </>
         )
     }
 }

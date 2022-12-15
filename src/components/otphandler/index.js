@@ -25,11 +25,15 @@ function OTPModule(props) {
         console.log(OTP)
   }
   
+      const resendOtp=()=>{
+        const {resendOpt}=props
+        resendOpt()
+      }
 
   return (
     <div style={{display:"flex", flexDirection:"column"}}>
       <OTPInput value={OTP} onChange={setOTP} autoFocus OTPLength={4} otpType="number" disabled={false}/>
-      <ResendOTP maxTime="40" renderButton={renderButton} renderTime={renderTime} style={{marginTop:"10px", justifyContent:"space-around", alignItems:"center"}} onResendClick={() => console.log("Resend clicked")} />
+      <ResendOTP maxTime="40" renderButton={renderButton} renderTime={renderTime} style={{marginTop:"10px", justifyContent:"space-around", alignItems:"center"}} onResendClick={resendOtp} />
       {/* <Button variant='Contained' style={{backgroundColor:"blue", color:"white", margin:"10px"}} onClick={verifyUser}>Submit otp</Button> */}
           <Button variant='Contained' style={{backgroundColor:"blue", color:"white", margin:"10px"}} onClick={sendOtp}>Submit otp</Button> 
     </div>

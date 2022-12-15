@@ -3,7 +3,9 @@
     flex-direction: column;
     width: 90vw;
     align-items: center;
-     overflow: auto;
+    overflow: auto;
+    justify-content: center;
+    margin-left: 8vw;
 }
 .marksContainer{
     width: 85vw;

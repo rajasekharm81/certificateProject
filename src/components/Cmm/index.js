@@ -43,7 +43,8 @@ export class BtechCmm extends Component{
         filesUploadedSuccessFully:false,
         isLoading:false,
         networkErr:false,
-        documents:[]
+        documents:[],
+        dataSavedAlert:false
     }
 
     SlideTransition=(SlideProps)=> {
@@ -394,7 +395,7 @@ export class BtechCmm extends Component{
         }
         try{
             const r = await axios(options)
-            this.setState({dataSaved:true,isLoading:false})
+            this.setState({dataSaved:true,isLoading:false,dataSavedAlert:true})
         }catch(e){
             console.log(e)
             this.setState({isLoading:false,networkErr:true})            
@@ -422,9 +423,9 @@ export class BtechCmm extends Component{
             },
           data: fd
         }
-        const r = await axios(options)
+        await axios(options)
         this.filesUploadedSuccessFullyOpen()
-        console.log(r)
+        // console.log(r)
         }catch(e){
             this.fileUploadErrDiologOpen()
         }
@@ -452,10 +453,12 @@ export class BtechCmm extends Component{
         this.setState({filesUploadedSuccessFully:false})
     }
 
+    dataSavedAlertClose=()=>{
+        this.setState({dataSavedAlert:false})
+    }
+
     render(){
         const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr}=this.state
-        // const {degree,name,regNo,clzName,branch}=this.props
-        console.log(y1a)
         return(
            <Box className="mainContainer">
             {isLoading?<Backdrop
@@ -467,98 +470,98 @@ export class BtechCmm extends Component{
             <h1 style={{alignSelf:"center"}}>Consolidated Marks</h1>
             <div className='marksContainer'>
 {/* First Year Marks section */}
-                <p>First Year</p>        
-                    <div style={{display:"flex",marginLeft:"65px"}}>
-                        <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black", padding:"10px 0 0 10px"}}>Theory</p>
-                        <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black",padding:"10px 0 0 10px"}}>Practicals & Projects</p>
+                <h2>First Year</h2>        
+                    <div style={{display:"flex",marginLeft:"80px"}}>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
                            { tableHeadings.map((each)=><th id={`1st${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y1a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y1b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y1c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y1d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y1d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
 
                     </table>
 {/* Second Year marks section */}
-                <p>Second Year</p>        
-                    <div style={{display:"flex",marginLeft:"65px"}}>
-                        <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black", padding:"10px 0 0 10px"}}>Theory</p>
-                        <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black",padding:"10px 0 0 10px"}}>Practicals & Projects</p>
+                <h2>Second Year</h2>        
+                    <div style={{display:"flex",marginLeft:"80px"}}>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
                            { tableHeadings.map((each)=><th id={`2nd${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y2a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y2b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y2c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y2d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y2d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
 
                     </table>
 {/* Third Year marks section */}
-                <p>Third Year</p>        
-                    <div style={{display:"flex",marginLeft:"65px"}}>
-                        <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black", padding:"10px 0 0 10px"}}>Theory</p>
-                        <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black",padding:"10px 0 0 10px"}}>Practicals & Projects</p>
+                <h2>Third Year</h2>        
+                    <div style={{display:"flex",marginLeft:"80px"}}>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
                            { tableHeadings.map((each)=><th id={`3rd${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y3a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y3b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y3c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y3d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y3d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
 
                     </table>
 {/* Fourth Year marks section */}
-                <p>Fourth Year</p>        
-                    <div style={{display:"flex",marginLeft:"65px"}}>
-                            <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black", padding:"10px 0 0 10px"}}>Theory</p>
-                            <p style={{minWidth:"525px",margin:"0px",height:"25px",border:"1px solid black",padding:"10px 0 0 10px"}}>Practicals & Projects</p>
+                <h2>Fourth Year</h2>        
+                    <div style={{display:"flex",marginLeft:"80px"}}>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                        <p style={{minWidth:"520px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
                     </div>
                     <table style={{marginTop:"0"}}>
                         <tr>
                            { tableHeadings.map((each)=><th id={`4th${each}`}>{each}</th>)}
                         </tr>
                         <tr>
-                            {y4a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4a.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y4b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4b.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y4c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4c.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                         <tr>
-                            {y4d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} onChange={this.update} className='cell' id={each.id}/></td>)}
+                            {y4d.map((each)=><td key={`cell${each.id}`}><input value={each.marks} type={each.id[3]==="0"? "text":"number"} style={each.id[3]==="0"? {width:"70px",border:"1px solid silver",backgroundColor:"white"}:{backgroundColor:"white",border:"1px solid silver"}} onChange={this.update} className='cell' id={each.id}/></td>)}
                         </tr>
                     </table>
             </div>
@@ -616,16 +619,28 @@ export class BtechCmm extends Component{
 {/* files upload success Notification */}
                         <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={filesUploadedSuccessFully} autoHideDuration={3000} onClose={this.filesUploadedSuccessFullyClose}>
                             <Alert onClose={this.filesUploadedSuccessFullyClose} severity="success" sx={{ width: '100%', backgroundColor:"#2E7D32", color:"white" }}>
-                                Files Uploaded successfully!!!
+                                Files Uploaded successfully!!! Please Proceed for Payment
                             </Alert>
                         </Snackbar>
 {/* error Notification on network err */}
 
                 <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={networkErr} autoHideDuration={3000} onClose={this.networkErrClose}>
-                <Alert onClose={this.networkErrClose} severity="error" sx={{ width: '100%', backgroundColor:"orange", color:"white" }}>
-                    OOPS!!! Network Error Please Try Again
-                </Alert>
-            </Snackbar>
+                    <Alert onClose={this.networkErrClose} severity="error" sx={{ width: '100%', backgroundColor:"orange", color:"white" }}>
+                        OOPS!!! Network Error Please Try Again
+                    </Alert>
+                </Snackbar>
+{/* Data saved Notifications */}
+
+                <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={this.state.dataSavedAlert} autoHideDuration={3000} onClose={this.dataSavedAlertClose}>
+                    <Alert onClose={this.dataSavedAlertClose} severity="success" sx={{ width: '100%', backgroundColor:"lightgreen", color:"white" }}>
+                        Data Uploaded Successfylly. Please upload Required Documents for verification.
+                    </Alert>
+                </Snackbar>
+
+
+
+
+
            </Box>
         )
     }
