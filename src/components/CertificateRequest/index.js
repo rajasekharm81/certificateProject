@@ -2,7 +2,9 @@ import {Component} from 'react'
 import {TextField,Grid,Box,Button} from '@mui/material';
 import ReactToPrint from 'react-to-print';
 import format from 'date-fns/format'
+import logopng from "../../assects/logopng.png"
 import "./index.css"
+import { fontWeight } from '@mui/system';
 
 class CeritificateRequest extends Component{
     state={
@@ -136,14 +138,15 @@ class CeritificateRequest extends Component{
         return(
             <>
              <Box className="CertificatesPreviewFormContainer" ref={el => (this.componentRef = el)}>
+                <img src={logopng} alt='logo'   />
                 <p style={{textAlign:"right", width:"100%", paddingRight:"5vw"}}>Date:<span> {date}</span></p>
-                <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>To,</p>
+                <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw",fontWeight:"bold"}}>To,</p>
                 <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>The Controller of Examinations /</p>
-                <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>The Additional Controller of Examinations</p>
-                <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>Acharya Nagarjuna University</p>
+                <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>The Additional Controller of Examinations,</p>
+                <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>Acharya Nagarjuna University,</p>
                 <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>Nagarjuna Nagar-522510.</p>
                 <p></p>
-                <p style={{textAlign:"left",width:"100%", paddingLeft:"5vw"}}>Sub: - Request to issue <span>{certificateName}</span>  - Reg.</p>
+                <p style={{textAlign:"left",width:"100%", paddingLeft:"5vw", fontWeight:"bold"}}>Sub: - Request to issue <span>{certificateName}</span>  - Reg.</p>
                 <p style={{textAlign:"left",width:"100%", paddingLeft:"15vw"}}>Respected Sir,</p>
                 <p>***</p>
                 <p style={{textAlign:"left",width:"100%", paddingLeft:"5vw"}}>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; I&ensp;<span style={{fontWeight:"bold"}}> {studentName}</span> studied <span style={{fontWeight:"bold"}}>{courseName}</span> with Hall Ticket No: <span style={{fontWeight:"bold"}}>{hallTicketNumber}</span> in the Academic Year <span style={{fontWeight:"bold"}}>{AcademicYear}</span> and also completed my Degree in <span style={{fontWeight:"bold"}}>{degreeCompletedMonth}-{degreeCompletedYear}</span>.</p>
@@ -152,7 +155,7 @@ class CeritificateRequest extends Component{
                 <p style={{textAlign:"right", width:"100%"}}>Yours Obediently,</p>
                 <p style={{textAlign:"right", width:"100%"}}>{studentName}</p>
                 <p style={{textAlign:"right", width:"100%"}}>{hallTicketNumber}</p>
-                <div style={{display:"flex", justifyContent:"space-around", width:"300px"}}>
+                <div className="printable">
                     <Button style={{marginRight:'10px'}} variant="contained" onClick={()=>this.setState({isCompleted:false})}>Edit</Button>
                     <Button style={{marginRight:'10px'}} variant="contained" onClick={this.save}>Save</Button>
                     <ReactToPrint trigger={()=><Button style={{marginRight:'10px'}} variant="contained">Print</Button>} content={() => this.componentRef}/>

@@ -2,8 +2,6 @@
 import OTPInput, { ResendOTP } from "otp-input-react";
 import {Button} from "@mui/material"
 import { useState } from "react";
-// import axios from "axios";
-// import Cookies from "js-cookie"
 
 
 const renderButton = (buttonProps) => {
@@ -12,7 +10,6 @@ const renderButton = (buttonProps) => {
 const renderTime = (remainingtime) => {
   return <span>{remainingtime} seconds remaining</span>;
 };
-
 
 
 function OTPModule(props) {

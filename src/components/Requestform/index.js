@@ -4,7 +4,7 @@ import {Component} from 'react';
 import { Navigate } from 'react-router-dom';
 import { Select,MenuItem,FormControl,InputLabel,TextField,FormLabel,RadioGroup,FormControlLabel,Radio,FormGroup,Checkbox,Button,Backdrop,CircularProgress,Snackbar,Alert} from '@mui/material';
 import {format} from 'date-fns'
-import {BtechCmm, DegreeCmm} from "../Cmm"
+import {BtechCmm, Degreecmm,PgEduAndLawcmm} from "../Cmm"
 import CeritificateRequest from "../CertificateRequest"
 import logopng from "../../assects/logopng.png"
 import "./index.css"
@@ -43,6 +43,7 @@ class Odrequest extends Component{
         examCenter:"",
         collageName:'',
         country:"",
+        isLocked:false,
         datasaved:false,
         higherEducationNoteCheck:false,
         courseCategoryErr:false,
@@ -112,6 +113,7 @@ class Odrequest extends Component{
                     collageName:program_details.collageName,
                     higherEducation:program_details.higherEducation,
                     examCenter:program_details.examCenter,
+                    isLocked:true
                     },
                     this.getDistricts,console.log(pinCode)
                 )
@@ -202,7 +204,9 @@ class Odrequest extends Component{
         pinCodeErr,
         examCenterErr,
         collageNameErr,
-        higherEducationErr} = this.state
+        higherEducationErr,
+        courseCategoryErr} = this.state
+
         if(degreeErr ||
         studentNameErr ||
         examYearErr ||
@@ -218,7 +222,7 @@ class Odrequest extends Component{
         pinCodeErr ||
         examCenterErr ||
         collageNameErr ||
-        higherEducationErr){
+        higherEducationErr || courseCategoryErr){
         this.setState({errorExists:true})
     }else{
         this.setState({errorExists:false})
@@ -228,6 +232,7 @@ class Odrequest extends Component{
     saveOnContinue=()=>{
         this.setState({isLoading:true})
         const {requestForm,
+            courseCategory,
             degree,
             StudyType,
             studentName,
@@ -265,6 +270,7 @@ class Odrequest extends Component{
                     },
                 program_details:{
                     prog_ID:degree,
+                    courseCategory:courseCategory,
                     studentBranch_id:studentBranch,
                     registrationNumber:registrationNumber,
                     examMonth:examMonth,
@@ -433,10 +439,21 @@ class Odrequest extends Component{
     cmmForm=()=>{
         const{studentBranch,degree,studentName,registrationNumber,collageName} = this.state
             switch (degree){
-                case "B.tech":
+                case "B.Tech":
                     return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
                 case "B.Pharm":
                     return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                case "B.Sc":
+                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                case "B.A":
+                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                case "B.Com":
+                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                case "M.A":
+                    return <PgEduAndLawcmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                case "M.Com":
+                    return <PgEduAndLawcmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                   
                 default: 
                     return null
             }
@@ -485,7 +502,8 @@ class Odrequest extends Component{
             higherEducationErr,
             errorExists,
             NoErrorInOd,
-            courseCategoryErr
+            courseCategoryErr,
+            isLocked
         }=this.state
         switch (requestForm){
             case "OD Request":
@@ -506,7 +524,7 @@ class Odrequest extends Component{
                                            <MenuItem value='PG'>PG</MenuItem>
                                         </Select>
                                 </FormControl>
-                                <FormControl size="small" style={{width:"40%",margin:"10px 10px 0px 0px"}}>
+                                <FormControl disabled={isLocked} size="small" style={{width:"40%",margin:"10px 10px 0px 0px"}}>
                                         <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Degree Applied for</InputLabel>
                                         <Select error={degreeErr} onChange={(event)=>{this.setState({degree:event.target.value})}} value={degree}>
                                             {Degrees.map((each)=>(<MenuItem id={`degree${each}`} value={each}>{each}</MenuItem>))}
@@ -680,8 +698,7 @@ class Odrequest extends Component{
 
                         </form>
                         {NoErrorInOd?null:<Button type='submit' onClick={this.onContinue} style={{margin:"50px 0 10px 0"}} variant="contained" size="medium">Continue</Button>}
-                        {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields</p>:<p style={{margin:"0 0 30px 0"}}></p>}
-                    
+                        {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields and check Higher Education section</p>:<p style={{margin:"0 0 30px 0"}}></p>}
                         {NoErrorInOd?this.cmmForm():null}
                     </div>
                 </>)  
@@ -734,7 +751,7 @@ class Odrequest extends Component{
     }
 
     render(){
-        const{isValidUser,dashBoard,datasaved,higherEducation}=this.state
+        const{isValidUser,dashBoard,datasaved}=this.state
         return(
             <>
                 {dashBoard?<Navigate to="/"/>:null}

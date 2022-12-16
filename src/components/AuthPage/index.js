@@ -36,7 +36,7 @@ class SigninForm extends React.Component{
       try{
       const {enrollNo,mobile}=this.state
       const options = {
-          url : `${process.env.REACT_APP_BASEURL}account/register/`,
+          url : `${process.env.REACT_APP_BASEURL}account/login/`,
           method: 'POST',
           headers: {
             'Accept': 'application/json',
