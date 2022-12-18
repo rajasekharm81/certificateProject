@@ -9,9 +9,9 @@ import CeritificateRequest from "../CertificateRequest"
 import logopng from "../../assects/logopng.png"
 import "./index.css"
 
-import {BtechBranchs,Degrees} from "../../basedata/basedata"
 import axios from 'axios';
 import Cookies from 'js-cookie'
+import { TroubleshootRounded } from '@mui/icons-material';
 
 
 class Odrequest extends Component{
@@ -24,6 +24,8 @@ class Odrequest extends Component{
         months:[],
         stateData:[],
         districtData:[],
+        Degrees:[],
+        Branchs:[],
         degree:"",
         StudyType:"0",
         studentName:"",
@@ -64,7 +66,7 @@ class Odrequest extends Component{
         collageNameErr:false,
         higherEducationErr:false,
         errorExists:false,
-        NoErrorInOd:false,
+        NoErrorInOd:false, 
         isLoading:false
     }   
 
@@ -82,7 +84,7 @@ class Odrequest extends Component{
         const token = Cookies.get("authToken")
         try{
             const options = {
-            url:`${process.env.REACT_APP_BASEURL}od/get-od-details/`,
+            url:`${process.env.REACT_APP_BASEURL}certificate/get-od-details/`,
             method:"GET",
             headers:{
                 "Authorization":`Bearer ${token}`,
@@ -90,6 +92,7 @@ class Odrequest extends Component{
             }
         }
         const studentData = await axios(options)
+        console.log(studentData)
         if(studentData!==undefined){
             const program_details = studentData.data.program_details
         const address = studentData.data.address
@@ -133,7 +136,7 @@ class Odrequest extends Component{
     getStates=async()=>{
         try{
             const token = Cookies.get("authToken")
-        const options = {
+            const options = {
             url:`${process.env.REACT_APP_BASEURL}list/states/?country_id=1`,
             method:"GET",
             headers:{
@@ -144,7 +147,7 @@ class Odrequest extends Component{
         this.setState({stateData:states.data.data})
 
         if(states.status===200){
-            console.log("valid user")
+            console.log(states)
         }
         }catch(e){
            if(e.response.status===401){
@@ -158,10 +161,12 @@ class Odrequest extends Component{
 
     getDistricts=async()=>{
         this.setState({isLoading:true})
-        const token = Cookies.get("authToken")
-        const {state}=this.state
+         const {state}=this.state
+        try{
+            const token = Cookies.get("authToken")
+       
         const options = {
-            url:`${process.env.REACT_APP_BASEURL}list/districts?state_id=${state}`,
+            url:`${process.env.REACT_APP_BASEURL}list/districts/?state_id=${state}`,
             method:"GET",
             headers:{
                  'Authorization': `Bearer ${token}`,
@@ -169,6 +174,58 @@ class Odrequest extends Component{
         }
         const districts = await axios(options)
         this.setState({districtData:districts.data.data,isLoading:false})
+        }catch(e){
+            console.log(e)
+            this.setState({isLoading:false})
+        }
+        
+    }
+
+    getPrograms=async()=>{
+        this.setState({isLoading:true})
+        try{
+            const token = Cookies.get("authToken")
+        const {courseCategory}=this.state
+        const options = {
+            // url:`${process.env.REACT_APP_BASEURL}list/programs/?program_category=${courseCategory}`,
+            url:`${process.env.REACT_APP_BASEURL}list/programs/`,
+            method:"GET",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+            }
+        }
+        const Degrees = await axios(options)
+        // console.log(Degrees.data.data)
+        this.setState({Degrees:Degrees.data.data,isLoading:false})
+        }catch(e){
+            console.log(e)
+            this.setState({isLoading:false})
+        }
+        
+    }
+
+    getBranchs=async()=>{
+         this.setState({isLoading:true})
+        try{
+            const token = Cookies.get("authToken")
+        const {degree
+        }=this.state
+        const options = {
+            // url:`${process.env.REACT_APP_BASEURL}list/program-categories/?program_id=${degree}`,
+            url:`${process.env.REACT_APP_BASEURL}list/program-categories/`,
+            method:"GET",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+            }
+        }
+        const Branchs = await axios(options)
+        this.setState({Branchs:Branchs.data.data,isLoading:false})
+        // console.log(Branchs)
+        }catch(e){
+            console.log(e)
+             this.setState({isLoading:false})
+        }
+        
     }
 
     yearCounter=()=>{
@@ -270,7 +327,7 @@ class Odrequest extends Component{
                     },
                 program_details:{
                     prog_ID:degree,
-                    courseCategory:courseCategory,
+                    is_ug:courseCategory,
                     studentBranch_id:studentBranch,
                     registrationNumber:registrationNumber,
                     examMonth:examMonth,
@@ -439,7 +496,7 @@ class Odrequest extends Component{
     cmmForm=()=>{
         const{studentBranch,degree,studentName,registrationNumber,collageName} = this.state
             switch (degree){
-                case "B.Tech":
+                case 1:
                     return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
                 case "B.Pharm":
                     return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
@@ -503,7 +560,9 @@ class Odrequest extends Component{
             errorExists,
             NoErrorInOd,
             courseCategoryErr,
-            isLocked
+            isLocked,
+            Degrees,
+            Branchs
         }=this.state
         switch (requestForm){
             case "OD Request":
@@ -519,15 +578,15 @@ class Odrequest extends Component{
                             <div>
                                 <FormControl size="small" style={{width:"30%",margin:"10px 10px 0px 0px"}}>
                                         <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Course Category</InputLabel>
-                                        <Select error={courseCategoryErr} onChange={(event)=>{this.setState({courseCategory:event.target.value})}} value={courseCategory}>
-                                           <MenuItem value="UG">UG</MenuItem>
-                                           <MenuItem value='PG'>PG</MenuItem>
+                                        <Select error={courseCategoryErr} onChange={(event)=>{this.setState({courseCategory:event.target.value},this.getPrograms)}} value={courseCategory}>
+                                           <MenuItem value={0}>UG</MenuItem>
+                                           <MenuItem value={1}>PG</MenuItem>
                                         </Select>
                                 </FormControl>
                                 <FormControl disabled={isLocked} size="small" style={{width:"40%",margin:"10px 10px 0px 0px"}}>
                                         <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Degree Applied for</InputLabel>
-                                        <Select error={degreeErr} onChange={(event)=>{this.setState({degree:event.target.value})}} value={degree}>
-                                            {Degrees.map((each)=>(<MenuItem id={`degree${each}`} value={each}>{each}</MenuItem>))}
+                                        <Select error={degreeErr} onChange={(event)=>{this.setState({degree:event.target.value},this.getBranchs)}} value={degree}>
+                                            {Degrees.map((each)=>(<MenuItem id={`degree${each}`} value={each.program_id}>{each.program_name}</MenuItem>))}
                                         </Select>
                                 </FormControl>
 {/* Branch */}  
@@ -543,7 +602,7 @@ class Odrequest extends Component{
                                                     this.setState({studentBranch:event.target.value})
                                                 }}
                                                 >
-                                                {BtechBranchs.map((each)=>(<MenuItem id={`subject${each}`} value={each.id}>{each.name}</MenuItem>))}
+                                                {Branchs.map((each)=>(<MenuItem id={`subject${each}`} value={each.program_category_id}>{each.name}</MenuItem>))}
                                             </Select>
                                 </FormControl>
                             </div>
@@ -695,7 +754,6 @@ class Odrequest extends Component{
                                     </ul>
                                 </div>
                             </FormControl>
-
                         </form>
                         {NoErrorInOd?null:<Button type='submit' onClick={this.onContinue} style={{margin:"50px 0 10px 0"}} variant="contained" size="medium">Continue</Button>}
                         {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields and check Higher Education section</p>:<p style={{margin:"0 0 30px 0"}}></p>}
@@ -755,7 +813,7 @@ class Odrequest extends Component{
         return(
             <>
                 {dashBoard?<Navigate to="/"/>:null}
-                {isValidUser?this.initialView():<Navigate to="/requests/login"/>}
+                {isValidUser?this.initialView():<Navigate to="/student/signin"/>}
                 <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={datasaved} autoHideDuration={3000} onClose={this.docSavedAlertClosed}>
                     <Alert onClose={this.docSavedAlertClosed} severity="success" sx={{ width: '100%', backgroundColor:"lightGreen", color:"white" }}>
                         Data saved... Please Fill Consolidated Marks Sheets  

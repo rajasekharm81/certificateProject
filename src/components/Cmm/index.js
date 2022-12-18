@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import {Component} from 'react';
+import { Navigate } from 'react-router-dom';
 import {Box,FormControlLabel,Checkbox,Button,FormGroup,MenuItem,Select,IconButton,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle,Snackbar,Alert,Backdrop,CircularProgress} from '@mui/material';
 import Fade from '@mui/material/Fade';
 // eslint-disable-next-line no-unused-vars
@@ -13,6 +14,8 @@ import "./index.css"
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
+import Payment from '../Payments';
+
 
 const tableHeadings = ["Month & Year",1,2,3,4,5,6,7,8,9,'I',"II",'III','IV','V','VI','Sessionals',"Total Marks", "Max Marks"]
 const PgEduAndLawTableHeadings = ["Month & Year","P-1","P-2","P-3","P-4",'P-5','P-6','P-7','P-8','P-9','Pr-1','Pr-2','Pr-3','Pr-4',"Proj/ Viva","Total"]
@@ -20,6 +23,8 @@ const PgEduAndLawBettermentTableHeadings = ["Month & Year","P-1","P-2","P-3","P-
 
 const DegreeTableHeadings =["Month & Year","1",'2','3','4','5','6','7','8','9','10','11','12','13']
 const thirdDegreeTableHeadings =["Month & Year",'W*','p*','W*','p*','W*','p*','W*','p*','W*','p*','W*','p*','W*','p*','Total']
+
+
 
 export class BtechCmm extends Component{
     state={y1a:[],
@@ -42,13 +47,15 @@ export class BtechCmm extends Component{
         certify:false,
         dropDownCounter:[],
         noOfFiles:1,
-        dataSaved:false,
+        dataSaved:false, 
         fileUploadingError:false,
         filesUploadedSuccessFully:false,
         isLoading:false,
         networkErr:false,
         documents:[],
-        dataSavedAlert:false
+        dataSavedAlert:false,
+        proceedForPaymentBtn:false,
+        proceedToPayment:false
     }
 
     SlideTransition=(SlideProps)=> {
@@ -71,7 +78,7 @@ export class BtechCmm extends Component{
             const {pinCode}=this.state
             const token = Cookies.get("authToken")
             const options = {
-                url:`https://20.235.87.10/capis/od/get-od-details/`,
+                url:`https://20.235.87.10/capis/certificate/get-od-details/`,
                 method:"GET",
                 headers:{
                     "Authorization":`Bearer ${token}`,
@@ -378,20 +385,20 @@ export class BtechCmm extends Component{
         this.setState({networkErr:false})
     }
 // for storing in local storage
-    saveData= async()=>{
+    saveData=async()=>{
         this.setState({isLoading:true})
         const {regNo}=this.props
         const token = Cookies.get("authToken")
         const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,networkErr}=this.state
         const temp = localStorage.getItem(`${regNo}_BasicData`)
         const basicData =  JSON.parse(temp)
-        const details = {...basicData,marks:[y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d]}
+        const details = {...basicData,marks:[y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d],tatkal:0}
         const options = {
-            url:`${process.env.REACT_APP_BASEURL}od/original-degree-application/`,
+            url:`${process.env.REACT_APP_BASEURL}certificate/original-degree-application/`,
             method: 'POST',
             headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json',             
             'Authorization':`Bearer ${token}`
             },
           data: details
@@ -428,6 +435,7 @@ export class BtechCmm extends Component{
         }
         await axios(options)
         this.filesUploadedSuccessFullyOpen()
+
         // console.log(r)
         }catch(e){
             this.fileUploadErrDiologOpen()
@@ -447,7 +455,7 @@ export class BtechCmm extends Component{
 // files upload successfull diolog open
 
     filesUploadedSuccessFullyOpen=()=>{
-        this.setState({filesUploadedSuccessFully:true})
+        this.setState({filesUploadedSuccessFully:true,proceedForPaymentBtn:true})
     }
 
 // files upload successfull diolog close
@@ -460,9 +468,17 @@ export class BtechCmm extends Component{
         this.setState({dataSavedAlert:false})
     }
 
+
+    proceedForPayment=()=>{
+        this.setState({proceedForPayment:true})
+        console.log("proceeding for payment")
+    }
+
     render(){
-        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr}=this.state
+        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr,proceedForPaymentBtn,proceedForPayment}=this.state
         return(
+            <>
+            {proceedForPayment?<Navigate to='/student/payment'/>:null}
            <Box className="mainContainer">
             {isLoading?<Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -593,9 +609,9 @@ export class BtechCmm extends Component{
                                             {each.file===null?<h4>Select file</h4>:<h4>{each.file.name}</h4>}
                                         </IconButton>)} 
                     </div>
-                        <div style={{width:"100%",display:"flex",justifyContent:"flex-end"}}>
-                            <Button variant="outlined" className="customOutlinedButton" onClick={this.saveDocs}>Upload Documents</Button>
-                        </div>
+                    <div style={{width:"100%",display:"flex",justifyContent:"flex-end"}}>
+                        {proceedForPaymentBtn?<Button variant="outlined" className="customOutlinedButton" onClick={this.proceedForPayment}>Proceed for Payment</Button>:<Button variant="outlined" className="customOutlinedButton" onClick={this.saveDocs}>Upload Documents</Button> }                       
+                    </div>
                      </div>:null}
 
 {/* error dilog box */}
@@ -639,12 +655,8 @@ export class BtechCmm extends Component{
                         Data Uploaded Successfylly. Please upload Required Documents for verification.
                     </Alert>
                 </Snackbar>
-
-
-
-
-
            </Box>
+            </>
         )
     }
 }
@@ -676,7 +688,9 @@ export class PgEduAndLawcmm extends Component{
         isLoading:false,
         networkErr:false,
         documents:[],
-        dataSavedAlert:false
+        dataSavedAlert:false,
+        proceedForPaymentBtn:false,
+        proceedToPayment:false
     }
 
     SlideTransition=(SlideProps)=> {
@@ -699,7 +713,7 @@ export class PgEduAndLawcmm extends Component{
             const {pinCode}=this.state
             const token = Cookies.get("authToken")
             const options = {
-                url:`https://20.235.87.10/capis/od/get-od-details/`,
+                url:`https://20.235.87.10/capis/certificate/get-od-details/`,
                 method:"GET",
                 headers:{
                     "Authorization":`Bearer ${token}`,
@@ -1089,8 +1103,15 @@ export class PgEduAndLawcmm extends Component{
         this.setState({dataSavedAlert:false})
     }
 
+    
+    proceedForPayment=()=>{
+        this.setState({proceedForPayment:true})
+        console.log("proceeding for payment")
+    }
+
+
     render(){
-        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr}=this.state
+        const {y1a,y1b,y1c,y1d,y2a,y2b,y2c,y2d,y3a,y3b,y3c,y3d,y4a,y4b,y4c,y4d,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr,proceedForPaymentBtn,proceedForPayment}=this.state
         return(
            <Box className="mainContainer">
             {isLoading?<Backdrop
@@ -1099,6 +1120,7 @@ export class PgEduAndLawcmm extends Component{
         >
           <CircularProgress color="inherit" />
         </Backdrop>:null}
+        {proceedForPayment?<Navigate to='student/payment'/>:null}
             <h1 style={{alignSelf:"center"}}>Consolidated Marks</h1>
             <div className='marksContainer'>
 {/* First Year Marks section */}
@@ -1223,7 +1245,8 @@ export class PgEduAndLawcmm extends Component{
                                         </IconButton>)} 
                     </div>
                         <div style={{width:"100%",display:"flex",justifyContent:"flex-end"}}>
-                            <Button variant="outlined" className="customOutlinedButton" onClick={this.saveDocs}>Upload Documents</Button>
+                            {proceedForPaymentBtn?<Button variant="outlined" className="customOutlinedButton" onClick={this.proceedForPayment}>Proceed for Payment</Button>:<Button variant="outlined" className="customOutlinedButton" onClick={this.saveDocs}>Upload Documents</Button> }                       
+                    
                         </div>
                      </div>:null}
 
@@ -1304,7 +1327,9 @@ export class Degreecmm extends Component{
         isLoading:false,
         networkErr:false,
         documents:[],
-        dataSavedAlert:false
+        dataSavedAlert:false,
+        proceedForPayment:false,
+        proceedForPaymentBtn:false
     }
 
     SlideTransition=(SlideProps)=> {
@@ -1620,7 +1645,7 @@ export class Degreecmm extends Component{
     networkErrClose=()=>{
         this.setState({networkErr:false})
     }
-// for storing in local storage
+// for uploading to db
     saveData= async()=>{
         this.setState({isLoading:true})
         const {regNo}=this.props
@@ -1641,7 +1666,7 @@ export class Degreecmm extends Component{
         }
         try{
             const r = await axios(options)
-            this.setState({dataSaved:true,isLoading:false,dataSavedAlert:true})
+            this.setState({dataSaved:true,isLoading:false,dataSavedAlert:true,proceedForPaymentBtn:true})
         }catch(e){
             console.log(e)
             this.setState({isLoading:false,networkErr:true})            
@@ -1703,14 +1728,19 @@ export class Degreecmm extends Component{
         this.setState({dataSavedAlert:false})
     }
 
+    proceedForPayment=()=>{
+        this.setState({proceedForPayment:true})
+    }
+
     render(){
-        const {y1a,y1b,y1c,y1d,y1e,y2a,y2b,y2c,y2d,y2e,y3a,y3b,y3c,y3d,y3e,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr}=this.state
+        const {y1a,y1b,y1c,y1d,y1e,y2a,y2b,y2c,y2d,y2e,y3a,y3b,y3c,y3d,y3e,certify,dropDownCounter,noOfFiles,memos,dataSaved,fileUploadingError,filesUploadedSuccessFully,isLoading,networkErr,proceedForPayment,proceedForPaymentBtn}=this.state
         return(
            <Box className="mainContainer">
             {isLoading?<Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open
         >
+            {proceedForPayment?<Navigate to='student/payment'/>:null}
           <CircularProgress color="inherit" />
         </Backdrop>:null}
             <h1 style={{alignSelf:"center"}}>Consolidated Marks</h1>
@@ -1822,7 +1852,7 @@ export class Degreecmm extends Component{
                                         </IconButton>)} 
                     </div>
                         <div style={{width:"100%",display:"flex",justifyContent:"flex-end"}}>
-                            <Button variant="outlined" className="customOutlinedButton" onClick={this.saveDocs}>Upload Documents</Button>
+                            {proceedForPaymentBtn?<Button variant="outlined" className="customOutlinedButton" onClick={this.proceedForPayment}>Proceed For Payment</Button>:<Button variant="outlined" className="customOutlinedButton" onClick={this.saveDocs}>Upload Documents</Button>}
                         </div>
                      </div>:null}
 

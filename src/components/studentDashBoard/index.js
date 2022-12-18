@@ -136,7 +136,7 @@ state = {activeID:"",isValidUser:true,userName:"",menu:false}
     render(){
         const{isValidUser}=this.state
         return( 
-            isValidUser?this.renderInitialContent():<Navigate to="/requests/login"/>
+            isValidUser?this.renderInitialContent():<Navigate to="/student/signin"/>
         )
     }
 }

@@ -1,6 +1,6 @@
 import {Component} from 'react';
 import { Navigate } from 'react-router-dom';
-import { Box,TextField,Button } from '@mui/material';
+import { Box,TextField,Button,Snackbar,Alert } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import validator from 'validator';
 import {format} from 'date-fns'
@@ -9,7 +9,11 @@ import {format} from 'date-fns'
 import registrationt from "../../assects/registrationt.png"
 import logopng from '../../assects/logopng.png'
 
+import OTPModule from "../otphandler"
+import LoadingView from '../loadingView';
+
 import "./index.css"
+import axios from 'axios';
 
 
 
@@ -36,6 +40,7 @@ class SignUpFrom extends Component{
     state={name:"",
             fatherName:"",
             email:"",
+            enrollmentNo:"",
             dob:'',
             mobileNo:'',
             password:"",
@@ -43,14 +48,28 @@ class SignUpFrom extends Component{
             nameErr:false,
             fatherNameErr:false,
             emailErr:false,
+            enrollmentNoErr:false,
             dobErr:false,
             mobileNoErr:false,
             passwordErr:false,
             confirmPasswordErr:false,
             passwordMatched:true,
             allDataEntered:false,
-            otpSent:false
+            otpSent:false,
+            otpVerifiedSuccessfully:false,
+            backErr:false,
+            backErrMsg:"",
+            severity:"",
+            alreadyRegistered:false,
+            isLoading:false
         }
+
+        navigateToSignIn=()=>{
+           setTimeout(() => {
+                this.setState({otpVerifiedSuccessfully:true});
+            }, 3000);
+        }
+
         updateEmail=(event)=>{
             const email = validator.isEmail(event.target.value)
             if(email){
@@ -77,6 +96,7 @@ class SignUpFrom extends Component{
             this.setState({ name:"",
                             fatherName:"",
                             email:"",
+                            enrollmentNo:"",
                             dob:'',
                             mobileNo:'',
                             password:"",
@@ -84,29 +104,47 @@ class SignUpFrom extends Component{
                             nameErr:false,
                             fatherNameErr:false,
                             emailErr:false,
+                            enrollmentNoErr:false,
                             dobErr:false,
                             mobileNoErr:false,
                             passwordErr:false,
                             confirmPasswordErr:false,
-                            passwordMatched:true,
+                            passwordMatched:true
                         })
         }
 
-        callForOtp=()=>{
-            const {name,fatherName,email,dob,mobileNo,password}=this.state
-            const data = {name:name,
-                          fatherName:fatherName,
-                          emailId:email,
-                          Dob:format(new Date(dob), 'dd/MM/yyyy'),
-                          mobile:mobileNo,
-                          password:password
-                        } 
-            console.log(data)
+        callForOtp=async ()=>{
+            const {name,fatherName,email,dob,mobileNo,password,enrollmentNo}=this.state
+            try{
+                const options = {
+                url:`${process.env.REACT_APP_BASEURL}account/register/`,
+                method:"POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8'
+                    },
+                data:{name: name,
+                        father_name: fatherName,
+                        email: email,
+                        enrollment: enrollmentNo,
+                        mobile: mobileNo,
+                        password:password,
+                        confirm_password: password,
+                        date_of_birth: format(new Date(dob), 'dd/MM/yyyy')
+                    }
+            }
+            const response = await axios(options)
+                console.log(response)
+                this.setState({otpSent:true,isLoading:false})
+            }catch(e){
+                this.setState({backErr:true,backErrMsg:e.msg,isLoading:false})
+            }
+            
         }
 
         onSubmit=()=>{
-            const {name,fatherName,email,dob,mobileNo,emailErr,mobileNoErr,password,confirmPassword} = this.state
-
+            const {name,fatherName,email,enrollmentNo,dob,mobileNo,emailErr,mobileNoErr,password,confirmPassword} = this.state
+            this.setState({isLoading:true})
             if(name===""){
                 this.setState({nameErr:true})
             }
@@ -124,6 +162,12 @@ class SignUpFrom extends Component{
             }
             if(email!==""){
                 this.setState({emailErr:false})
+            }
+            if(enrollmentNo===""){
+                this.setState({enrollmentNoErr:true})
+            }
+            if(enrollmentNo!==""){
+                this.setState({enrollmentNoErr:false})
             }
             if(dob===""){
                 this.setState({dobErr:true})
@@ -155,7 +199,7 @@ class SignUpFrom extends Component{
             if(password!==confirmPassword){
                 this.setState({passwordMatched:false})
             }
-            if(name!=="" && fatherName!=="" && emailErr===false && dob!=="" && mobileNoErr===false && password===confirmPassword && password!=="" && confirmPassword!==''){
+            if(name!=="" && fatherName!=="" && enrollmentNo!=="" && emailErr===false && dob!=="" && mobileNoErr===false && password===confirmPassword && password!=="" && confirmPassword!==''){
                 this.setState({allDataEntered:true},this.callForOtp)
             }
         }
@@ -164,11 +208,13 @@ class SignUpFrom extends Component{
             const {name,
                     fatherName,
                     email,
+                    enrollmentNo,
                     dob,
                     mobileNo,
                     nameErr,
                     fatherNameErr,
                     emailErr,
+                    enrollmentNoErr,
                     dobErr,
                     mobileNoErr,
                     password,
@@ -182,6 +228,7 @@ class SignUpFrom extends Component{
         {/* name */}         
                         <TextField
                             required
+                             size="small"
                             id="reg-student-name"
                             label="Name"
                             style={{margin:"10px",width:"90%"}}
@@ -193,6 +240,7 @@ class SignUpFrom extends Component{
     {/* fatherName */}
                         <TextField
                             required
+                             size="small"
                             id="reg-father-name"
                             label="Father Name"
                             style={{margin:"10px",width:"90%"}}
@@ -203,6 +251,7 @@ class SignUpFrom extends Component{
     {/* emailId */}
                         <TextField
                             required
+                             size="small"
                             id="reg-student-email"
                             label="Email id"
                             style={{margin:"10px",width:"90%"}}
@@ -210,9 +259,23 @@ class SignUpFrom extends Component{
                             value={email}
                             error={emailErr}
                             />
+
+    {/* enrollmentNo */}
+                        <TextField
+                            required
+                             size="small"
+                            id="reg-father-enroll"
+                            label="Enrollment Number"
+                            style={{margin:"10px",width:"90%"}}
+                            onChange={(event)=>this.setState({enrollmentNo:event.target.value.toUpperCase()})}
+                            value={enrollmentNo}
+                            error={enrollmentNoErr}
+                            />
+
     {/* Dob */}
                         <TextField
                             required
+                             size="small"
                             id="reg-student-dob"
                             label="Date of Birth"
                             style={{margin:"10px",width:"90%"}}
@@ -225,6 +288,7 @@ class SignUpFrom extends Component{
     {/* mobile */}
                         <TextField
                             required
+                             size="small"
                             id="reg-student-mobile"
                             label="Mobile"
                             style={{margin:"10px",width:"90%"}}
@@ -236,6 +300,7 @@ class SignUpFrom extends Component{
 
                         <TextField
                             required
+                             size="small"
                             id="reg-student-password"
                             label="Password"
                             style={{margin:"10px",width:"90%"}}
@@ -245,6 +310,7 @@ class SignUpFrom extends Component{
                             />
                         <TextField
                             required
+                             size="small"
                             id="reg-student-ConfirmPassword"
                             label="Confirm Password"
                             style={{margin:"10px",width:"90%"}}
@@ -257,20 +323,72 @@ class SignUpFrom extends Component{
                             <Button onClick={this.reset} variant="contained" color="reset">Reset</Button>
                             <Button onClick={this.onSubmit} variant="contained" color="success">Register</Button>
                         </div>
+                        <Button onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button>
                         </Box>
             )
         }
 
+        verifyotp=async(otp)=>{
+            try{
+                const {enrollmentNo}=this.state
+                const options = {
+                    url : `${process.env.REACT_APP_BASEURL}account/verify/`,
+                    method:"POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                        },
+                    data:{
+                            enrollment: enrollmentNo,
+                            otp:otp
+                        }
+                    }
+                const response = await axios(options)
+                if(response.status===200){
+                    this.setState({backErr:true,
+                                    backErrMsg:"Registered Successfully. Please login to Continue",
+                                    severity:'success'},this.navigateToSignIn)
+                }
+            }catch(e){
+                if(e.response.request.status===403){
+                    this.setState({backErr:true,backErrMsg:e.response.data.detail.toUpperCase(),severity:'error'})
+                }else{
+                    this.setState({backErr:true,backErrMsg:e.msg})
+                }
+                
+                
+            }
+            
+        }
+
+        handleClose=()=>{
+            this.setState({backErr:false})
+        }
+
     render(){
-        const{otpSent}=this.state
+        const{otpSent,otpVerifiedSuccessfully,backErr,backErrMsg,alreadyRegistered,severity,isLoading}=this.state
         return(
+            <>
              <ThemeProvider theme={theme}>
                 <div className='SignupMainPage'>
                     <img className='universityLogo' src={logopng} alt="logo"/>
                     <img className='registrationImage' src={registrationt} alt='regImage'/>
-                    {otpSent?<Navigate to="/requests/login"/>:this.registerForm()}
+                    {otpSent?<OTPModule resendOtp={this.callForOtp} verifyotp={this.verifyotp} />:this.registerForm()}
+                    {otpVerifiedSuccessfully?<Navigate to="/student/signin"/>:null}
+                    {alreadyRegistered?<Navigate to="/student/signin"/>:null}
                 </div>  
             </ThemeProvider>
+            <Snackbar open={backErr}
+                        autoHideDuration={6000} 
+                        onClose={this.handleClose} 
+                        anchorOrigin={{vertical:"top",horizontal:"right"}} 
+                        >
+                <Alert onClose={this.handleClose} severity={severity} sx={{ width: '100%' }}>
+                  {backErrMsg}
+                </Alert>
+              </Snackbar>
+              <LoadingView isLoading={isLoading}/>
+            </>
         )
     }
 }
