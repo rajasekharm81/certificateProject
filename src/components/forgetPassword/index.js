@@ -51,7 +51,8 @@ class ForgotPassword extends Component{
             backErr:false,
             backErrMsg:"",
             severity:"",
-            isLoading:false
+            isLoading:false,
+            alreadyRegistered:false
         }
 
         navigateToSignIn=()=>{
@@ -90,8 +91,12 @@ class ForgotPassword extends Component{
                 console.log(response)
                 this.setState({otpSent:true,isLoading:false})
             }catch(e){
+                if(e.response.status===500){
+          this.setState({isLoading:false,backErr:true,backErrMsg:"Unregistered user... Please sign up"})
+            }else{
                 this.setState({backErr:true,backErrMsg:`${e.message}...Please try again`,isLoading:false,severity:"error"})
             }
+        }
             
         }
 
@@ -176,9 +181,11 @@ class ForgotPassword extends Component{
                         {passwordMatched?null:<p>Passwords not Matched</p>}
                         <div style={{width:"80%", display:"flex", justifyContent:"space-around",marginTop:"20px"}}>
                             <Button onClick={this.reset} variant="contained" color="reset">Reset</Button>
-                            <Button onClick={this.onSubmit} variant="contained" color="success">Register</Button>
+                            <Button onClick={this.onSubmit} variant="contained" color="success">
+                                Update Password
+                            </Button>
                         </div>
-                        <Button onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button>
+                        <Button onClick={()=>this.setState({alreadyRegistered:true})}>Click me to signin page</Button>
                         </Box>
             )
         }
@@ -221,9 +228,10 @@ class ForgotPassword extends Component{
         }
 
     render(){
-        const{otpSent,otpVerifiedSuccessfully,backErr,backErrMsg,severity,isLoading}=this.state
+        const{otpSent,otpVerifiedSuccessfully,backErr,backErrMsg,severity,isLoading,alreadyRegistered}=this.state
         return(
             <>
+            {alreadyRegistered?<Navigate to='/student/signin'/>:null}
              <ThemeProvider theme={theme}>
                 <div className='SignupMainPage'>
                     <img className='universityLogo' src={logopng} alt="logo"/>

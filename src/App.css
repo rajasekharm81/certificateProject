@@ -41,3 +41,13 @@ h1{
     transform: rotate(360deg);
   }
 }
+
+
+.fallbackContainer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url("https://anucde.org/img4.e0531e20a9f75722.jpg");
+  height: 100vh;
+  background-size: cover;
+}

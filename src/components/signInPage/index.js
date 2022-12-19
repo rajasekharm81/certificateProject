@@ -22,7 +22,8 @@ class SigninForm extends React.Component{
           passwordVisable:false,
           validUser:false,
           signUp:false,
-          forgotPassword:false
+          forgotPassword:false,
+          isEmployee:false
         }
 
     componentDidMount=()=>{
@@ -63,8 +64,19 @@ class SigninForm extends React.Component{
       }
       catch(e){
         console.log(e)
-        if(e)
-        this.setState({isLoading:false,backErr:true,backErrMsg:e.message})    
+        if(e.message==='Network Error'){
+         this.setState({isLoading:false,backErr:true,backErrMsg:"Something went wrong Please try again"})
+        }
+        if(e.response.status===500){
+          this.setState({isLoading:false,backErr:true,backErrMsg:"Unregistered user... Please sign up"})
+        }
+        if(e.response.status===403){
+          this.setState({isLoading:false,backErr:true,backErrMsg:"Incorrect Password... Please try again"})
+        }
+        else{
+         this.setState({isLoading:false,backErr:true,backErrMsg:"Something went wrong Please try again"})
+        }
+            
       }
     }
 
@@ -91,15 +103,22 @@ class SigninForm extends React.Component{
       this.setState({forgotPassword:true})
     }
 
+    role=()=>{
+      this.setState({isEmployee:true})
+    }
+
     signInView=()=>{
-       const {enrollNo,enrollNoErr,password,passwordErr,passwordVisable,forgotPassword}=this.state
+       const {enrollNo,enrollNoErr,password,passwordErr,passwordVisable,forgotPassword,isEmployee}=this.state
       return (
         <>
         {forgotPassword?<Navigate to='/student/forgotPassword'/>:null}
+        {isEmployee?<Navigate to='/employeelogin'/>:null}
+
         <div className='AuthPageSignin'>
            <img className='authLogo' alt="Logo" src={logopng}/>
+           <Button variant='contained' style={{position:"absolute", right:'10px', top:"10px", fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Employee Login</Button>
            <Box className='AuthpageSigninForm'>
-                <h1>Sign in</h1>
+                <h1>Student Log in</h1>
            <TextField
                   required
                   id="student-login-enrollNo"

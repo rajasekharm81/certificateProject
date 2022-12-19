@@ -4,20 +4,33 @@ import {GiHamburgerMenu} from "react-icons/gi"
 import {Button,Avatar} from "@mui/material"
 import {Desk} from "@mui/icons-material"
 import logopng from "../../../assects/logopng.png"
+import { Navigate } from 'react-router-dom'
 // import {FaRegThumbsUp} from "react-icons/fa"
 // import {MdOutlinePendingActions,MdOutlineError} from "react-icons/md"
+
+import Cookies from "js-cookie"
 
 import "./index.css" 
 
 const bgColors = ["#5F71E3","#5F71E3","#11CBEF","#1173EF","#F5375B","#F55F37","#1a1a4d","#1a1a4d"]
 
 class VerificationDashBoard extends Component{
-    state={activeID:"verifyDash"}
+    state={activeID:"verifyDash",validUser:true}
 
+
+    verifyUser=()=>{
+        const token = Cookies.get("staffAuthToken")
+        if(token===undefined){
+        this.setState({validUser:false})
+      }else{
+        this.setState({validUser:true})
+      }
+    }
 
      dashBoardView=()=>{
-        return(
-            <div className='dashBoardViewMainContainer'>
+        const {validUser}=this.state
+        return(<>
+            {validUser?<div className='dashBoardViewMainContainer'>
                 <h1 style={{fontFamily:"Public Sans"}}>Welcome Name</h1>
                 <div className='DashBoardCardsContainer'>
                     <div className='DashBoardCard' style={{backgroundImage:`linear-gradient(to right,${bgColors[0]},${bgColors[1]})`}}>
@@ -41,7 +54,8 @@ class VerificationDashBoard extends Component{
                         <hr style={{width:"80%"}}/>
                     </div>
                 </div>
-            </div>
+            </div>:<Navigate to='/employeelogin/'/>}
+            </>
         )
     }
 
@@ -52,7 +66,6 @@ class VerificationDashBoard extends Component{
             </div>
         )
     }
-
 
     renderBodyContent=()=>{
         const {activeID}=this.state

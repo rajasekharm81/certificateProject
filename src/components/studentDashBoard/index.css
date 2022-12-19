@@ -2,3 +2,93 @@
     margin-top: 150px;
     padding:10px;
 }
+
+.verificationDashMainCont{
+    display: flex;
+    height: 100vh;
+    background-image: url("https://anucde.org/img4.e0531e20a9f75722.jpg");
+    background-size: cover;
+}
+
+.verificationSideNav{
+    width: 20vw;
+    background-color: #FFFFFF;
+    opacity: .9;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    height: 100vh;
+}
+
+.verificationDashContainer{
+    background-color: #f8f8f8d3;
+    width: 80vw;
+    height: 100vh;
+    overflow: auto;
+}
+
+.verificationSideNavButton{
+    width: 90%;
+    height: 40px;
+    border: none;
+    border-radius:10px ;
+    font-weight: bolder;
+    color: #1b1b1b!important;
+}
+
+.activeButton{
+     background-image: linear-gradient(to bottom, #ededf0,#e5e5e7);
+}
+
+.navBarLogo{
+    height: 40px;
+    width: 40px;
+    align-self: flex-start;
+    justify-content: flex-start;
+}
+
+.profileContainer{
+    background-image: linear-gradient(to bottom, #e7e7e7, #e9e9e9);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 16vw;
+    margin-bottom: 20px;
+    padding:15px;
+    border-radius:10px;
+}
+
+.dashBoardViewMainContainer{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    margin-top: 110px;
+}
+
+.DashBoardCardsContainer{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* height: 200px; */
+    width: 100%;
+    /* background-color: red; */
+}
+
+.DashBoardCard{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px;
+    border-radius: 10px;
+    width:230px;
+    height:180px;
+    color: white;
+}
+
+.DashBoardCard h2{
+    font-size: 22px;
+}
