@@ -21,7 +21,8 @@ class SigninForm extends React.Component{
           backErrMsg:"",
           passwordVisable:false,
           validUser:false,
-          signUp:false
+          signUp:false,
+          forgotPassword:false
         }
 
     componentDidMount=()=>{
@@ -62,6 +63,7 @@ class SigninForm extends React.Component{
       }
       catch(e){
         console.log(e)
+        if(e)
         this.setState({isLoading:false,backErr:true,backErrMsg:e.message})    
       }
     }
@@ -85,13 +87,15 @@ class SigninForm extends React.Component{
       }
     }
 
-    forgotPassword=()=>{
-      console.log("forgot Password")
+    toggleForgotpassword=()=>{
+      this.setState({forgotPassword:true})
     }
 
     signInView=()=>{
-       const {enrollNo,enrollNoErr,password,passwordErr,passwordVisable}=this.state
+       const {enrollNo,enrollNoErr,password,passwordErr,passwordVisable,forgotPassword}=this.state
       return (
+        <>
+        {forgotPassword?<Navigate to='/student/forgotPassword'/>:null}
         <div className='AuthPageSignin'>
            <img className='authLogo' alt="Logo" src={logopng}/>
            <Box className='AuthpageSigninForm'>
@@ -145,13 +149,14 @@ class SigninForm extends React.Component{
                 <Button size='small' variant="contained" onClick={this.onLogin} style={{width:"30%", marginTop:"20px"}} >
                     Login
                 </Button>
-                <Button size='small' variant="contained" onClick={this.forgotPassword} style={{width:"30%", marginTop:"20px"}} >
+                <Button size='small' variant="contained" onClick={this.toggleForgotpassword} style={{width:"30%", marginTop:"20px"}} >
                     Forgot Password
                 </Button>
             </div>
              <Button onClick={()=>this.setState({signUp:true})} style={{alignSelf:"flex-end"}}>Not Registered??? Sign Up</Button>
            </Box>
         </div>
+         </>
       )
     }
 

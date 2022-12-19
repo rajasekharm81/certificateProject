@@ -92,12 +92,13 @@ class Odrequest extends Component{
             }
         }
         const studentData = await axios(options)
-        console.log(studentData)
+        // console.log(studentData)
         if(studentData!==undefined){
             const program_details = studentData.data.program_details
-        const address = studentData.data.address
-        const student_details = studentData.data.student_details
+            const address = studentData.data.address
+            const student_details = studentData.data.student_details
         this.setState({
+                    courseCategory:program_details.is_ug,
                     dependentOf:address.dependentOf,
                     dependentName:address.dependentName,
                     street:address.street,
@@ -118,7 +119,7 @@ class Odrequest extends Component{
                     examCenter:program_details.examCenter,
                     isLocked:true
                     },
-                    this.getDistricts,console.log(pinCode)
+                    this.getDistricts,this.getBranchs,this.getPrograms,console.log("data recieved")
                 )
         }
         }catch(e){
@@ -578,12 +579,12 @@ class Odrequest extends Component{
                             <div>
                                 <FormControl size="small" style={{width:"30%",margin:"10px 10px 0px 0px"}}>
                                         <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Course Category</InputLabel>
-                                        <Select error={courseCategoryErr} onChange={(event)=>{this.setState({courseCategory:event.target.value},this.getPrograms)}} value={courseCategory}>
+                                        <Select error={courseCategoryErr} onChange={(event)=>{this.setState({courseCategory:Number(event.target.value)},this.getPrograms)}} value={courseCategory}>
                                            <MenuItem value={0}>UG</MenuItem>
                                            <MenuItem value={1}>PG</MenuItem>
                                         </Select>
                                 </FormControl>
-                                <FormControl disabled={isLocked} size="small" style={{width:"40%",margin:"10px 10px 0px 0px"}}>
+                                <FormControl size="small" disabled={isLocked} style={{width:"40%",margin:"10px 10px 0px 0px"}}>
                                         <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Degree Applied for</InputLabel>
                                         <Select error={degreeErr} onChange={(event)=>{this.setState({degree:event.target.value},this.getBranchs)}} value={degree}>
                                             {Degrees.map((each)=>(<MenuItem id={`degree${each}`} value={each.program_id}>{each.program_name}</MenuItem>))}
@@ -708,20 +709,6 @@ class Odrequest extends Component{
                                         </FormControl>
 {/* Study Type */}
                                             {StudyType==="0"? (
-                                                // <FormControl style={{width:"100%",  margin:"10px 10px 0px 0px"}}>
-                                                //     <InputLabel id="ClzName">College Name</InputLabel>
-                                                //     <Select 
-                                                //         labelId="ClzName"
-                                                //         id="clzName"
-                                                //         label="College Name"
-                                                //         value={collageName}
-                                                //         error={collageNameErr}
-                                                //         onChange={(event)=>this.setState({collageName:event.target.value})}
-                                                //         >
-                                                //         <MenuItem value="clz1">College 1</MenuItem>
-                                                //         <MenuItem value="clz2">College 2</MenuItem>
-                                                //     </Select>
-                                                // </FormControl>
                                                  <TextField size="small" value={collageName} error={collageNameErr} onChange={(event)=>{this.setState({collageName:event.target.value.toUpperCase()})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="ClzName" label="College Name" variant="outlined" />
                                                 ):null}
 {/* Last Appeared Exam Center */}
@@ -740,7 +727,8 @@ class Odrequest extends Component{
                                             </RadioGroup>
                                         </FormControl>
 {/*higher education caution note}*/}
-                                        {higherEducation==="0"? <FormGroup row>
+                                         {/* eslint-disable-next-line eqeqeq */}
+                                        {higherEducation==0? <FormGroup row>
                                               <FormControlLabel style={{width:"100%", color:higherEducationErr?"red":"black"}} control={<Checkbox onChange={(event)=>{
                                                 this.setState({higherEducationNoteCheck:event.target.checked})
                                               }} />} label={`Note: Candidates applying for M.Phil., Ph.D, M.A., M.H.R.M., Ms.C., M.Com., M.B.A., M.C.A., MLISc., M.P.Ed., LL.B., B.Ed., M.Ed., Degree should enclse the lower original Degree certificate with a photocopy. True copies will not be considered.`} />

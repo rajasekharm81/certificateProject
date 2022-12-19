@@ -8,29 +8,27 @@ import VerificationDashBoard from "./components/verificationView/verificationDas
 import StudendDashBoard from "./components/studentDashBoard"
 import SignUpFrom from "./components/SignupPage"
 import Payment from "./components/Payments"
+import ForgotPassword from './components/forgetPassword';
 
 
 
 import { Component } from 'react';
 
 class App extends Component {
-  state={activeNetwork:true}
-
-
 render(){
   return (
-  //  <BrowserRouter>
-  //      <Routes>
-  //       <Route exact path="/" element={<StudendDashBoard/>}/>
-  //        <Route exact path="/student/signin" element={<SigninForm/>}/>
-  //        <Route exact path="/student/signup" element={<SignUpFrom/>}/>
-  //        <Route exact path="/requests/odrequest" element={<Odrequest />} />
-  //        <Route exact path="/approvalsection/dashboard" element={<VerificationDashBoard />} />
-  //        <Route exact path='student/payment' element={<Payment/>}/>
-  //        <Route path="*" element={<Notfound />} />
-  //      </Routes>
-  //    </BrowserRouter>
-        <Payment/>
+   <BrowserRouter>
+       <Routes>
+        <Route exact path="/" element={<StudendDashBoard/>}/>
+         <Route exact path="/student/signin" element={<SigninForm/>}/>
+         <Route exact path="/student/signup" element={<SignUpFrom/>}/>
+         <Route exact path="/requests/odrequest" element={<Odrequest />} />
+         <Route exact path="/approvalsection/dashboard" element={<VerificationDashBoard />} />
+         <Route exact path='student/payment' element={<Payment/>}/>
+         <Route exact path='/student/forgotPassword' element={<ForgotPassword/>}/>
+         <Route path="*" element={<Notfound />} />
+       </Routes>
+     </BrowserRouter>
   )
 }
 }
