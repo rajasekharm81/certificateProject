@@ -234,7 +234,7 @@ class ForgotPassword extends Component{
             {alreadyRegistered?<Navigate to='/student/signin'/>:null}
              <ThemeProvider theme={theme}>
                 <div className='SignupMainPage'>
-                    <img className='universityLogo' src={logopng} alt="logo"/>
+                    <img style={{height:'150px'}} className='universityLogo' src={logopng} alt="logo"/>
                     <img className='registrationImage' src={registrationt} alt='regImage'/>
                     {otpSent?<OTPModule resendOtp={this.callForOtp} verifyotp={this.verifyotp} />:this.passwordResetForm()}
                     {otpVerifiedSuccessfully?<Navigate to="/student/signin"/>:null}

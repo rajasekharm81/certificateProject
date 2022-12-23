@@ -4,7 +4,7 @@ import format from 'date-fns/format'
 
 
 class Greet extends Component{
-    state={fSize:"25px", bg:"transperant",greetMsg:""}
+    state={fSize:"25px", bg:"transperant",greetMsg:"",custom:{}}
 
         gettime=()=>{ 
             const hours = format(new Date(), "H")
@@ -23,8 +23,8 @@ class Greet extends Component{
         }
     
         componentDidMount(){
-            const {fSize,bg}=this.props
-            this.setState({fSize:fSize,bg:bg})
+            const {fSize,bg,styles}=this.props
+            this.setState({fSize:fSize,bg:bg,custom:styles})
             this.gettime()
         }
 
@@ -32,7 +32,7 @@ class Greet extends Component{
             const {fSize,bg,greetMsg}=this.state
             return(
                 <div>
-                    <h1 style={{fontSize:`${fSize}`,backgroundColor:`${bg}`}}>{greetMsg}</h1>
+                    <h1 style={{fontSize:`${fSize}`,backgroundColor:`${bg}` }}>{greetMsg}</h1>
                 </div>
             )
         }

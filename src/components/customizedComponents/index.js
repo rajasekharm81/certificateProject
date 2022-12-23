@@ -1,27 +1,51 @@
-import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Button from '@mui/material/Button';
+import { styled,TextField } from '@mui/material';
+import {createTheme,Select} from '@mui/material';
 
-const theme = createTheme({
+export const theme = createTheme({
   palette: {
-    primary: {
+    regTextField: {
       // Purple and green play nicely together.
-      main: "#11cbef",
+      main: "#1173ef",
       contrastText: '#fff',
     },
-    secondary: {
-      // This is green.A700 as hex.
+    lableText:{
+        main:"#2B2E7A"
+    },
+    success: {
       main: '#11cb5f',
       contrastText: '#ffffff',
+    },
+    reset:{
+        main: '#FFE6CC',
+        contrastText: '#D46300',
+    }
+  },
+});
+
+export const CssTextField = styled(TextField)({
+  '& label.Mui-focused': {
+    color: 'blue',
+  },
+  '& .MuiOutlinedInput-root': {
+    fontSize:'14px',
+    color:'black',
+    '& fieldset': {
+      border:'1px solid black',
+      color:"black",
+      fontSize:'29px',
+    },
+    '&:hover fieldset': {
+      border:'2px solid blue'
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: 'blue',
     },
   },
 });
 
-export default function Palette() {
-  return (
-    <ThemeProvider theme={theme}>
-      <Button variant="contained">Primary</Button>
-      <Button variant="contained" color="secondary">Secondary</Button>
-    </ThemeProvider>
-  );
-}
+export const CssSelect = styled(Select)({
+  '& ..MuiSelect-select': {
+      border:'1px solid red',
+      backgroundColor:"red",
+  }
+});

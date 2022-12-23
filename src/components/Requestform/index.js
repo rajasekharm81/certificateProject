@@ -7,16 +7,24 @@ import {format} from 'date-fns'
 import {BtechCmm, Degreecmm,PgEduAndLawcmm} from "../Cmm"
 import CeritificateRequest from "../CertificateRequest"
 import logopng from "../../assects/logopng.png"
+import nagarjuna from "../../assects/nagarjuna.png"
 import "./index.css"
 
 import axios from 'axios';
 import Cookies from 'js-cookie'
 import { TroubleshootRounded } from '@mui/icons-material';
 
+import {CssSelect,CssTextField} from "../customizedComponents"
+
+
+import {CmmType1,CmmType2,CmmType3} from "../test/test"
+
 
 class Odrequest extends Component{
     state={
         dashBoard:false,
+        screen:"requestForm",
+        // screen:'cmm',
         isValidUser:true,
         requestForm:"",
         courseCategory:"",
@@ -24,8 +32,10 @@ class Odrequest extends Component{
         months:[],
         stateData:[],
         districtData:[],
+        courseCategories:[],
         Degrees:[],
         Branchs:[],
+        cmmType:"",
         degree:"",
         StudyType:"0",
         studentName:"",
@@ -45,8 +55,10 @@ class Odrequest extends Component{
         examCenter:"",
         collageName:'',
         country:"",
+        backErr:false,
+        backErrMsg:'',
+        severity:'',
         isLocked:false,
-        datasaved:false,
         higherEducationNoteCheck:false,
         courseCategoryErr:false,
         degreeErr:false,
@@ -66,8 +78,8 @@ class Odrequest extends Component{
         collageNameErr:false,
         higherEducationErr:false,
         errorExists:false,
-        NoErrorInOd:false, 
-        isLoading:false
+        isLoading:false,
+        uploadedFiles:[]
     }   
 
     componentDidMount(){
@@ -77,6 +89,14 @@ class Odrequest extends Component{
         this.userValidation()
         this.timeouter()
         this.getStudentData()
+        this.getProgCategories()
+    }
+
+
+// for forward and backward views
+
+    viewChanger=(view)=>{
+        this.setState({screen:view})
     }
 
     getStudentData=async()=>{
@@ -92,7 +112,6 @@ class Odrequest extends Component{
             }
         }
         const studentData = await axios(options)
-        // console.log(studentData)
         if(studentData!==undefined){
             const program_details = studentData.data.program_details
             const address = studentData.data.address
@@ -117,16 +136,24 @@ class Odrequest extends Component{
                     collageName:program_details.collageName,
                     higherEducation:program_details.higherEducation,
                     examCenter:program_details.examCenter,
-                    isLocked:true
+                    isLocked:true,
                     },
-                    this.getDistricts,this.getBranchs,this.getPrograms,console.log("data recieved")
+                    this.basicCalls()
                 )
         }
+
         }catch(e){
-            console.log(e.message)
+            this.setState({backErr:true,backErrMsg:'New User',severity:'success'})
         }
         
         
+    }   
+
+    basicCalls=()=>{
+        this.getPrograms()
+        this.getBranchsOnlyForGetStudentData()
+        this.getDistricts()
+        this.setState({isLocked:true})
     }
 
     timeouter=()=>{
@@ -148,12 +175,18 @@ class Odrequest extends Component{
         this.setState({stateData:states.data.data})
 
         if(states.status===200){
-            console.log(states)
+            console.log("states data received")
         }
         }catch(e){
            if(e.response.status===401){
-            Cookies.remove("authToken")
-            window.location.reload()
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+                setTimeout(() => {
+                Cookies.remove("authToken")
+                window.location.reload()
+                }, 3000);
+           }else{
+            
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
            }
         
         }
@@ -176,20 +209,35 @@ class Odrequest extends Component{
         const districts = await axios(options)
         this.setState({districtData:districts.data.data,isLoading:false})
         }catch(e){
-            console.log(e)
-            this.setState({isLoading:false})
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
         }
         
     }
 
+    getProgCategories=async()=>{
+    const token = Cookies.get("authToken")
+    try{
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}list/course-categories/`,
+            method:"GET",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+            }
+        }
+        const courseCategories = await axios(options)
+        this.setState({courseCategories:courseCategories.data.data})
+    }catch(e){
+        this.setState({isLoading:false})
+    }
+    }
+
     getPrograms=async()=>{
-        this.setState({isLoading:true})
-        try{
-            const token = Cookies.get("authToken")
+    this.setState({isLoading:true})
+    try{
+        const token = Cookies.get("authToken")
         const {courseCategory}=this.state
         const options = {
-            // url:`${process.env.REACT_APP_BASEURL}list/programs/?program_category=${courseCategory}`,
-            url:`${process.env.REACT_APP_BASEURL}list/programs/`,
+            url:`${process.env.REACT_APP_BASEURL}list/programs/?course_category_id=${courseCategory}`,
             method:"GET",
             headers:{
                  'Authorization': `Bearer ${token}`,
@@ -199,21 +247,53 @@ class Odrequest extends Component{
         // console.log(Degrees.data.data)
         this.setState({Degrees:Degrees.data.data,isLoading:false})
         }catch(e){
-            console.log(e)
             this.setState({isLoading:false})
         }
+        
+    }
+
+    getBranchsOnlyForGetStudentData=async()=>{
+         this.setState({isLoading:true})
+        try{
+        const token = Cookies.get("authToken")
+        const {degree}=this.state
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}list/program-categories/?program_id=${degree}`,
+            method:"GET",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+            }
+        }
+        const Branchs = await axios(options)
+        this.setState({Branchs:Branchs.data.data,isLoading:false},this.setCmmTypeOnlyForGetStudentData)
+        }catch(e){
+            console.log(e)
+             this.setState({isLoading:false})
+        }
+        
+    }
+
+    setCmmTypeOnlyForGetStudentData=()=>{
+        const {degree,Degrees}=this.state
+        // eslint-disable-next-line array-callback-return
+        const cmm = Degrees.map((each)=>{
+            const temp = ''
+            if(each.program_id===degree){
+                this.setState({cmmType:each.cmm_type})
+            }
+        })
         
     }
 
     getBranchs=async()=>{
          this.setState({isLoading:true})
         try{
-            const token = Cookies.get("authToken")
-        const {degree
-        }=this.state
+        const token = Cookies.get("authToken")
+        const {degree,Degrees}=this.state
+        const cmm = Degrees.filter((each)=>each.program_id===degree)
+        this.setState({cmmType:cmm[0].cmm_type})
         const options = {
-            // url:`${process.env.REACT_APP_BASEURL}list/program-categories/?program_id=${degree}`,
-            url:`${process.env.REACT_APP_BASEURL}list/program-categories/`,
+            url:`${process.env.REACT_APP_BASEURL}list/program-categories/?program_id=${degree}`,
             method:"GET",
             headers:{
                  'Authorization': `Bearer ${token}`,
@@ -221,7 +301,6 @@ class Odrequest extends Component{
         }
         const Branchs = await axios(options)
         this.setState({Branchs:Branchs.data.data,isLoading:false})
-        // console.log(Branchs)
         }catch(e){
             console.log(e)
              this.setState({isLoading:false})
@@ -287,8 +366,9 @@ class Odrequest extends Component{
     }
     }
 
-    saveOnContinue=()=>{
+    saveOnContinue=async()=>{
         this.setState({isLoading:true})
+        try{
         const {requestForm,
             courseCategory,
             degree,
@@ -311,7 +391,7 @@ class Odrequest extends Component{
             collageName,
             country
         }=this.state
-        const clz = collageName===""?"Private":collageName
+        const clz = collageName===""?"Acharaya Nagarjuna university(Private Study)":collageName
         const StudentData = {
                 address:{
                     dependentOf:dependentOf,
@@ -339,8 +419,35 @@ class Odrequest extends Component{
                     examCenter:examCenter,
                     },
             }
-        localStorage.setItem(`${registrationNumber}_BasicData`,JSON.stringify(StudentData))
-        this.setState({isLoading:false,datasaved:true})
+        const token = Cookies.get("authToken")
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}certificate/original-degree-application/`,
+            method:"POST",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+                 'Content-Type':'application/json'
+            },
+            data:StudentData
+            }
+            const response = await axios(options)
+                if(response.status===200){
+                this.setState({backErr:true,backErrMsg:'Data saved Successfully, please continue',severity:'success',isLoading:false})
+                setTimeout(() => {
+                    this.setState({screen:'cmm'})
+                }, 2000);
+            }
+            }catch(e){
+                if(e.response.status===401){
+                    this.setState({isLoading:false,backErr:true,severity:'error',backErrMsg:"Please LOGIN Again.."})
+                    setTimeout(() => {
+                        Cookies.remove("authToken")
+                        window.location.reload()
+                    }, 3000);
+                }else{
+                this.setState({isLoading:false,backErr:true,severity:'error',backErrMsg:e.message})
+            }
+
+    }
     }
 
     onContinue=(event)=>{
@@ -490,36 +597,30 @@ class Odrequest extends Component{
             examCenter!=="" && 
             courseCategory!==""
         ){  
-            this.setState({NoErrorInOd:true},this.saveOnContinue)
+            this.saveOnContinue()
         }
     }
 
     cmmForm=()=>{
-        const{studentBranch,degree,studentName,registrationNumber,collageName} = this.state
-            switch (degree){
+        const{studentBranch,degree,studentName,registrationNumber,collageName,cmmType} = this.state
+            switch (cmmType){
+                case 4:
+                    return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                case 2:
+                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
+                case 3:
+                    return <PgEduAndLawcmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
                 case 1:
-                    return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case "B.Pharm":
-                    return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case "B.Sc":
-                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case "B.A":
-                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case "B.Com":
-                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case "M.A":
-                    return <PgEduAndLawcmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case "M.Com":
-                    return <PgEduAndLawcmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                   
+                    return <CmmType1/>
                 default: 
                     return null
             }
     }
 
-    commonRequestForm=()=>{
+    screenViewer=()=>{
         const {stateData,
             districtData,
+            courseCategories,
             requestForm,
             degree,
             years,
@@ -559,193 +660,249 @@ class Odrequest extends Component{
             collageNameErr,
             higherEducationErr,
             errorExists,
-            NoErrorInOd,
             courseCategoryErr,
             isLocked,
             Degrees,
-            Branchs
+            Branchs,
+            screen,
+            cmmType
         }=this.state
+        switch(screen){
+            case "requestForm":
+                return (<>
+            {/* <h2>ACHARYA NAGARJUNA UNIVERSIRY</h2> */}
+            <h1>APPLICATION FOR OBTAINING ORIGINAL DEGREE</h1>
+            <form style={{margin:"20px 0 0 0"}}>
+                <div style={{position:'absolute',marginLeft:'30%', opacity:".1"}}>
+                    <img src={nagarjuna} alt='Nagarjuna'/>
+                </div>
+                <div>
+                    <FormControl size="small" style={{width:"400px",margin:"10px 10px 0px 0px"}}>
+                            <label htmlFor='odform-name'>Course Category</label>
+                            <Select disabled={isLocked} id='odform-name' style={{border:'1px solid black'}} error={courseCategoryErr} onChange={(event)=>{this.setState({courseCategory:Number(event.target.value)},this.getPrograms)}} value={courseCategory}>
+                            {courseCategories.map((each)=><MenuItem id={each.course_category_id} value={each.course_category_id}>{each.course_category_name}</MenuItem>)}
+                            </Select>
+                    </FormControl>
+                    <FormControl size="small" style={{width:"400px",margin:"10px 10px 0px 0px"}}>
+                            <label htmlFor='degreeName'>Name of Degree Completed</label>
+                            <Select disabled={isLocked} id='degreeName' style={{border:'1px solid black'}} error={degreeErr} onChange={(event)=>{this.setState({degree:event.target.value},this.getBranchs)}} value={degree}>
+                                {Degrees.map((each)=>(<MenuItem key={each.program_id} id={each.program_id} value={each.program_id}>{each.program_name}</MenuItem>))}
+                            </Select>
+                    </FormControl>
+{/* Branch */}  
+                    <FormControl size="small" style={{width:"400px", margin:"10px 0px 0px 0px"}}>
+                                <label htmlFor='branchName'>Name of Branch</label>
+                                <Select
+                                    disabled={isLocked} 
+                                    id="branchName"
+                                    style={{border:'1px solid black'}}
+                                    error={studentBranchErr}
+                                    value={studentBranch}
+                                    onChange={(event)=>{
+                                        this.setState({studentBranch:event.target.value})
+                                    }}
+                                    >
+                                    {Branchs.map((each)=>(<MenuItem id={`subject${each}`} value={each.program_category_id}>{each.name}</MenuItem>))}
+                                </Select>
+                    </FormControl>
+                </div>
+                <FormControl size="small">               
+                    <div className='generalOdReqDataContainer'>
+                        <label>Name of the Student as per Certificates</label>
+                        <CssTextField size="small" error={studentNameErr} value={studentName} onChange={(event)=>{this.setState({studentName:event.target.value.toUpperCase()})}} style={{margin:".5vw 0vw .2vw 0vw",width:"99%"}} id="odreq-studentName" variant="outlined" helperText="Please Provide with surname as per University Records"  />
+{/* address section */}
+                        <div style={{display:"flex", flexWrap:"wrap"}}>
+{/* c/o */}
+                            <div style={{display:"flex",flexDirection:'column',margin:'20px 0px 0vw 0', width:"80px"}}>
+                                <label style={{color:'transparent'}}>jj</label>
+                                <FormControl sx={{m: "0px 0px 1vw 0vw" }} size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            style={{border:"1px solid black"}}
+                                            value={dependentOf}
+                                            onChange={(event)=>{
+                                                this.setState({dependentOf:event.target.value})
+                                            }}
+                                        >
+                                            <MenuItem value="C/O">C/O</MenuItem>
+                                            <MenuItem value="S/O">S/O</MenuItem>
+                                            <MenuItem value="D/O">D/O</MenuItem>
+                                            <MenuItem value="W/O">W/O</MenuItem>
+                                        </Select>
+                                </FormControl>
+                            </div>
+{/* dependentName */}
+                            <div style={{margin:"18px 10px 1vw 0vw",display:'flex',flexDirection:'column'}}>
+                                <label>Dependent Name</label>
+                                <CssTextField size="small" style={{margin:'2px 0 0 0',width:"250px"}} value={dependentName} error={dependentNameErr} id="odreq-address" variant="outlined" onChange={(event)=>{this.setState({dependentName:event.target.value.toUpperCase()})}} />
+                            </div>
+{/* street */}
+                            <div style={{flexDirection:"column", display:'flex', margin:'18px 10px 0 0', width:"300px"}}>
+                                <label>Street</label>
+                                <CssTextField size="small" style={{margin:'2px 0 0 0',width:'100%'}} id="odreq-address" value={street} error={streetErr} variant="outlined" onChange={(event)=>this.setState({street:event.target.value.toUpperCase()})} />
+                            </div>              
+{/* village/city */}
+                            <div style={{display:'flex', flexDirection:'column',margin:"18px 10px 0 0",width:'300px'}}>
+                                <label>Village/City</label>
+                                <CssTextField size="small" style={{margin:"2px 10px 0vw 0vw",width:'100%'}} id="odreq-address" value={village} error={villageErr} variant="outlined" onChange={(event)=>this.setState({village:event.target.value.toUpperCase()})} />
+                            </div>
+{/* mandal */}                      
+                            <div style={{display:'flex', flexDirection:'column',margin:"20px 10px 0 0px",width:'250px'}}>
+                                <label>Mandal</label>
+                                <CssTextField size="small" style={{margin:"0px 10px 0vw 0vw",width:'100%'}} id="odreq-address" value={mandal} error={mandalErr} variant="outlined" onChange={(event)=>this.setState({mandal:event.target.value.toUpperCase()})} />             
+                            </div>
+
+{/* states data  */}               <div style={{display:'flex', flexDirection:'column',margin:"0px 0 0 0",width:'250px'}}>
+                                <FormControl sx={{ m: "20px 10px 1vw 0vw",fontSize:"6px"  }} size="small">
+                                        <lable>State</lable>
+                                        <Select
+                                            size="small"
+                                            id="stateOption"
+                                            value={state}
+                                            onChange={(event)=>this.setState({state:event.target.value},this.getDistricts)}
+                                            error={stateErr}
+                                            style={{border:'1px solid black'}}
+                                        >
+                                            {stateData.map((each)=><MenuItem style={{backgroundColor:"white"}} value={each.state_id}>{each.state_name}</MenuItem>)}
+                                        </Select>
+                                </FormControl>
+                            </div>
+                            
+{/* district data  */}  
+                            <FormControl sx={{ m: "20px 10px 1vw 0vw", width:"300px",fontSize:"6px"  }} size="small">
+                                    <lable>District</lable>
+                                    <Select
+                                        size="small"
+                                        id="districtOption"
+                                        value={district} 
+                                        error={districtErr}
+                                        onChange={(event)=>this.setState({district:event.target.value})}
+                                        style={{border:'1px solid black'}}                                                  
+                                    >
+                                        {districtData.map((each)=><MenuItem style={{backgroundColor:"white"}} value={each.district_id}>{each.district_name}</MenuItem>)}
+                                    </Select>
+                            </FormControl>
+{/* pin code  */}
+                            <div style={{display:'flex',flexDirection:'column',width:'310px',margin:"20px 0 0 0"}}>
+                                <label>Pin Code</label>
+                                <CssTextField size="small" type="number" style={{margin:"2px 10px 0vw 0vw"}} id="odreq-address" value={pinCode} error={pinCodeErr} variant="outlined" onChange={(event)=>this.setState({pinCode:(event.target.value)})} />
+                            </div>
+                        
+{/* registrationNumber */}  
+                            <div style={{display:'flex',flexDirection:'column',width:'330px',margin:"20px 10px 0 0"}}>
+                                <lable>Hall Ticket Number</lable>
+                                <CssTextField size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value.toUpperCase()})}} value={registrationNumber} id="regID" variant="outlined" />
+                            </div>
+{/* Months section */}                  
+                            <div style={{display:'flex',flexDirection:'column',width:'300px',margin:"20px 10px 0 0"}}>
+                                <FormControl size="small" >
+                                    <label>Exam Month</label>
+                                    <Select 
+                                        labelId="examMonth"
+                                        id="ExamMonth"
+                                        value={examMonth}
+                                        error={examMonthErr}
+                                        onChange={(event)=>{
+                                            this.setState({examMonth:event.target.value})
+                                        }}
+                                        style={{border:'1px solid black'}}
+                                        >
+                                        {months.map((each)=>(<MenuItem value={each}>{each}</MenuItem>))}
+                                    </Select>
+                                </FormControl>
+                            </div>
+{/* years section */}
+                            <div style={{display:'flex',flexDirection:'column',width:'300px',margin:"20px 10px 0 0"}}>
+                                <FormControl size="small">
+                                    <label>Exam Year</label>
+                                    <Select
+                                        labelId="examYearLabel"
+                                        id="examYear"
+                                        value={examYear}
+                                        error={examYearErr}
+                                        style={{border:'1px solid black'}}
+                                        onChange={(event)=>{this.setState({examYear:event.target.value})}}>
+                                        {years.map((each)=>(<MenuItem  value={each}>{each}</MenuItem>))}
+                                    </Select>
+                                </FormControl>
+                            </div>
+{/* Course type section */}
+                            
+                            <FormControl style={{margin:"10px 0px 0px 20px"}}>
+                                <FormLabel id="courseTypeRadio">Course Type</FormLabel>
+                                <RadioGroup row
+                                    aria-labelledby="courseTypeRadio"
+                                    name="controlled-radio-buttons-group"
+                                    onChange={(event)=>{this.setState({StudyType:event.target.value})}} value={StudyType}>
+                                    <FormControlLabel value={0} control={<Radio />} label="Regular" />
+                                    <FormControlLabel value={1} control={<Radio />} label="Private" />
+                                </RadioGroup>
+                            </FormControl>
+{/* Study Type */}              
+                                
+                                {StudyType==="0"? (
+                                    <div style={{display:'flex',flexDirection:'column',width:'90%',margin:"20px 10px 0 0"}}>
+                                        <label>College Name</label>
+                                        <CssTextField size="small" value={collageName} error={collageNameErr} onChange={(event)=>{this.setState({collageName:event.target.value.toUpperCase()})}} style={{margin:"10px 10px 0vw 0vw", width:"99%"}} id="ClzName" variant="outlined" />
+                                    </div>
+                                    ):null}
+{/* Last Appeared Exam Center */}
+                                <div style={{display:'flex',flexDirection:'column',width:'90%',margin:"20px 10px 0 0"}}>
+                                        <label>Last Appeared Examination Center</label>
+                                        <CssTextField size="small" error={examCenterErr} value={examCenter} onChange={(event)=>{this.setState({examCenter:event.target.value.toUpperCase()})}} style={{margin:"10px 10px 0vw 0vw", width:"99%"}} id="exmCenter" variant="outlined" />
+                                </div>
+
+{/* Applying For Higher Education */}
+                            <FormControl style={{margin:"10px 0px 0px 0px"}}>
+                                <FormLabel id="higherEducation">Applying For Higher Degree</FormLabel>
+                                <RadioGroup row
+                                    aria-labelledby="higherEducation"
+                                    name="controlled-radio-buttons-group"
+                                    onChange={(event)=>{this.setState({higherEducation:event.target.value})}} value={higherEducation}                                                >
+                                    <FormControlLabel value={0} control={<Radio />} label="Yes" />
+                                    <FormControlLabel value={1} control={<Radio />} label="No" />
+                                </RadioGroup>
+                            </FormControl>
+{/*higher education caution note}*/}
+                            {/* eslint-disable-next-line eqeqeq */}
+                            {higherEducation==0? <FormGroup row>
+                                <FormControlLabel style={{width:"100%", color:higherEducationErr?"red":"black"}} control={<Checkbox onChange={(event)=>{
+                                    this.setState({higherEducationNoteCheck:event.target.checked})
+                                }} />} label={`Note: Candidates applying for M.Phil., Ph.D, M.A., M.H.R.M., Ms.C., M.Com., M.B.A., M.C.A., MLISc., M.P.Ed., LL.B., B.Ed., M.Ed., Degree should enclse the lower original Degree certificate with a photocopy. True copies will not be considered.`} />
+                            </FormGroup>:null}
+                        </div> 
+                        <p>Instructions</p>
+                        <ul>
+                            <li>Candidates applying for M.Phil., Ph.D, M.A., M.H.R.M., Ms.C., M.Com., M.B.A., M.C.A., MLISc., M.P.Ed., LL.B., B.Ed., M.Ed., Degree should enclse the lower original Degree certificate with a photocopy. True copies will not be considered.</li>
+                            <li>A Candidate of Acharya Nagarjuna University applying of the Degree should enclose the photostat copies of all the marks statements and Provisional Ceritificate</li>
+                            <li>Candidates who studied lower degree or part of the degree course in any other university should enclose original marks statements, original Provisional certificate and original lower degree along with Photostat copies of all certificates. </li>
+                        </ul>
+                    </div>
+                </FormControl>
+            </form>
+            <Button type='submit' onClick={this.onContinue} style={{margin:"50px 0 10px 0"}} variant="contained" size="medium">Save and Continue</Button>
+            {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields and check Higher Education section</p>:<p style={{margin:"0 0 30px 0"}}></p>}
+                </>)
+            case "cmm":
+                return this.cmmForm()
+
+            default:
+                return null
+        }
+        }
+
+    commonRequestForm=()=>{
+        const {requestForm}=this.state
         switch (requestForm){
             case "OD Request":
                 return(
                 <>
                     <div className='requestFormContainer'>
                         <div>
-                            <img src={logopng} alt="logo"/>
+                            <img style={{height:'180px'}} src={logopng} alt="logo"/>
                         </div>
-                        {/* <h2>ACHARYA NAGARJUNA UNIVERSIRY</h2> */}
-                        <h5>APPLICATION FOR OBTAINING ORIGINAL DEGREE</h5>
-                        <form>
-                            <div>
-                                <FormControl size="small" style={{width:"30%",margin:"10px 10px 0px 0px"}}>
-                                        <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Course Category</InputLabel>
-                                        <Select error={courseCategoryErr} onChange={(event)=>{this.setState({courseCategory:Number(event.target.value)},this.getPrograms)}} value={courseCategory}>
-                                           <MenuItem value={0}>UG</MenuItem>
-                                           <MenuItem value={1}>PG</MenuItem>
-                                        </Select>
-                                </FormControl>
-                                <FormControl size="small" disabled={isLocked} style={{width:"40%",margin:"10px 10px 0px 0px"}}>
-                                        <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Degree Applied for</InputLabel>
-                                        <Select error={degreeErr} onChange={(event)=>{this.setState({degree:event.target.value},this.getBranchs)}} value={degree}>
-                                            {Degrees.map((each)=>(<MenuItem id={`degree${each}`} value={each.program_id}>{each.program_name}</MenuItem>))}
-                                        </Select>
-                                </FormControl>
-{/* Branch */}  
-                                <FormControl size="small" style={{width:"250px", margin:"10px 0px 0px 0px"}}>
-                                            <InputLabel id="branch">Branch</InputLabel>
-                                            <Select 
-                                                labelId="branch"
-                                                id="examcenter"
-                                                label="Branch"
-                                                error={studentBranchErr}
-                                                value={studentBranch}
-                                                onChange={(event)=>{
-                                                    this.setState({studentBranch:event.target.value})
-                                                }}
-                                                >
-                                                {Branchs.map((each)=>(<MenuItem id={`subject${each}`} value={each.program_category_id}>{each.name}</MenuItem>))}
-                                            </Select>
-                                </FormControl>
-                            </div>
-                            <FormControl size="small">               
-                                <div className='generalOdReqDataContainer'>
-                                    <TextField size="small" error={studentNameErr} value={studentName} onChange={(event)=>{this.setState({studentName:event.target.value.toUpperCase()})}} style={{margin:".5vw 0vw .2vw 0vw",width:"80%"}} id="odreq-studentName" label="Name of the applicant (As per University Records)" variant="outlined" helperText="Please Provide with surname as per University Records"  />
-{/* address section */}
-                                    <div style={{display:"flex", flexWrap:"wrap"}}>
-                                        <div style={{display:"flex",alignItems:"flex-end", width:"49%"}}>
-                                        <FormControl sx={{ m: "20px 0px 1vw 0vw", width:"14%",fontSize:"6px"  }} size="small">
-                                                <Select
-                                                    labelId="demo-select-small"
-                                                    id="demo-select-small"
-                                                    value={dependentOf}
-                                                    onChange={(event)=>{
-                                                        this.setState({dependentOf:event.target.value})
-                                                    }}
-                                                >
-                                                    <MenuItem value="C/O">C/O</MenuItem>
-                                                    <MenuItem value="S/O">S/O</MenuItem>
-                                                    <MenuItem value="D/O">D/O</MenuItem>
-                                                    <MenuItem value="W/O">W/O</MenuItem>
-                                                </Select>
-                                        </FormControl>
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"80%"}} value={dependentName} error={dependentNameErr} id="odreq-address" label="Name" variant="outlined" onChange={(event)=>{this.setState({dependentName:event.target.value.toUpperCase()})}} />
-                                        </div>
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={street} error={streetErr} label="Street" variant="outlined" onChange={(event)=>this.setState({street:event.target.value.toUpperCase()})} />
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={village} error={villageErr} label="Village/City" variant="outlined" onChange={(event)=>this.setState({village:event.target.value.toUpperCase()})} />
-                                        <TextField size="small" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={mandal} error={mandalErr} label="Mandal" variant="outlined" onChange={(event)=>this.setState({mandal:event.target.value.toUpperCase()})} />
-{/* states data  */}
-                                        <FormControl sx={{ m: "20px 0px 1vw 0vw", width:"150px",fontSize:"6px"  }} size="small">
-                                                <InputLabel style={{backgroundColor:"white"}} id="state-dropDown">State</InputLabel>
-                                                <Select
-                                                    size="small"
-                                                    labelId="state-dropDown"
-                                                    id="stateOption"
-                                                    value={state}
-                                                    onChange={(event)=>this.setState({state:event.target.value},this.getDistricts)}
-                                                    error={stateErr}
-                                                >
-                                                    {stateData.map((each)=><MenuItem style={{backgroundColor:"white"}} value={each.state_id}>{each.state_name}</MenuItem>)}
-                                                </Select>
-                                        </FormControl>
-                                        
-{/* district data  */}
-                                        <FormControl sx={{ m: "20px 0px 1vw 0vw", width:"150px",fontSize:"6px"  }} size="small">
-                                                <InputLabel style={{backgroundColor:"white"}} id="state-dropDown">District</InputLabel>
-                                                <Select
-                                                    size="small"
-                                                    labelId="district-dropDown"
-                                                    id="districtOption"
-                                                    value={district} 
-                                                    error={districtErr}
-                                                    onChange={(event)=>this.setState({district:event.target.value})}                                                   
-                                                >
-                                                    {districtData.map((each)=><MenuItem style={{backgroundColor:"white"}} value={each.district_id}>{each.district_name}</MenuItem>)}
-                                                </Select>
-                                        </FormControl>
-  
-                                        <TextField size="small" type="number" style={{margin:"20px 10px 1vw 0vw", width:"47%"}} id="odreq-address" value={pinCode} error={pinCodeErr} label="Pin Code" variant="outlined" onChange={(event)=>this.setState({pinCode:(event.target.value)})} />
-                                    </div>                                   
-                                    <div>
-                                        <TextField size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value.toUpperCase()})}} value={registrationNumber} style={{margin:"10px 10px 0vw 0vw"}} id="regID" label="Registration Number" variant="outlined" />
-{/* Months section */}
-                                        <FormControl size="small" style={{width:"150px", margin:"10px 10px 0 0px"}}>
-                                            <InputLabel id="examMonth">Exam Month</InputLabel>
-                                            <Select 
-                                                labelId="examMonth"
-                                                id="ExamMonth"
-                                                label="Exam Month"
-                                                value={examMonth}
-                                                error={examMonthErr}
-                                                onChange={(event)=>{
-                                                    this.setState({examMonth:event.target.value})
-                                                }}
-                                                >
-                                                {months.map((each)=>(<MenuItem value={each}>{each}</MenuItem>))}
-                                            </Select>
-                                        </FormControl>
-{/* years section */}
-                                        <FormControl size="small" style={{width:"150px", margin:"10px 0px 0px 0px"}}>
-                                            <InputLabel id="examYearLabel">Exam Year</InputLabel>
-                                            <Select
-                                                labelId="examYearLabel"
-                                                id="examYear"
-                                                label="Exam Year"
-                                                value={examYear}
-                                                error={examYearErr}
-                                                onChange={(event)=>{this.setState({examYear:event.target.value})}}>
-                                                {years.map((each)=>(<MenuItem  value={each}>{each}</MenuItem>))}
-                                            </Select>
-                                        </FormControl>
-{/* Course type section */}
-                                        <FormControl style={{margin:"10px 0px 0px 20px"}}>
-                                            <FormLabel id="courseTypeRadio">Course Type</FormLabel>
-                                            <RadioGroup row
-                                                aria-labelledby="courseTypeRadio"
-                                                name="controlled-radio-buttons-group"
-                                                onChange={(event)=>{this.setState({StudyType:event.target.value})}} value={StudyType}>
-                                                <FormControlLabel value={0} control={<Radio />} label="Regular" />
-                                                <FormControlLabel value={1} control={<Radio />} label="Private" />
-                                            </RadioGroup>
-                                        </FormControl>
-{/* Study Type */}
-                                            {StudyType==="0"? (
-                                                 <TextField size="small" value={collageName} error={collageNameErr} onChange={(event)=>{this.setState({collageName:event.target.value.toUpperCase()})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="ClzName" label="College Name" variant="outlined" />
-                                                ):null}
-{/* Last Appeared Exam Center */}
-                                        <TextField size="small" error={examCenterErr} value={examCenter} onChange={(event)=>{this.setState({examCenter:event.target.value.toUpperCase()})}} style={{margin:"10px 10px 0vw 0vw", width:"90%"}} id="exmCenter" label="Last Appeared Examination Center" variant="outlined" />
-
-
-{/* Applying For Higher Education */}
-                                        <FormControl style={{margin:"10px 0px 0px 0px"}}>
-                                            <FormLabel id="higherEducation">Applying For Higher Degree</FormLabel>
-                                            <RadioGroup row
-                                                aria-labelledby="higherEducation"
-                                                name="controlled-radio-buttons-group"
-                                                onChange={(event)=>{this.setState({higherEducation:event.target.value})}} value={higherEducation}                                                >
-                                                <FormControlLabel value={0} control={<Radio />} label="Yes" />
-                                                <FormControlLabel value={1} control={<Radio />} label="No" />
-                                            </RadioGroup>
-                                        </FormControl>
-{/*higher education caution note}*/}
-                                         {/* eslint-disable-next-line eqeqeq */}
-                                        {higherEducation==0? <FormGroup row>
-                                              <FormControlLabel style={{width:"100%", color:higherEducationErr?"red":"black"}} control={<Checkbox onChange={(event)=>{
-                                                this.setState({higherEducationNoteCheck:event.target.checked})
-                                              }} />} label={`Note: Candidates applying for M.Phil., Ph.D, M.A., M.H.R.M., Ms.C., M.Com., M.B.A., M.C.A., MLISc., M.P.Ed., LL.B., B.Ed., M.Ed., Degree should enclse the lower original Degree certificate with a photocopy. True copies will not be considered.`} />
-                                        </FormGroup>:null}
-                                    </div>
-                                    <p>Instructions</p>
-                                    <ul>
-                                        <li>Candidates applying for M.Phil., Ph.D, M.A., M.H.R.M., Ms.C., M.Com., M.B.A., M.C.A., MLISc., M.P.Ed., LL.B., B.Ed., M.Ed., Degree should enclse the lower original Degree certificate with a photocopy. True copies will not be considered.</li>
-                                        <li>A Candidate of Acharya Nagarjuna University applying of the Degree should enclose the photostat copies of all the marks statements and Provisional Ceritificate</li>
-                                        <li>Candidates who studied lower degree or part of the degree course in any other university should enclose original marks statements, original Provisional certificate and original lower degree along with Photostat copies of all certificates. </li>
-                                    </ul>
-                                </div>
-                            </FormControl>
-                        </form>
-                        {NoErrorInOd?null:<Button type='submit' onClick={this.onContinue} style={{margin:"50px 0 10px 0"}} variant="contained" size="medium">Continue</Button>}
-                        {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields and check Higher Education section</p>:<p style={{margin:"0 0 30px 0"}}></p>}
-                        {NoErrorInOd?this.cmmForm():null}
+                        {this.screenViewer()}
                     </div>
                 </>)  
                 break;
@@ -792,19 +949,19 @@ class Odrequest extends Component{
         )
     }
 
-    docSavedAlertClosed=()=>{
-        this.setState({datasaved:false})
+    backErrAlertHandler=()=>{
+        this.setState({backErr:false})
     }
 
     render(){
-        const{isValidUser,dashBoard,datasaved}=this.state
+        const{isValidUser,dashBoard,backErr,backErrMsg,severity}=this.state
         return(
             <>
                 {dashBoard?<Navigate to="/"/>:null}
                 {isValidUser?this.initialView():<Navigate to="/student/signin"/>}
-                <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={datasaved} autoHideDuration={3000} onClose={this.docSavedAlertClosed}>
-                    <Alert onClose={this.docSavedAlertClosed} severity="success" sx={{ width: '100%', backgroundColor:"lightGreen", color:"white" }}>
-                        Data saved... Please Fill Consolidated Marks Sheets  
+                <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={backErr} autoHideDuration={3000} onClose={this.backErrAlertHandler}>
+                    <Alert onClose={this.backErrAlertHandler} severity={severity} sx={{ width: '100%'}}>
+                        {backErrMsg}  
                     </Alert>
                 </Snackbar>
             </>

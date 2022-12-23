@@ -4,7 +4,10 @@ import ReactToPrint from 'react-to-print';
 import format from 'date-fns/format'
 import logopng from "../../assects/logopng.png"
 import "./index.css"
-import { fontWeight } from '@mui/system';
+
+import {CssTextField} from '../customizedComponents'
+
+
 
 class CeritificateRequest extends Component{
     state={
@@ -96,25 +99,27 @@ class CeritificateRequest extends Component{
                     <Box style={{padding:"20px 0 0 5vw"}}>
                         <Grid container spacing={3}>
                             <Grid item xs={5.5}>
-                                <TextField error={studentNameErr} value={studentName} onChange={(event)=>this.setState({studentName:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}} id="outlined-basic" label="Student Name" variant="outlined" />
+                                <label htmlFor=''>Name</label>
+                                <CssTextField id='name' error={studentNameErr} value={studentName} onChange={(event)=>this.setState({studentName:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}} placeholder="Student Name" variant="outlined" />
                             </Grid>
                             <Grid item xs={5.5}>
-                                <TextField error={certificateNameErr} value={certificateName} onChange={(event)=>this.setState({certificateName:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}} id="outlined-basic" label="Certificate Name" variant="outlined" />
+                                <label htmlFor='cerName'>Certificate Name</label>
+                                <CssTextField id='cerName' error={certificateNameErr} value={certificateName} onChange={(event)=>this.setState({certificateName:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}}  placeholder="Certificate Name" variant="outlined" />
                             </Grid>
                             <Grid item xs={5.5}>
-                                <TextField error={courseNameErr} value={courseName} onChange={(event)=>this.setState({courseName:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}} id="outlined-basic" label="Course Name" variant="outlined" />
+                                <TextField error={courseNameErr} value={courseName} onChange={(event)=>this.setState({courseName:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}} id="outlined-basic" placeholder="Course Name" variant="outlined" />
                             </Grid>
                             <Grid item xs={5.5}>
-                                <TextField error={hallTicketNumberErr} value={hallTicketNumber} onChange={(event)=>this.setState({hallTicketNumber:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}} id="outlined-basic" label="Hall ticket Number" variant="outlined" />
+                                <TextField error={hallTicketNumberErr} value={hallTicketNumber} onChange={(event)=>this.setState({hallTicketNumber:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"38vw"}} id="outlined-basic" placeholder="Hall ticket Number" variant="outlined" />
                             </Grid>
                             <Grid item xs={3.65}>
-                                <TextField error={AcademicYearErr} value={AcademicYear} onChange={(event)=>this.setState({AcademicYear:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"25vw"}} id="outlined-basic" label="Academic Year" variant="outlined" />
+                                <TextField error={AcademicYearErr} value={AcademicYear} onChange={(event)=>this.setState({AcademicYear:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"25vw"}} id="outlined-basic" placeholder="Academic Year" variant="outlined" />
                             </Grid>
                             <Grid item xs={3.65}>
-                                <TextField error={degreeCompletedMonthErr} value={degreeCompletedMonth} onChange={(event)=>this.setState({degreeCompletedMonth:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"25vw"}} id="outlined-basic" label="Degree Completed Month" variant="outlined" />
+                                <TextField error={degreeCompletedMonthErr} value={degreeCompletedMonth} onChange={(event)=>this.setState({degreeCompletedMonth:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"25vw"}} id="outlined-basic" placeholder="Degree Completed Month" variant="outlined" />
                             </Grid>
                             <Grid item xs={3.65}>
-                                <TextField error={degreeCompletedYearErr} value={degreeCompletedYear} onChange={(event)=>this.setState({degreeCompletedYear:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"25vw"}} id="outlined-basic" label="Degree Completed Year" variant="outlined" />
+                                <TextField error={degreeCompletedYearErr} value={degreeCompletedYear} onChange={(event)=>this.setState({degreeCompletedYear:event.target.value.toLocaleUpperCase()})} size="small" style={{width:"25vw"}} id="outlined-basic" placeholder="Degree Completed Year" variant="outlined" />
                             </Grid>
                         </Grid>
                         <div style={{display:"flex", justifyContent:"flex-end",margin:"50px 0 0 0"}}>

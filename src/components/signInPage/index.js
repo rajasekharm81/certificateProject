@@ -4,6 +4,9 @@ import { Navigate } from 'react-router-dom';
 import {Box,Button,TextField,Snackbar,Alert, IconButton,FormControl,InputLabel,OutlinedInput,InputAdornment} from '@mui/material';
 import LoadingView from "../loadingView"
 
+import { ThemeProvider } from '@mui/material/styles';
+import {theme} from "../customizedComponents"
+
 import {AiFillEye,AiFillEyeInvisible} from 'react-icons/ai'
 import Cookies from "js-cookie"
 import './index.css'
@@ -55,9 +58,11 @@ class SigninForm extends React.Component{
                 password: password
               }
         }
-        const response = await axios(options);  
+        const response = await axios(options);
         if(response.statusText==="OK"){
           Cookies.set("authToken",response.data.auth_token, {expires:1})
+          Cookies.set("studentName",response.data.name, {expires:1})
+          Cookies.set("studentEnroll",response.data.enrollment, {expires:1})
           this.setState({isLoading:false,validUser:true})
         }
         console.log(response)
@@ -115,14 +120,14 @@ class SigninForm extends React.Component{
         {isEmployee?<Navigate to='/employeelogin'/>:null}
 
         <div className='AuthPageSignin'>
-           <img className='authLogo' alt="Logo" src={logopng}/>
-           <Button variant='contained' style={{position:"absolute", right:'10px', top:"10px", fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Employee Login</Button>
+           <img style={{height:'150px'}} className='authLogo' alt="Logo" src={logopng}/>
+           <Button style={{position:"absolute", right:'10px', top:"10px", fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Employee Login</Button>
            <Box className='AuthpageSigninForm'>
                 <h1>Student Log in</h1>
            <TextField
                   required
                   id="student-login-enrollNo"
-                  label="Enrollment Number"
+                  label="Hallticket Number"
                   style={{margin:"30px 0 0 0"}}
                   onChange={(event)=>this.setState({enrollNo:event.target.value.toUpperCase()})}
                   value={enrollNo}
@@ -172,7 +177,9 @@ class SigninForm extends React.Component{
                     Forgot Password
                 </Button>
             </div>
-             <Button onClick={()=>this.setState({signUp:true})} style={{alignSelf:"flex-end"}}>Not Registered??? Sign Up</Button>
+            <ThemeProvider theme={theme}>
+              <Button color="lableText" onClick={()=>this.setState({signUp:true})} style={{alignSelf:"flex-end",fontWeight:'bold',fontSize:'14px'}}>Not Registered??? Sign Up</Button>
+            </ThemeProvider>
            </Box>
         </div>
          </>

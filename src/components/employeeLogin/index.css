@@ -1,8 +1,4 @@
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
+
 .err{
     margin: 0% 0px 0px 1vw;
     font-size: 12px;

@@ -13,7 +13,7 @@
 @media screen and (max-width:450px) {
     .paymentContainer{
     width: 90vw;
-    background-color: #eff9fdb0;
+    background-color: #eff9fde3;
     box-shadow:0px 0px 12px 0px #c6e5f75d;
     padding: 10px;
     display: flex;
@@ -28,12 +28,13 @@
 
 @media screen and (min-width:451px) {
 .paymentContainer{
-    width: 490px;
-    background-color: #eff9fdb0;
+    width: 50vw;
+    height: 60vh;
+    background-color: #eff9fde3;
     box-shadow:0px 0px 12px 0px #c6e5f75d;
     padding: 10px;
     display: flex;
-    justify-content: space-around;
+    /* justify-content: space-around; */
     flex-direction: column;
     align-items: center;
     border-radius: 10px;

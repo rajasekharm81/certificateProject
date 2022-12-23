@@ -11,12 +11,18 @@ import Greet from "../greetingsHandler"
 import "./index.css"
 
 
-
 class StudendDashBoard extends Component{
-state = {activeID:"",isValidUser:true,userName:"",menu:false}
+state = {activeID:"",isValidUser:true,userName:"",menu:false,role:""}
 
     componentDidMount(){
         this.userValidation()
+        this.getLoggerDetails()
+    }
+
+    getLoggerDetails=()=>{
+        const name = Cookies.get("studentName")
+        const role = Cookies.get("studentEnroll")
+        this.setState({userName:name,role:role})
     }
 
     logout=()=>{
@@ -48,9 +54,9 @@ state = {activeID:"",isValidUser:true,userName:"",menu:false}
         const {userName} = this.state
         return (
             <div className="StudentDashBoardBody">
-                <h1 style={{fontSize:"32px"}}>Hello {userName},</h1>
-                <Greet fSize="32px"/>
-                <h1 style={{textAlign:"center",fontSize:"35px"}}>Welcome to E-Services</h1>
+                <h1 style={{fontSize:"32px",paddingLeft:"20px"}}>Hello {userName},</h1>
+                <Greet fSize="32px" style={{paddingLeft:'40px'}}/>
+                <h1 style={{textAlign:"center",fontSize:"35px",paddingTop:"20vh"}}>Welcome to e-Services</h1>
             </div>
         )
     }
@@ -94,7 +100,7 @@ state = {activeID:"",isValidUser:true,userName:"",menu:false}
                         className={activeID==="newApplication"?'verificationSideNavButton activeButton':"verificationSideNavButton"} 
                         onClick={(event)=>this.setState({activeID:event.target.id})}
                         startIcon={<FaChartArea />}>
-                         New Application
+                         Request for Certificate
                     </Button>
                     <Button 
                         size="large" 
@@ -117,9 +123,9 @@ state = {activeID:"",isValidUser:true,userName:"",menu:false}
                                  top:"0",
                                  width:"78vw"
                                  }}>
-                        <img style={{height:"95px",paddingLeft:"10px"}} src={logopng} alt="logo"/>
+                        <img style={{height:"95px",paddingLeft:"10px",margin    :'auto'}} src={logopng} alt="logo"/>
                         <div>
-                            <Button onClick={this.toggleMenu}><h1>Role</h1></Button>
+                            <Button onClick={this.toggleMenu}><h1>{this.state.role}<span><GiHamburgerMenu/></span></h1></Button>
                         </div>
                     </div>
                                  {menu?<ul style={{position:"absolute",top:"55px",right:"30px",backgroundColor:"white",borderRadius:"10px", padding:"30px"}}>

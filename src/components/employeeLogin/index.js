@@ -50,16 +50,18 @@ class EmployeeSigninForm extends React.Component{
             'Content-Type': 'application/json;charset=UTF-8'
           },
           data: {
-                enrollment: enrollNo,
+                username: 'SUPERADMIN',   // username: enrollNo,
                 password: password
               }
         }
         const response = await axios(options);  
         if(response.statusText==="OK"){
           Cookies.set("staffAuthToken",response.data.auth_token, {expires:1})
+          Cookies.set("name",response.data.username,{expires:1})
+          Cookies.set("role",response.data.role,{expires:1})
           this.setState({isLoading:false,validUser:true})
         }
-        console.log(response)
+       
       }
       catch(e){
         if(e.message==='Network Error'){
@@ -112,8 +114,8 @@ class EmployeeSigninForm extends React.Component{
         {forgotPassword?<Navigate to='/student/forgotPassword'/>:null}
         {isStudent?<Navigate to='/student/signin'/>:null}
         <div className='AuthPageSignin'>
-           <img className='authLogo' alt="Logo" src={logopng}/>
-           <Button variant='contained' style={{position:"absolute", right:'15px', top:"15px", fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Student Login</Button>
+           <img style={{height:'150px'}} className='authLogo' alt="Logo" src={logopng}/>
+           <Button style={{position:"absolute", right:'15px', top:"15px", fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Student Login</Button>
            <Box className='AuthpageSigninForm'>
                 <h1>Employee Log in</h1>
            <TextField
@@ -167,8 +169,6 @@ class EmployeeSigninForm extends React.Component{
     handleClose=()=>{
       this.setState({backErr:false})
     }
-
-    
 
     render(){
         const{isLoading,backErr,backErrMsg,validUser}=this.state

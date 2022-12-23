@@ -1,7 +1,7 @@
 import {Component} from 'react';
 import { Navigate } from 'react-router-dom';
-import { Box,TextField,Button,Snackbar,Alert } from '@mui/material';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Box,Button,Snackbar,Alert } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import validator from 'validator';
 import {format} from 'date-fns'
 
@@ -12,29 +12,15 @@ import logopng from '../../assects/logopng.png'
 import OTPModule from "../otphandler"
 import LoadingView from '../loadingView';
 
+import { CssTextField } from '../customizedComponents';
+import {theme} from "../customizedComponents"
+
 import "./index.css"
 import axios from 'axios';
 
 
 
-const theme = createTheme({
-  palette: {
-    regTextField: {
-      // Purple and green play nicely together.
-      main: "#1173ef",
-      contrastText: '#fff',
-    },
-    success: {
-      // This is green.A700 as hex.
-      main: '#11cb5f',
-      contrastText: '#ffffff',
-    },
-    reset:{
-        main: '#FFE6CC',
-        contrastText: '#D46300',
-    }
-  },
-});
+
 
 class SignUpFrom extends Component{
     state={name:"",
@@ -137,7 +123,7 @@ class SignUpFrom extends Component{
                 console.log(response)
                 this.setState({otpSent:true,isLoading:false})
             }catch(e){
-                this.setState({backErr:true,backErrMsg:e.msg,isLoading:false})
+                this.setState({backErr:true,backErrMsg:e.msg,isLoading:false,severity:"error"})
             }
             
         }
@@ -201,6 +187,10 @@ class SignUpFrom extends Component{
             }
             if(name!=="" && fatherName!=="" && enrollmentNo!=="" && emailErr===false && dob!=="" && mobileNoErr===false && password===confirmPassword && password!=="" && confirmPassword!==''){
                 this.setState({allDataEntered:true},this.callForOtp)
+                console.log("error")
+            }
+            else{
+                this.setState({ backErr:true,isLoading:false,backErrMsg:"Something went wrong. Please try again", severity:"error"})
             }
         }
 
@@ -225,105 +215,127 @@ class SignUpFrom extends Component{
             return(
                 <Box className="registrationForm"> 
                         <h1 style={{padding:"10px"}}>Please Register</h1>
-        {/* name */}         
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-student-name"
-                            label="Name"
-                            style={{margin:"10px",width:"90%"}}
-                            onChange={(event)=>this.setState({name:event.target.value.toUpperCase()})}
-                            value={name}
-                            error={nameErr}
-                            />
+        {/* name */}    
+                        <div style={{display:'flex',flexDirection:'column',width:'100%'}}>     
+                            <label id="reg-student-name">Name</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-student-name"
+                                placeholder="Name"
+                                style={{margin:"5px 0 0 0"}}
+                                onChange={(event)=>this.setState({name:event.target.value.toUpperCase()})}
+                                value={name}
+                                error={nameErr}
+                                />
+                        </div>
                             
     {/* fatherName */}
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-father-name"
-                            label="Father Name"
-                            style={{margin:"10px",width:"90%"}}
-                            onChange={(event)=>this.setState({fatherName:event.target.value.toUpperCase()})}
-                            value={fatherName}
-                            error={fatherNameErr}
-                            />
-    {/* emailId */}
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-student-email"
-                            label="Email id"
-                            style={{margin:"10px",width:"90%"}}
-                            onChange={this.updateEmail}
-                            value={email}
-                            error={emailErr}
-                            />
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-name">Father Name</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-father-name"
+                                placeholder="Father Name"
+                                style={{margin:"5px 0 0 0"}}
+                                onChange={(event)=>this.setState({fatherName:event.target.value.toUpperCase()})}
+                                value={fatherName}
+                                error={fatherNameErr}
+                                />
+                        </div>
+    {/* emailId */}     
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-email">Email ID</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-student-email"
+                                placeholder="Email id"
+                                style={{margin:"5px 0 0 0"}}
+                                onChange={this.updateEmail}
+                                value={email}
+                                error={emailErr}
+                                />
+                        </div>
 
     {/* enrollmentNo */}
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-father-enroll"
-                            label="Enrollment Number"
-                            style={{margin:"10px",width:"90%"}}
-                            onChange={(event)=>this.setState({enrollmentNo:event.target.value.toUpperCase()})}
-                            value={enrollmentNo}
-                            error={enrollmentNoErr}
-                            />
-
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-enroll">HallTicket Number</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-father-enroll"
+                                placeholder="Hallticket Number"
+                                style={{margin:"5px 0 0 0"}}
+                                onChange={(event)=>this.setState({enrollmentNo:event.target.value.toUpperCase()})}
+                                value={enrollmentNo}
+                                error={enrollmentNoErr}
+                                />
+                        </div>
     {/* Dob */}
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-student-dob"
-                            label="Date of Birth"
-                            style={{margin:"10px",width:"90%"}}
-                            type="date"
-                            onChange={this.updateDob}
-                            value={dob}
-                            error={dobErr}
-                            focused
-                            />
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-dob">Date of Birth</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-student-dob"
+                                style={{margin:"5px 0 0 0"}}
+                                type="date"
+                                onChange={this.updateDob}
+                                value={dob}
+                                error={dobErr}
+                                />
+                        </div>
     {/* mobile */}
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-student-mobile"
-                            label="Mobile"
-                            style={{margin:"10px",width:"90%"}}
-                            type="number"
-                            value={mobileNo}
-                            onChange={this.updateMobilenumber}
-                            error={mobileNoErr}
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-mobile">Mobile Number</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-student-mobile"
+                                placeholder="Mobile"
+                                style={{margin:"5px 0 0 0"}}
+                                type="number"
+                                value={mobileNo}
+                                onChange={this.updateMobilenumber}
+                                error={mobileNoErr}
                             />
-
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-student-password"
-                            label="Password"
-                            style={{margin:"10px",width:"90%"}}
-                            value={password}
-                            onChange={(event)=>this.setState({password:event.target.value})}
-                            error={passwordErr}
-                            />
-                        <TextField
-                            required
-                             size="small"
-                            id="reg-student-ConfirmPassword"
-                            label="Confirm Password"
-                            style={{margin:"10px",width:"90%"}}
-                            value={confirmPassword}
-                            onChange={(event)=>this.setState({confirmPassword:event.target.value})}
-                            error={confirmPasswordErr}
-                            />
+                        </div>
+    {/* password */}
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-password">Create Password</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-student-password"
+                                placeholder="Create Password"
+                                style={{margin:"5px 0 0 0"}}
+                                value={password}
+                                onChange={(event)=>this.setState({password:event.target.value})}
+                                error={passwordErr}
+                                />
+                            </div>
+    {/* confirm password */}
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-ConfirmPassword">Confirm Password</label>
+                            <CssTextField
+                                required
+                                size="small"
+                                id="reg-student-ConfirmPassword"
+                                placeholder="Confirm Password"
+                                style={{margin:"5px 0 0 0"}}
+                                value={confirmPassword}
+                                onChange={(event)=>this.setState({confirmPassword:event.target.value})}
+                                error={confirmPasswordErr}
+                                />
+                        </div>
                         {passwordMatched?null:<p>Passwords not Matched</p>}
                         <div style={{width:"80%", display:"flex", justifyContent:"space-around",marginTop:"20px"}}>
                             <Button onClick={this.reset} variant="contained" color="reset">Reset</Button>
                             <Button onClick={this.onSubmit} variant="contained" color="success">Register</Button>
                         </div>
-                        <Button onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button>
+                            <Button color="lableText" style={{fontSize:"14px",fontWeight:'bold'}} onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button>
                         </Box>
             )
         }
@@ -371,7 +383,7 @@ class SignUpFrom extends Component{
             <>
              <ThemeProvider theme={theme}>
                 <div className='SignupMainPage'>
-                    <img className='universityLogo' src={logopng} alt="logo"/>
+                    <img style={{height:'150px'}} className='universityLogo' src={logopng} alt="logo"/>
                     <img className='registrationImage' src={registrationt} alt='regImage'/>
                     {otpSent?<OTPModule resendOtp={this.callForOtp} verifyotp={this.verifyotp} />:this.registerForm()}
                     {otpVerifiedSuccessfully?<Navigate to="/student/signin"/>:null}

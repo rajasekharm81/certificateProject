@@ -7,7 +7,7 @@ class Header extends Component{
     render(){
         return(
             <div className="headerMainContainer">
-                <img style={{padding:"10px", width:"45%", height:"150px"}} alt="logo" src={logopng}/>
+                <img style={{padding:"10px", height:"150px"}} alt="logo" src={logopng}/>
             </div>
         )
     }
