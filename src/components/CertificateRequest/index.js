@@ -3,6 +3,7 @@ import {TextField,Grid,Box,Button} from '@mui/material';
 import ReactToPrint from 'react-to-print';
 import format from 'date-fns/format'
 import logopng from "../../assects/logopng.png"
+import nagarjuna from "../../assects/nagarjuna.png"
 import "./index.css"
 
 import {CssTextField} from '../customizedComponents'
@@ -97,6 +98,9 @@ class CeritificateRequest extends Component{
             <div className='CertificatesRequestFormContainer'>
                     <h1 style={{paddingLeft:"5vw"}}>Enter Details for Requesting a Certificate</h1>
                     <Box style={{padding:"20px 0 0 5vw"}}>
+                        <div>
+                            <img src={nagarjuna} alt='nagarjuna' style={{position:'absolute',left:'40%',top:'16%',opacity:'0.15', height:'500px'}}/>
+                        </div>
                         <Grid container spacing={3}>
                             <Grid item xs={5.5}>
                                 <label htmlFor=''>Name</label>
@@ -142,8 +146,11 @@ class CeritificateRequest extends Component{
         const date = format(new Date(), 'MM/dd/yyyy')
         return(
             <>
-             <Box className="CertificatesPreviewFormContainer" ref={el => (this.componentRef = el)}>
-                <img src={logopng} alt='logo'   />
+            <Box className="CertificatesPreviewFormContainer" ref={el => (this.componentRef = el)}>
+                <div>
+                    <img src={nagarjuna} alt='nagarjuna' className='nagarjunaLogo'/>
+                </div>
+                <img style={{height:'150px'}} src={logopng} alt='logo'   />
                 <p style={{textAlign:"right", width:"100%", paddingRight:"5vw"}}>Date:<span> {date}</span></p>
                 <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw",fontWeight:"bold"}}>To,</p>
                 <p style={{textAlign:"left", width:"100%", paddingLeft:"5vw"}}>The Controller of Examinations /</p>
@@ -166,7 +173,7 @@ class CeritificateRequest extends Component{
                     <ReactToPrint trigger={()=><Button style={{marginRight:'10px'}} variant="contained">Print</Button>} content={() => this.componentRef}/>
                 </div>
             </Box>
-                </>
+             </>
             ) 
     }
     
