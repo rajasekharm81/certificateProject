@@ -2,7 +2,7 @@
 /* eslint-disable eqeqeq */
 import {Component} from 'react'
 import {MenuItem,Grid,Box,Button,FormControl,FormLabel,RadioGroup,FormControlLabel,Radio,Snackbar,Alert,Paper} from '@mui/material';
-import ReactToPrint from 'react-to-print';
+// import ReactToPrint from 'react-to-print';
 import format from 'date-fns/format'
 import logopng from "../../assects/logopng.png"
 import nagarjuna from "../../assects/nagarjuna.png"
