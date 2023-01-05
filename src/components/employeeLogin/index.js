@@ -4,6 +4,9 @@ import { Navigate } from 'react-router-dom';
 import {Box,Button,TextField,Snackbar,Alert, IconButton,FormControl,InputLabel,OutlinedInput,InputAdornment} from '@mui/material';
 import LoadingView from "../loadingView"
 
+import {ThemeProvider} from "@mui/material/styles"
+import {theme} from "../customizedComponents"
+
 import "./index.css"
 
 import {AiFillEye,AiFillEyeInvisible} from 'react-icons/ai'
@@ -30,7 +33,7 @@ class EmployeeSigninForm extends React.Component{
     }
 
     isUserLogedIn=()=>{
-      const token = Cookies.get("authToken")
+      const token = Cookies.get("staffAuthToken")
       if(token===undefined){
         this.setState({validUser:false})
       }else{
@@ -38,7 +41,7 @@ class EmployeeSigninForm extends React.Component{
       }
     }
 
-    verifyUser=async()=>{
+    verifyUser=async()=>{ 
       const {enrollNo,password}=this.state
       this.setState({isLoading:true})
       try{
@@ -50,7 +53,7 @@ class EmployeeSigninForm extends React.Component{
             'Content-Type': 'application/json;charset=UTF-8'
           },
           data: {
-                username: 'SUPERADMIN',   // username: enrollNo,
+                username: enrollNo,  
                 password: password
               }
         }
@@ -106,7 +109,6 @@ class EmployeeSigninForm extends React.Component{
       this.setState({isStudent:true})
     }
 
-
     signInView=()=>{
        const {enrollNo,enrollNoErr,password,passwordErr,passwordVisable,forgotPassword,isStudent}=this.state
       return (
@@ -115,9 +117,11 @@ class EmployeeSigninForm extends React.Component{
         {isStudent?<Navigate to='/student/signin'/>:null}
         <div className='AuthPageSignin'>
            <img style={{height:'150px'}} className='authLogo' alt="Logo" src={logopng}/>
-           <Button style={{position:"absolute", right:'15px', top:"15px", fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Student Login</Button>
+           <div style={{position:"absolute", right:'15px', top:"15px", fontSize:"18px", fontWeight:"bold"}}>
+              <Button className="muiButton" color="black" style={{fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Student Login</Button>
+           </div>
            <Box className='AuthpageSigninForm'>
-                <h1>Employee Log in</h1>
+                <h1 style={{textAlign:'center',fontSize:'18px'}}>Employee Log in</h1>
            <TextField
                   required
                   id="employee-login-username"
@@ -153,7 +157,7 @@ class EmployeeSigninForm extends React.Component{
           />
             </FormControl>
             <div className='authPageBtnContainer'>
-                <Button variant="contained" onClick={this.onLogin} style={{width:"30%", marginTop:"20px"}} >
+                <Button className="muiButton" color="but" variant="contained" onClick={this.onLogin} style={{width:"30%", marginTop:"20px"}} >
                     Login
                 </Button>
                 {/* <Button size='small' variant="contained" onClick={this.toggleForgotpassword} style={{width:"30%", marginTop:"20px"}} >
@@ -174,7 +178,9 @@ class EmployeeSigninForm extends React.Component{
         const{isLoading,backErr,backErrMsg,validUser}=this.state
           return(
             <>
+            <ThemeProvider theme={theme}>
             { this.signInView()}
+            </ThemeProvider>
             <LoadingView isLoading={isLoading}/>
               <Snackbar open={backErr}
                         autoHideDuration={6000} 

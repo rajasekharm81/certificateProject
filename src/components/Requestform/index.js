@@ -2,9 +2,8 @@
 /* eslint-disable no-unused-vars */
 import {Component} from 'react';
 import { Navigate } from 'react-router-dom';
-import { Select,MenuItem,FormControl,InputLabel,TextField,FormLabel,RadioGroup,FormControlLabel,Radio,FormGroup,Checkbox,Button,Backdrop,CircularProgress,Snackbar,Alert} from '@mui/material';
+import { Select,MenuItem,FormControl,InputLabel,FormLabel,RadioGroup,FormControlLabel,Radio,FormGroup,Checkbox,Button,Backdrop,CircularProgress,Snackbar,Alert, ThemeProvider} from '@mui/material';
 import {format} from 'date-fns'
-import {BtechCmm, Degreecmm,PgEduAndLawcmm} from "../Cmm"
 import CeritificateRequest from "../CertificateRequest"
 import logopng from "../../assects/logopng.png"
 import nagarjuna from "../../assects/nagarjuna.png"
@@ -12,22 +11,23 @@ import "./index.css"
 
 import axios from 'axios';
 import Cookies from 'js-cookie'
-import { TroubleshootRounded } from '@mui/icons-material';
 
 import {CssSelect,CssTextField} from "../customizedComponents"
+import {CmmType1,CmmType2,CmmType3} from "../CMM/test"
+import DocumentUploader from "../DocumentsUploader"
+import Payment from "../Payments"
+import {ApplicationPreview,ApplicationPreview2} from "../ApplicationPreview"
 
 
-import {CmmType1,CmmType2,CmmType3} from "../test/test"
+import {theme} from "../customizedComponents"
 
 
 class Odrequest extends Component{
     state={
         dashBoard:false,
-        screen:"requestForm",
-        // screen:'cmm',
+        screen:"requestForm",               // requestForm
         isValidUser:true,
         requestForm:"",
-        courseCategory:"",
         years:[],
         months:[],
         stateData:[],
@@ -35,16 +35,17 @@ class Odrequest extends Component{
         courseCategories:[],
         Degrees:[],
         Branchs:[],
-        cmmType:"",
-        degree:"",
+        cmmType:'',       
         StudyType:"0",
+        courseCategory:"",
+        degree:"",
+        studentBranch:"",
         studentName:"",
         dependentOf:"C/O",
         dependentName:"",
         examYear:"",
         examMonth:"",
-        studentBranch:"",
-        higherEducation:"0",
+        higherEducation:0,
         registrationNumber:"",
         street:"",
         village:"",
@@ -57,7 +58,7 @@ class Odrequest extends Component{
         country:"",
         backErr:false,
         backErrMsg:'',
-        severity:'',
+        severity:"info",
         isLocked:false,
         higherEducationNoteCheck:false,
         courseCategoryErr:false,
@@ -79,10 +80,18 @@ class Odrequest extends Component{
         higherEducationErr:false,
         errorExists:false,
         isLoading:false,
-        uploadedFiles:[]
+        uploadedFiles:[],
+// checklist
+        
+        isRequestFormFilled:false, 
+        isCmmFormFilled:false,
+        previewVerified:false,
+        isDocumentsUploaded:false,
+        paymentCompleted:false,
     }   
 
     componentDidMount(){
+        this.keydata()
         this.yearCounter()
         this.monthCounter()
         this.getStates()
@@ -90,14 +99,167 @@ class Odrequest extends Component{
         this.timeouter()
         this.getStudentData()
         this.getProgCategories()
+        this.requestedForm()
+        
     }
 
+    requestedForm=()=>{
+       const form= Cookies.get("form")
+       this.setState({requestForm:form})
+
+    }
+
+    refresh=()=>{
+        this.getProgCategories()
+        this.getStudentData()
+    }
+
+// initial data setup components
+
+    keydata=()=>{
+       const out = Cookies.get('keydata')
+       const studentName = Cookies.get('studentName')
+       const hallticketNo = Cookies.get('studentEnroll')
+       const keyData = JSON.parse(out)
+        this.setState({ courseCategory:keyData.progType,
+                        degree:keyData.ProgId,
+                        studentBranch:keyData.branchId,
+                        studentName:studentName,
+                        registrationNumber:hallticketNo,
+                        isLocked:true
+                },this.basicCalls())
+    }
+    
+    getStates=async()=>{
+        try{
+            const token = Cookies.get("authToken")
+            const options = {
+            url:`${process.env.REACT_APP_BASEURL}list/states/?country_id=1`,
+            method:"GET",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+            }
+        }
+        const states = await axios(options)
+        this.setState({stateData:states.data.data})
+
+        if(states.status===200){
+            console.log("states data received")
+        }
+        }catch(e){
+            if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+            }
+           if(e.response.status===401){
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+                setTimeout(() => {
+                Cookies.remove("authToken")
+                window.location.reload()
+                }, 1000);
+           }else{
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }
+        
+        }
+        
+    }
+
+    getDistricts=async()=>{
+        this.setState({isLoading:true})
+         const {state}=this.state
+        try{
+            const token = Cookies.get("authToken")
+       
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}list/districts/?state_id=${state}`,
+            method:"GET",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+            }
+        }
+        const districts = await axios(options)
+        this.setState({districtData:districts.data.data,isLoading:false})
+        }catch(e){
+            if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+            }
+           if(e.response.status===401){
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+                setTimeout(() => {
+                Cookies.remove("authToken")
+                window.location.reload()
+                }, 1000);
+           }else{
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }
+        }
+        
+    }
+
+    getProgCategories=async()=>{
+    const token = Cookies.get("authToken")
+    try{
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}list/course-categories/`,
+            method:"GET",
+            headers:{
+                 'Authorization': `Bearer ${token}`,
+            }
+        }
+        const courseCategories = await axios(options)
+        this.setState({courseCategories:courseCategories.data.data})
+    }catch(e){
+        if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+            }
+           if(e.response.status===401){
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+                setTimeout(() => {
+                Cookies.remove("authToken")
+                window.location.reload()
+                }, 1000);
+           }else{
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }
+    }
+    }
+
+    yearCounter=()=>{
+        const yearList = [];
+        const dt = format(new Date(),"yyyy")
+        for(let i=1980;i<=dt;i++){
+            yearList.push(i)
+        }
+        this.setState({years:yearList})
+    }
+
+    monthCounter=()=>{
+        const monthsList = [];
+        for(let i=1;i<=12;i++){
+            monthsList.push(i)
+        }
+        this.setState({months:monthsList})
+    }
+
+// user login check function
+
+    userValidation=()=>{
+        const token = Cookies.get("authToken")
+        if(token===undefined){
+            this.setState({isValidUser:false})
+        }else{
+            this.setState({isValidUser:true})
+        }
+    }
 
 // for forward and backward views
 
-    viewChanger=(view)=>{
-        this.setState({screen:view})
+    viewChanger=(event)=>{
+        this.setState({screen:event.target.id})
     }
+
+// get student data components
+
 
     getStudentData=async()=>{
         const {pinCode}=this.state
@@ -150,110 +312,36 @@ class Odrequest extends Component{
     }   
 
     basicCalls=()=>{
-        this.getPrograms()
-        this.getBranchsOnlyForGetStudentData()
+        this.getProgramsOnlyForGetStudentData()
         this.getDistricts()
         this.setState({isLocked:true})
     }
 
-    timeouter=()=>{
-        // eslint-disable-next-line no-sequences
-        setTimeout(() => (Cookies.remove("authToken"), this.setState({ isValidUser: false })), 900000);
-    }
-
-    getStates=async()=>{
-        try{
-            const token = Cookies.get("authToken")
-            const options = {
-            url:`${process.env.REACT_APP_BASEURL}list/states/?country_id=1`,
-            method:"GET",
-            headers:{
-                 'Authorization': `Bearer ${token}`,
-            }
-        }
-        const states = await axios(options)
-        this.setState({stateData:states.data.data})
-
-        if(states.status===200){
-            console.log("states data received")
-        }
-        }catch(e){
-           if(e.response.status===401){
-            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
-                setTimeout(() => {
-                Cookies.remove("authToken")
-                window.location.reload()
-                }, 3000);
-           }else{
-            
-            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
-           }
-        
-        }
-        
-    }
-
-    getDistricts=async()=>{
-        this.setState({isLoading:true})
-         const {state}=this.state
-        try{
-            const token = Cookies.get("authToken")
-       
-        const options = {
-            url:`${process.env.REACT_APP_BASEURL}list/districts/?state_id=${state}`,
-            method:"GET",
-            headers:{
-                 'Authorization': `Bearer ${token}`,
-            }
-        }
-        const districts = await axios(options)
-        this.setState({districtData:districts.data.data,isLoading:false})
-        }catch(e){
-            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
-        }
-        
-    }
-
-    getProgCategories=async()=>{
-    const token = Cookies.get("authToken")
-    try{
-        const options = {
-            url:`${process.env.REACT_APP_BASEURL}list/course-categories/`,
-            method:"GET",
-            headers:{
-                 'Authorization': `Bearer ${token}`,
-            }
-        }
-        const courseCategories = await axios(options)
-        this.setState({courseCategories:courseCategories.data.data})
-    }catch(e){
-        this.setState({isLoading:false})
-    }
-    }
-
-    getPrograms=async()=>{
-    this.setState({isLoading:true})
+    getProgramsOnlyForGetStudentData=async()=>{
     try{
         const token = Cookies.get("authToken")
         const {courseCategory}=this.state
         const options = {
-            url:`${process.env.REACT_APP_BASEURL}list/programs/?course_category_id=${courseCategory}`,
+            url:`${process.env.REACT_APP_BASEURL}list/programs/`,
             method:"GET",
             headers:{
                  'Authorization': `Bearer ${token}`,
             }
         }
         const Degrees = await axios(options)
-        // console.log(Degrees.data.data)
-        this.setState({Degrees:Degrees.data.data,isLoading:false})
+        this.setState({Degrees:Degrees.data.data},this.getBranchsOnlyForGetStudentData)
         }catch(e){
-            this.setState({isLoading:false})
+            if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+            
+           }else{
+            console.log(e)
+           }
         }
         
     }
 
     getBranchsOnlyForGetStudentData=async()=>{
-         this.setState({isLoading:true})
         try{
         const token = Cookies.get("authToken")
         const {degree}=this.state
@@ -265,10 +353,22 @@ class Odrequest extends Component{
             }
         }
         const Branchs = await axios(options)
-        this.setState({Branchs:Branchs.data.data,isLoading:false},this.setCmmTypeOnlyForGetStudentData)
+        this.setState({Branchs:Branchs.data.data},this.setCmmTypeOnlyForGetStudentData)
         }catch(e){
-            console.log(e)
-             this.setState({isLoading:false})
+            if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+            }
+           if(e.response.status===401){
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+                setTimeout(() => {
+                Cookies.remove("authToken")
+                window.location.reload()
+                }, 1000);
+           }if(e.response.status===422){
+            this.setState({backErrMsg:e.message,severity:'error',isLoading:false})
+           }else{
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }
         }
         
     }
@@ -279,52 +379,21 @@ class Odrequest extends Component{
         const cmm = Degrees.map((each)=>{
             const temp = ''
             if(each.program_id===degree){
-                this.setState({cmmType:each.cmm_type})
+                this.setState({cmmType:each.cmm_type,isLoading:false})
             }
         })
         
     }
 
-    getBranchs=async()=>{
-         this.setState({isLoading:true})
-        try{
-        const token = Cookies.get("authToken")
-        const {degree,Degrees}=this.state
-        const cmm = Degrees.filter((each)=>each.program_id===degree)
-        this.setState({cmmType:cmm[0].cmm_type})
-        const options = {
-            url:`${process.env.REACT_APP_BASEURL}list/program-categories/?program_id=${degree}`,
-            method:"GET",
-            headers:{
-                 'Authorization': `Bearer ${token}`,
-            }
-        }
-        const Branchs = await axios(options)
-        this.setState({Branchs:Branchs.data.data,isLoading:false})
-        }catch(e){
-            console.log(e)
-             this.setState({isLoading:false})
-        }
-        
+
+// for auto logout
+
+    timeouter=()=>{
+        // eslint-disable-next-line no-sequences
+        setTimeout(() => (Cookies.remove("authToken"), this.setState({ isValidUser: false })), 1800000);
     }
 
-    yearCounter=()=>{
-        const yearList = [];
-        const dt = format(new Date(),"yyyy")
-        for(let i=1980;i<=dt;i++){
-            yearList.push(i)
-        }
-        this.setState({years:yearList})
-    }
-
-    monthCounter=()=>{
-        const monthsList = [];
-        for(let i=1;i<=12;i++){
-            monthsList.push(i)
-        }
-        this.setState({months:monthsList})
-    }
-
+// Data validation components before uploading
     errorChecked=()=>{
         const {degreeErr,
         studentNameErr,
@@ -431,10 +500,10 @@ class Odrequest extends Component{
             }
             const response = await axios(options)
                 if(response.status===200){
-                this.setState({backErr:true,backErrMsg:'Data saved Successfully, please continue',severity:'success',isLoading:false})
+                this.setState({backErr:true,backErrMsg:'Data saved Successfully, please continue',severity:'success',isLoading:false,isRequestFormFilled:true})
                 setTimeout(() => {
                     this.setState({screen:'cmm'})
-                }, 2000);
+                }, 1000);
             }
             }catch(e){
                 if(e.response.status===401){
@@ -442,7 +511,7 @@ class Odrequest extends Component{
                     setTimeout(() => {
                         Cookies.remove("authToken")
                         window.location.reload()
-                    }, 3000);
+                    }, 1000);
                 }else{
                 this.setState({isLoading:false,backErr:true,severity:'error',backErrMsg:e.message})
             }
@@ -516,13 +585,13 @@ class Odrequest extends Component{
         if(studentBranch!==""){
             this.setState({studentBranchErr:false})
         }
-        if(higherEducation==="0" && higherEducationNoteCheck===false){
+        if(higherEducation===0 && higherEducationNoteCheck===false){
             this.setState({higherEducationErr:true})
         }
-        if(higherEducation==="0" && higherEducationNoteCheck===true){
+        if(higherEducation===0 && higherEducationNoteCheck===true){
             this.setState({higherEducationErr:false})
         }
-        if(higherEducation==="1" && higherEducationNoteCheck===false){
+        if(higherEducation===1 && higherEducationNoteCheck===false){
             this.setState({higherEducationErr:false})
         }
         if(registrationNumber===""){
@@ -581,7 +650,7 @@ class Odrequest extends Component{
         }
         if(
         ((StudyType==="0" && collageName !=="") || (StudyType==="1" && collageName==="")) &&
-        ((higherEducation==="1" && higherEducationNoteCheck===false) || (higherEducation==="0" && higherEducationNoteCheck===true)) &&
+        ((higherEducation===1 && higherEducationNoteCheck===false) || (higherEducation===0 && higherEducationNoteCheck===true)) &&
             studentName !=="" &&
             dependentName!=="" &&
             examYear!=="" &&
@@ -601,17 +670,54 @@ class Odrequest extends Component{
         }
     }
 
+// for updating completion status
+
+    updateStatus=(r)=>{
+       switch(r){
+        case "cmm":
+            this.setState({isCmmFormFilled:true})
+            setTimeout(() => {
+                    this.setState({screen:'preview'})
+                }, 1000);
+            break;
+        case "preview":
+            this.setState({previewVerified:true})
+            setTimeout(() => {
+                    this.setState({screen:'docs'})
+                }, 1000);
+            break;
+        case "docs":
+            this.setState({isDocumentsUploaded:true})
+            setTimeout(() => {
+                    this.setState({screen:'payment'})
+                }, 1000);
+            break;
+        default:
+            return null
+       }
+    }
+
+    editPrevious=(r)=>{
+        this.setState({screen:r})
+    }
+// for locking key parameters
+
+    lockCmmEffecters=()=>{
+        this.setState({isLocked:true})
+    }
+
+
+// ccm form rendering function
+
     cmmForm=()=>{
-        const{studentBranch,degree,studentName,registrationNumber,collageName,cmmType} = this.state
+        const{cmmType} = this.state
             switch (cmmType){
-                case 4:
-                    return <BtechCmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case 2:
-                    return <Degreecmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
-                case 3:
-                    return <PgEduAndLawcmm degree={degree} name={studentName} regNo={registrationNumber} clzName={collageName} branch={studentBranch}/>
                 case 1:
-                    return <CmmType1/>
+                    return <CmmType1 lock={this.lockCmmEffecters} statusUpdater={this.updateStatus}/>
+                case 2:
+                    return <CmmType2 lock={this.lockCmmEffecters} statusUpdater={this.updateStatus}/>
+                case 3:
+                    return <CmmType3 lock={this.lockCmmEffecters} statusUpdater={this.updateStatus}/>
                 default: 
                     return null
             }
@@ -792,7 +898,7 @@ class Odrequest extends Component{
 {/* registrationNumber */}  
                             <div style={{display:'flex',flexDirection:'column',width:'330px',margin:"20px 10px 0 0"}}>
                                 <lable>Hall Ticket Number</lable>
-                                <CssTextField size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value.toUpperCase()})}} value={registrationNumber} id="regID" variant="outlined" />
+                                <CssTextField disabled={isLocked} size="small" error={registrationNumberErr} onChange={(event)=>{this.setState({registrationNumber:event.target.value.toUpperCase()})}} value={registrationNumber} id="regID" variant="outlined" />
                             </div>
 {/* Months section */}                  
                             <div style={{display:'flex',flexDirection:'column',width:'300px',margin:"20px 10px 0 0"}}>
@@ -881,16 +987,37 @@ class Odrequest extends Component{
                     </div>
                 </FormControl>
             </form>
-            <Button type='submit' onClick={this.onContinue} style={{margin:"50px 0 10px 0"}} variant="contained" size="medium">Save and Continue</Button>
+            <Button className="muiButton" type='submit' onClick={this.onContinue} style={{margin:"50px 0 10px 0"}} variant="contained" size="medium">Save and Continue</Button>
+            <Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>
             {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields and check Higher Education section</p>:<p style={{margin:"0 0 30px 0"}}></p>}
                 </>)
             case "cmm":
                 return this.cmmForm()
-
+            case "preview":
+                 return <ApplicationPreview2 goto={this.editPrevious} statusUpdater={this.updateStatus}/>
+            case "docs":
+                return <DocumentUploader cmm={cmmType} statusUpdater={this.updateStatus}/>
+            case "payment":
+                return <Payment/>
             default:
                 return null
         }
-        }
+    }
+    
+    stepperComponent=()=>{
+        const{screen,isRequestFormFilled,isCmmFormFilled,isDocumentsUploaded,previewVerified,paymentCompleted}=this.state
+        return(
+            <ThemeProvider theme={theme}>
+                <div style={{display:'flex',flexDirection:'row',justifyContent:'space-around',width:'80%',margin:'30px 0 30px 0'}}>
+                    <Button className="muiButton" id='requestForm' style={{fontWeight:'bold'}} color={screen==='requestForm'?'primary':'stepper'} variant="contained" onClick={this.viewChanger} >Fill OD Request Form</Button>
+                    <Button className="muiButton" disabled={!isRequestFormFilled} id='cmm' style={{fontWeight:'bold'}} color={screen==='cmm'?'primary':'stepper'} variant="contained" onClick={this.viewChanger}>Fill Marks List</Button>
+                    <Button className="muiButton" disabled={!isCmmFormFilled} id='preview'  style={{fontWeight:'bold'}} color={screen==='preview'?'primary':'stepper'} variant="contained" onClick={this.viewChanger}>Application Perview</Button>
+                    <Button className="muiButton" disabled={!previewVerified} id='docs' style={{fontWeight:'bold'}} color={screen==='docs'?'primary':'stepper'} variant="contained" onClick={this.viewChanger}>Upload Documents</Button>
+                    <Button className="muiButton" disabled={!isDocumentsUploaded} id='payment'  style={{fontWeight:'bold'}} color={screen==='payment'?'primary':'stepper'} variant="contained" onClick={this.viewChanger}>Payment</Button>
+                </div>
+            </ThemeProvider>
+        )
+    }
 
     commonRequestForm=()=>{
         const {requestForm}=this.state
@@ -903,25 +1030,17 @@ class Odrequest extends Component{
                             <img style={{height:'180px'}} src={logopng} alt="logo"/>
                         </div>
                         {this.screenViewer()}
+                        {/* {this.stepperComponent()} */}
                     </div>
                 </>)  
                 break;
             case "Certificates":
-                return <CeritificateRequest/>
+                return <CeritificateRequest back={()=>this.setState({requestForm:''})}/>
                 break;
             default:
                 return null
         }
     }   
-
-    userValidation=()=>{
-        const token = Cookies.get("authToken")
-        if(token===undefined){
-            this.setState({isValidUser:false})
-        }else{
-            this.setState({isValidUser:true})
-        }
-    }
 
     initialView=()=>{
         const{requestForm,isLoading}=this.state
@@ -929,15 +1048,7 @@ class Odrequest extends Component{
             <div className='requestForm'>
                  <img className='LogoImg' alt="LogoImage" src="https://anucde.org/assets/img/brand/logo.png"/>
                  {/* <img className='LogoutImg' alt="LogoImage" src="https://anucde.org/assets/img/brand/logo.png"/> */}
-                 <Button onClick={()=>this.setState({dashBoard:true})} variant="contained" className="dashBordBtn">Back to Dashboard</Button>  
-                <h1>Request Forms</h1>
-                <FormControl style={{width:"40vw"}}>
-                    <InputLabel style={{backgroundColor:"white"}} id="demo-simple-select-label">Requesting For</InputLabel>
-                        <Select style={{backgroundColor:"white"}} value={requestForm} onChange={(event)=>this.setState({requestForm:event.target.value})} placeholder="Select Request">
-                            <MenuItem value="OD Request">OD Request</MenuItem>
-                            <MenuItem value="Certificates">Certificate Request</MenuItem>
-                        </Select>
-                    </FormControl>
+                 <Button onClick={()=>this.setState({dashBoard:true})} variant="contained" className="dashBordBtn muiButton">Back to Dashboard</Button>  
                 {this.commonRequestForm()}
                 {isLoading?<Backdrop
           sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -954,10 +1065,11 @@ class Odrequest extends Component{
     }
 
     render(){
-        const{isValidUser,dashBoard,backErr,backErrMsg,severity}=this.state
+        const{isValidUser,dashBoard,backErr,backErrMsg,severity, higherEducation}=this.state
+        console.log(higherEducation)
         return(
             <>
-                {dashBoard?<Navigate to="/"/>:null}
+                {dashBoard?<Navigate to="/student_dash_board"/>:null}
                 {isValidUser?this.initialView():<Navigate to="/student/signin"/>}
                 <Snackbar  anchorOrigin={{ vertical:"top", horizontal:"right"}} TransitionComponent={this.SlideTransition} open={backErr} autoHideDuration={3000} onClose={this.backErrAlertHandler}>
                     <Alert onClose={this.backErrAlertHandler} severity={severity} sx={{ width: '100%'}}>

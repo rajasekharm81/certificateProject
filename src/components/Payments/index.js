@@ -15,16 +15,15 @@ class Payment extends Component{
             studentBranch:'',
             registrationNumber:'',
             examYear:'',
-            feesDetails:{certificate_fee:0,processing_fee:0,total_payable:0},
+            paymentDetails:{certificate_fee:0,processing_fee:0,total_payable:0,payment_link:''},
             isLoading:false,
             backErr:false,
             backErrMsg:'test',
             severity:'error',
-            feesDetailsRecieved:false,
+            receivedPaymentDetails:false,
             Degrees:[],
             Branchs:[],
             confirmPayment:false,
-            paymentLink:''
         }
 
     componentDidMount(){
@@ -132,56 +131,55 @@ class Payment extends Component{
         this.setState({copies:event.target.value})
     }
 
-    GetFeeDetailsonClick=async()=>{
+    getPaymentUrl=async()=>{
         const {isTatkal}=this.state
-        this.setState({isLoading:true})
-        const token = Cookies.get("authToken")
-        try{
-        const options = {
-          url : `${process.env.REACT_APP_BASEURL}certificate/get-fee-details/`,
-          method: 'POST',
-          headers: {
+        const token = Cookies.get('authToken')
+          try{
+            const options = {
+            url:`${process.env.REACT_APP_BASEURL}certificate/get-fee-details/`,
+            method:"POST",
+            headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json;charset=UTF-8',
             "Authorization":`Bearer ${token}`,
             },
-          data: {
+            data: {
                 is_tatkal: isTatkal,
                 certificate_id: 1,  
                 copies:1
               }
-        }
-        const response = await axios(options)
-        const feeDetail = {certificate_fee:response.data.certificate_fee,
-                        processing_fee:response.data.processing_fee,
-                        total_payable:response.data.total_payable}
-
-        this.setState({ feesDetails:feeDetail,
-                        feesDetailsRecieved:true,
-                        isLoading:false
-                    })
+            }
+            const response = await axios(options)
+            if(response.status===200){
+                this.setState({ paymentDetails:response.data,
+                                isLoading:false,
+                                backErr:true,
+                                backErrMsg:"Proceed for Payment",
+                                receivedPaymentDetails:true,
+                                severity:"success"
+                            })
+            }
         }catch(e){
-            if(e.message==='Network Error'){
-                this.setState({backErr:true,backErrMsg:e.message,isLoading:false})
+        if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
             }
-            if(e.response.status===401){
-                this.setState({backErr:true,backErrMsg:"Invalid User... Please login to Continue",isLoading:false})
+           if(e.response.status===401){
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
                 setTimeout(() => {
-                    Cookies.remove("authToken")
-                    window.location.replace("/student/signin")
-                }, 4000);
-            }else{
-                this.setState({backErr:true,backErrMsg:e.message,isLoading:false})
-            }
-            
+                Cookies.remove("authToken")
+                window.location.reload()
+                }, 3000);
+           }else{
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }
         }
     }
 
     getFeeDetailsView=()=>{
         const{otherCertificates,isTatkal,studentName,registrationNumber,Degrees,degree,Branchs,studentBranch}=this.state
         return(
-            <div style={{display:"flex",flexDirection:"column",margin:"20px 0 20px 0",padding:"20px",height:"auto",fontSize:'18px'}}>
-                 <h1 style={{textAlign:'center',fontSize:'26px'}}>Application Fee Process</h1>
+            <div style={{display:"flex",flexDirection:"column",padding:"20px",height:"auto",fontSize:'18px'}}>
+                 <h1 style={{textAlign:'center',fontSize:'26px'}}>Payment Details</h1>
                 <form style={{display:"flex",flexDirection:'column',justifyContent:"space-around"}}>
                     <FormControl disabled={otherCertificates} onChange={this.isTatkal} style={{margin:"20px 0 10px 0"}}>
                         <FormLabel id="demo-row-radio-buttons-group-label">Application Category</FormLabel>
@@ -257,12 +255,12 @@ class Payment extends Component{
     }
 
     feeDetailsView=()=>{
-        const {feesDetails}=this.state
+        const {paymentDetails}=this.state
         return(<div style={{margin:"20px 0 20px 0",padding:"20px"}}>
-                <h1 style={{fontSize:"28px"}}>Certificate Fees&emsp;&nbsp;:&nbsp;{feesDetails.certificate_fee}</h1>
-                <h1 style={{fontSize:"28px",marginBottom:'30px'}}>Processing Fees&emsp;:&nbsp;{feesDetails.processing_fee}</h1>
+                <h1 style={{fontSize:"28px"}}>Certificate Fees&emsp;&nbsp;:&nbsp;{paymentDetails.certificate_fee}</h1>
+                <h1 style={{fontSize:"28px",marginBottom:'30px'}}>Processing Fees&emsp;:&nbsp;{paymentDetails.processing_fee}</h1>
                 <hr/>
-                <h1 style={{fontSize:"28px"}}>Total Payable &emsp;&nbsp;&nbsp;&nbsp;:&nbsp;{feesDetails.total_payable}</h1>
+                <h1 style={{fontSize:"28px"}}>Total Payable &emsp;&nbsp;&nbsp;&nbsp;:&nbsp;{paymentDetails.total_payable}</h1>
             </div>)
     }
 
@@ -270,45 +268,11 @@ class Payment extends Component{
         this.setState({backErr:false})
     }
 
-    payment=async()=>{
-        const {isTatkal}=this.state
-        this.setState({isLoading:true})
-        const token = Cookies.get("authToken")
-        try{
-        const options = {
-          url : `${process.env.REACT_APP_BASEURL}certificate/apply-certificate/`,
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json;charset=UTF-8',
-            "Authorization":`Bearer ${token}`,
-            },
-          data: {
-                is_tatkal: isTatkal,
-                certificate_id: 1,  
-                copies:1
-              }
-        }
-        const response = await axios(options)
-            if(response.status===200){
-                this.setState({confirmPayment:true,isLoading:false,paymentLink:response.data.payment_link})
-            }
-        }catch(e){
-            
-            if(e.response.status===401){
-                this.setState({backErr:true,backErrMsg:"Invalid User... Please login to Continue",isLoading:false})
-            }else{
-                this.setState({backErr:true,backErrMsg:e.message,isLoading:false})
-            }
-            
-        }
-    }
-
     render(){
-        const {isLoading,backErr,backErrMsg,severity,feesDetailsRecieved,confirmPayment,paymentLink}=this.state
+        const {isLoading,backErr,backErrMsg,severity,receivedPaymentDetails,confirmPayment,paymentDetails}=this.state
         return(
             <>
-            {confirmPayment && window.location.replace(`${paymentLink}`)}
+            {confirmPayment && window.location.replace(`${paymentDetails.payment_link}`)}
             <LoadingView isLoading={isLoading}/>
               <Snackbar open={backErr}
                         autoHideDuration={3000} 
@@ -323,7 +287,7 @@ class Payment extends Component{
                 <div className='paymentContainer'>
                     {/* <h1 style={{fontFamily:"cursive", fontSize:"32px", fontVariant:"ruby"}}>Payments Page</h1> */}
                     {this.getFeeDetailsView()}
-                    {feesDetailsRecieved?<Button onClick={this.payment} variant='contained'>Pay Now</Button>:<Button onClick={this.GetFeeDetailsonClick} variant='contained'>Get Fees details</Button>}
+                    {receivedPaymentDetails?<Button className="muiButton" onClick={()=>this.setState({confirmPayment:true})} variant='contained'>Pay Now</Button>:<Button className="muiButton" onClick={this.getPaymentUrl} variant='contained'>Get Fees details</Button>}
                 </div>
             </div>
             </>

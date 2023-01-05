@@ -1,0 +1,55 @@
+.ChangePassMainPage{
+    background-image: url('https://res.cloudinary.com/dcqzidejd/image/upload/v1671102435/Pngtree_scene_with_geometrical_forms_the_1259850_gintpx.png');
+    /* background-size: cover; */
+    height: 100vh;
+    max-width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+@media screen and (max-width:600px){
+    .registrationImage{
+        display: none;
+    }
+    .registrationForm{
+        background-color: #91f5fc67;
+        /* padding: 30px 70px 30px 70px; */
+        width: 80vw;
+        border-radius: 10px;
+        box-shadow: 1px 1px 5px 0px #6d9fa1a2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .universityLogo{
+        position:absolute;
+        top:30px;
+        left:0;
+        width: 80vw;
+    }
+}
+
+@media screen and (min-width:600px){
+    .registrationImage{
+        width: 40vw;
+    }
+    .registrationForm{
+        background-color: #91f5fc67;
+        padding: 30px 70px 30px 70px;
+        width: 350px;
+        border-radius: 10px;
+        box-shadow: 1px 1px 5px 0px #6d9fa1a2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+    }
+    .universityLogo{
+        position:absolute;
+        top:10px;
+        left:10px;
+    }
+}

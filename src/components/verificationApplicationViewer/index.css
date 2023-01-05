@@ -1,0 +1,39 @@
+.CertificatesPreviewFormContainer{
+    width: 60vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0px 0px 10px 0px silver;
+    margin: 10px;
+    padding: 50px;
+    background-color:white;
+    /* opacity: .9; */
+    min-height: 842px;
+    background-color: #000000d0;
+}
+
+.nagarjunaLogo{
+    position:absolute;
+    left:40%;
+    top:50%;
+    opacity:0.15;
+    height:500px;
+}
+
+.docsImage{
+    height:200px;
+    width:200px;
+    margin:10px;
+    padding:10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: height 200ms,width 200ms, padding 200ms;
+}
+
+.docsImage:hover{
+    height: 220px;
+    width:220px;
+    padding:0px;
+    border-radius: 10px;
+}

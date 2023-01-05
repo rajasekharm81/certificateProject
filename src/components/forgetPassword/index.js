@@ -180,12 +180,12 @@ class ForgotPassword extends Component{
                             />
                         {passwordMatched?null:<p>Passwords not Matched</p>}
                         <div style={{width:"80%", display:"flex", justifyContent:"space-around",marginTop:"20px"}}>
-                            <Button onClick={this.reset} variant="contained" color="reset">Reset</Button>
-                            <Button onClick={this.onSubmit} variant="contained" color="success">
+                            <Button className="muiButton" onClick={this.reset} variant="contained" color="reset">Reset</Button>
+                            <Button className="muiButton" onClick={this.onSubmit} variant="contained" color="success">
                                 Update Password
                             </Button>
                         </div>
-                        <Button onClick={()=>this.setState({alreadyRegistered:true})}>Click me to signin page</Button>
+                        <Button className="muiButton" onClick={()=>this.setState({alreadyRegistered:true})}>Click me to signin page</Button>
                         </Box>
             )
         }

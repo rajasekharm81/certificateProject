@@ -1,6 +1,6 @@
 import {Component} from 'react';
 import { Navigate } from 'react-router-dom';
-import { Box,Button,Snackbar,Alert } from '@mui/material';
+import { Box,Button,Snackbar,Alert,FormControl,Select,MenuItem } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import validator from 'validator';
 import {format} from 'date-fns'
@@ -23,7 +23,13 @@ import axios from 'axios';
 
 
 class SignUpFrom extends Component{
-    state={name:"",
+    state={ 
+// Data
+            programTypeData:[],
+            programsData:[],
+            branchesData:[],
+// student information
+            name:"",
             fatherName:"",
             email:"",
             enrollmentNo:"",
@@ -31,6 +37,14 @@ class SignUpFrom extends Component{
             mobileNo:'',
             password:"",
             confirmPassword:"",
+// program details
+            is_ug:"",
+            programId:'',
+            studentBranchID:'',
+// program details error handling
+            is_ugErr:false,
+            programIdErr:false,
+            studentBranchIDErr:false,
             nameErr:false,
             fatherNameErr:false,
             emailErr:false,
@@ -48,6 +62,79 @@ class SignUpFrom extends Component{
             severity:"",
             alreadyRegistered:false,
             isLoading:false
+        }
+
+        componentDidMount(){
+            this.getProgCategories()
+        }
+
+        getProgCategories=async()=>{
+        try{
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}list/course-categories/`,
+        }
+        const courseCategories = await axios(options)
+        this.setState({programTypeData:courseCategories.data.data})
+        }catch(e){
+        if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+            }
+           if(e.response.status===401){
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }else{
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }
+        }
+        }
+
+        getPrograms=async()=>{
+        this.setState({isLoading:true})
+        try{
+        const {is_ug}=this.state
+        const options = {
+            url:`${process.env.REACT_APP_BASEURL}list/programs/?course_category_id=${is_ug}`,
+            method:"GET",
+        }
+        const Degrees = await axios(options)
+        this.setState({programsData:Degrees.data.data,isLoading:false})
+        }catch(e){
+            if(e.message==="Network Error"){
+                 this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+            }
+           if(e.response.status===401){
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }if(e.response.status===422){
+            this.setState({backErrMsg:e.message,severity:'error',isLoading:false})
+           }else{
+            this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+           }
+        }
+        
+        }
+
+        getBranchs=async()=>{
+            this.setState({isLoading:true})
+            const {programId}=this.state
+            try{
+            const options = {
+                url:`${process.env.REACT_APP_BASEURL}list/program-categories/?program_id=${programId}`,
+                method:"GET",
+            }
+            const Branchs = await axios(options)
+            this.setState({branchesData:Branchs.data.data,isLoading:false})
+            }catch(e){
+                if(e.message==="Network Error"){
+                    this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
+                }
+            if(e.response.status===401){
+                this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+            }if(e.response.status===422){
+                this.setState({backErrMsg:e.message,severity:'error',isLoading:false})
+            }else{
+                this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
+            }
+            }
+            
         }
 
         navigateToSignIn=()=>{
@@ -100,7 +187,7 @@ class SignUpFrom extends Component{
         }
 
         callForOtp=async ()=>{
-            const {name,fatherName,email,dob,mobileNo,password,enrollmentNo}=this.state
+            const {name,fatherName,email,dob,mobileNo,password,enrollmentNo, is_ug,programId,studentBranchID}=this.state
             try{
                 const options = {
                 url:`${process.env.REACT_APP_BASEURL}account/register/`,
@@ -109,14 +196,17 @@ class SignUpFrom extends Component{
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8'
                     },
-                data:{name: name,
+                data:{  name: name,
                         father_name: fatherName,
                         email: email,
                         enrollment: enrollmentNo,
                         mobile: mobileNo,
                         password:password,
                         confirm_password: password,
-                        date_of_birth: format(new Date(dob), 'dd/MM/yyyy')
+                        date_of_birth: format(new Date(dob), 'dd/MM/yyyy'),
+                        student_branch_id: studentBranchID,
+                        program_id: programId,
+                        is_ug: is_ug
                     }
             }
             const response = await axios(options)
@@ -129,7 +219,19 @@ class SignUpFrom extends Component{
         }
 
         onSubmit=()=>{
-            const {name,fatherName,email,enrollmentNo,dob,mobileNo,emailErr,mobileNoErr,password,confirmPassword} = this.state
+            const {name,
+                fatherName,
+                email,
+                enrollmentNo,
+                dob,
+                mobileNo,
+                emailErr,
+                mobileNoErr,
+                password,
+                confirmPassword,
+                is_ug,
+                programId,
+                studentBranchID}= this.state
             this.setState({isLoading:true})
             if(name===""){
                 this.setState({nameErr:true})
@@ -185,9 +287,38 @@ class SignUpFrom extends Component{
             if(password!==confirmPassword){
                 this.setState({passwordMatched:false})
             }
-            if(name!=="" && fatherName!=="" && enrollmentNo!=="" && emailErr===false && dob!=="" && mobileNoErr===false && password===confirmPassword && password!=="" && confirmPassword!==''){
+            if(is_ug===""){
+                this.setState({is_ugErr:true})
+            }
+            if(is_ug!==""){
+                this.setState({is_ugErr:false})
+            }
+            if(programId===""){
+                this.setState({programIdErr:true})
+            }
+            if(programId!==""){
+                this.setState({programIdErr:false})
+            }
+            if(studentBranchID===""){
+                this.setState({studentBranchIDErr:true})
+            }
+            if(studentBranchID!==""){
+                this.setState({studentBranchIDErr:false})
+            }
+            if( name!=="" && 
+                fatherName!=="" && 
+                enrollmentNo!=="" && 
+                emailErr===false && 
+                dob!=="" && 
+                mobileNoErr===false && 
+                password===confirmPassword && 
+                password!=="" && 
+                confirmPassword!=='' &&
+                is_ug!=="" &&
+                programId!=="" &&
+                studentBranchID!==""
+                ){
                 this.setState({allDataEntered:true},this.callForOtp)
-                console.log("error")
             }
             else{
                 this.setState({ backErr:true,isLoading:false,backErrMsg:"Something went wrong. Please try again", severity:"error"})
@@ -195,18 +326,27 @@ class SignUpFrom extends Component{
         }
 
         registerForm=()=>{
-            const {name,
+            const { programTypeData,
+                    programsData,
+                    branchesData,
+                    programId,
+                    studentBranchID,
+                    programIdErr,
+                    studentBranchIDErr,
+                    name,
                     fatherName,
                     email,
                     enrollmentNo,
                     dob,
                     mobileNo,
+                    is_ug,
                     nameErr,
                     fatherNameErr,
                     emailErr,
                     enrollmentNoErr,
                     dobErr,
                     mobileNoErr,
+                    is_ugErr,
                     password,
                     confirmPassword,
                     passwordErr,
@@ -214,8 +354,8 @@ class SignUpFrom extends Component{
                     passwordMatched}=this.state
             return(
                 <Box className="registrationForm"> 
-                        <h1 style={{padding:"10px"}}>Please Register</h1>
-        {/* name */}    
+                        <h1 style={{padding:"10px",textAlign:"center"}}>Please Register</h1>
+    {/* name */}    
                         <div style={{display:'flex',flexDirection:'column',width:'100%'}}>     
                             <label id="reg-student-name">Name</label>
                             <CssTextField
@@ -244,6 +384,60 @@ class SignUpFrom extends Component{
                                 error={fatherNameErr}
                                 />
                         </div>
+    {/* prog type */}   
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-name">Degree Type</label>
+                            <FormControl sx={{m: "0px 0px 1vw 0vw" }} size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            style={{border:"1px solid black"}}
+                                            value={is_ug}
+                                            error={is_ugErr}
+                                            onChange={(event)=>{
+                                                this.setState({is_ug:event.target.value},this.getPrograms)
+                                            }}
+                                        >
+                                            {programTypeData.map((each)=><MenuItem value={each.course_category_id}>{each.course_category_name}</MenuItem>)}
+                                        </Select>
+                                </FormControl>
+                        </div>
+    {/* programs */}   
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-name">Degree</label>
+                            <FormControl sx={{m: "0px 0px 1vw 0vw" }} size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            style={{border:"1px solid black"}}
+                                            value={programId}
+                                            error={programIdErr}
+                                            onChange={(event)=>{
+                                                this.setState({programId:event.target.value},this.getBranchs)
+                                            }}
+                                        >
+                                            {programsData.map((each)=><MenuItem key={each.program_id} id={each.program_id} value={each.program_id}>{each.program_name}</MenuItem>)}
+                                        </Select>
+                                </FormControl>
+                        </div>
+    {/* branches */}   
+                        <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
+                            <label id="reg-student-name">Branch or Specilization</label>
+                            <FormControl sx={{m: "0px 0px 1vw 0vw" }} size="small">
+                                        <Select
+                                            labelId="demo-select-small"
+                                            id="demo-select-small"
+                                            style={{border:"1px solid black"}}
+                                            value={studentBranchID}
+                                            error={studentBranchIDErr}
+                                            onChange={(event)=>{
+                                                this.setState({studentBranchID:event.target.value})
+                                            }}
+                                        >
+                                            {branchesData.map((each)=><MenuItem key={each.program_category_id} id={each.program_category_id} value={each.program_category_id}>{each.name}</MenuItem>)}
+                                        </Select>
+                                </FormControl>
+                        </div>
     {/* emailId */}     
                         <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
                             <label id="reg-student-email">Email ID</label>
@@ -258,7 +452,6 @@ class SignUpFrom extends Component{
                                 error={emailErr}
                                 />
                         </div>
-
     {/* enrollmentNo */}
                         <div style={{display:'flex',flexDirection:'column',width:'100%',margin:'15px 0 0 0'}}>     
                             <label id="reg-student-enroll">HallTicket Number</label>
@@ -296,7 +489,8 @@ class SignUpFrom extends Component{
                                 id="reg-student-mobile"
                                 placeholder="Mobile"
                                 style={{margin:"5px 0 0 0"}}
-                                type="number"
+                                type="tel"
+                                pattern="[0-9]{10}"
                                 value={mobileNo}
                                 onChange={this.updateMobilenumber}
                                 error={mobileNoErr}
@@ -332,10 +526,10 @@ class SignUpFrom extends Component{
                         </div>
                         {passwordMatched?null:<p>Passwords not Matched</p>}
                         <div style={{width:"80%", display:"flex", justifyContent:"space-around",marginTop:"20px"}}>
-                            <Button onClick={this.reset} variant="contained" color="reset">Reset</Button>
-                            <Button onClick={this.onSubmit} variant="contained" color="success">Register</Button>
+                            <Button className="muiButton" onClick={this.reset} variant="contained" color="reset">Reset</Button>
+                            <Button className="muiButton" onClick={this.onSubmit} variant="contained" color="success">Register</Button>
                         </div>
-                            <Button color="lableText" style={{fontSize:"14px",fontWeight:'bold'}} onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button>
+                            <Button className="muiButton" color="lableText" style={{fontSize:"14px",fontWeight:'bold'}} onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button>
                         </Box>
             )
         }

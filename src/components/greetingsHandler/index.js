@@ -31,8 +31,8 @@ class Greet extends Component{
         render(){
             const {fSize,bg,greetMsg}=this.state
             return(
-                <div>
-                    <h1 style={{fontSize:`${fSize}`,backgroundColor:`${bg}` }}>{greetMsg}</h1>
+                <div style={{display:'flex'}}>
+                    <h1 style={{fontSize:`${fSize}`,backgroundColor:`${bg}`, width:'auto'}}>{greetMsg}</h1>
                 </div>
             )
         }

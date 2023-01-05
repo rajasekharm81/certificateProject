@@ -26,7 +26,7 @@ class SigninForm extends React.Component{
           validUser:false,
           signUp:false,
           forgotPassword:false,
-          isEmployee:false
+          isEmployee:false,
         }
 
     componentDidMount=()=>{
@@ -59,10 +59,17 @@ class SigninForm extends React.Component{
               }
         }
         const response = await axios(options);
+        const keyData = { branchId:response.data.student_branch_id,
+                          ProgId:response.data.program_id,
+                          progType:response.data.is_ug,
+                          studentName:response.name,
+                          hallticketNo:response.enrollment
+                        }
         if(response.statusText==="OK"){
           Cookies.set("authToken",response.data.auth_token, {expires:1})
           Cookies.set("studentName",response.data.name, {expires:1})
           Cookies.set("studentEnroll",response.data.enrollment, {expires:1})
+          Cookies.set("keydata",JSON.stringify(keyData),{expires:1})
           this.setState({isLoading:false,validUser:true})
         }
         console.log(response)
@@ -121,9 +128,11 @@ class SigninForm extends React.Component{
 
         <div className='AuthPageSignin'>
            <img style={{height:'150px'}} className='authLogo' alt="Logo" src={logopng}/>
-           <Button style={{position:"absolute", right:'10px', top:"10px", fontSize:"18px", fontWeight:"bold"}} onClick={this.role}>Employee Login</Button>
+           <div style={{position:"absolute", right:'10px', top:"10px", fontWeight:"bold"}}>
+              <Button className="muiButton" color="black" style={{fontSize:"16px",fontWeight:'bold'}} onClick={this.role}>Employee Login</Button>
+           </div>
            <Box className='AuthpageSigninForm'>
-                <h1>Student Log in</h1>
+                <h1 style={{textAlign:'center',fontSize:'18px', fontFamily:'verdana'}}>Student Log in</h1>
            <TextField
                   required
                   id="student-login-enrollNo"
@@ -135,18 +144,6 @@ class SigninForm extends React.Component{
                   autofill="false"
                   fullWidth
                   />
-
-            {/* <TextField
-                  required
-                  size="small"
-                  id="student-login-mobile"
-                  label="Mobile"
-                  style={{margin:"10px",width:"90%"}}
-                  onChange={(event)=>this.setState({mobile:event.target.value.toUpperCase()})}
-                  value={mobile}
-                  error={mobileErr}
-                  />
-            */}
             <FormControl  style={{margin:"30px 0 0 0"}} variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
               <OutlinedInput
@@ -170,16 +167,18 @@ class SigninForm extends React.Component{
           />
             </FormControl>
             <div className='authPageBtnContainer'>
-                <Button size='small' variant="contained" onClick={this.onLogin} style={{width:"30%", marginTop:"20px"}} >
+                <Button color='but' className="muiButton" size='small' variant="contained" onClick={this.onLogin} style={{width:"40%", marginTop:"20px"}} >
                     Login
                 </Button>
-                <Button size='small' variant="contained" onClick={this.toggleForgotpassword} style={{width:"30%", marginTop:"20px"}} >
+                <Button color='but' className="muiButton" size='small' variant="contained" onClick={this.toggleForgotpassword} style={{width:"40%", marginTop:"20px"}} >
                     Forgot Password
                 </Button>
             </div>
-            <ThemeProvider theme={theme}>
-              <Button color="lableText" onClick={()=>this.setState({signUp:true})} style={{alignSelf:"flex-end",fontWeight:'bold',fontSize:'14px'}}>Not Registered??? Sign Up</Button>
-            </ThemeProvider>
+            <div style={{display:'flex',justifyContent:"center",margin:"15px 0 0 0"}}>
+              {/* <ThemeProvider theme={theme}>
+                <Button className="muiButton" color="lableText" onClick={()=>this.setState({signUp:true})} style={{alignSelf:"flex-end",fontWeight:'bold',fontSize:'14px'}}>Not Registered??? Sign Up</Button>
+              </ThemeProvider> */}
+            </div>
            </Box>
         </div>
          </>
@@ -194,7 +193,9 @@ class SigninForm extends React.Component{
         const{isLoading,backErr,backErrMsg,signUp,validUser}=this.state
           return(
             <>
+            <ThemeProvider theme={theme}>
             { this.signInView()}
+            </ThemeProvider>
             <LoadingView isLoading={isLoading}/>
               <Snackbar open={backErr}
                         autoHideDuration={6000} 
@@ -206,7 +207,7 @@ class SigninForm extends React.Component{
                 </Alert>
               </Snackbar>
             {signUp?<Navigate to='/student/signup'/>:null}
-            {validUser?<Navigate to='/'/>:null}
+            {validUser?<Navigate to='/student_dash_board'/>:null}
             </>
              
             )
