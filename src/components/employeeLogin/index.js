@@ -75,7 +75,11 @@ class EmployeeSigninForm extends React.Component{
         }
         if(e.response.status===403){
           this.setState({isLoading:false,backErr:true,backErrMsg:"Incorrect Password... Please try again"})
-        }else{
+        }
+        if(e.response.status===404){
+          this.setState({isLoading:false,backErr:true,backErrMsg:"Incorrect/Invalid User Name"})
+        }
+        else{
           this.setState({isLoading:false,backErr:true,backErrMsg:e.message})
         }
             

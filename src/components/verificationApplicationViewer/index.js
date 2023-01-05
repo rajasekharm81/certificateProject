@@ -324,6 +324,7 @@ export class CmmPType3 extends Component{
 // for certificate_id 1 (Original Degree)
 export class OdApplicationPreview extends Component{
     state={
+        currentStatus:'',
 // essentials
         districts:[],
         states:[],
@@ -381,6 +382,8 @@ export class OdApplicationPreview extends Component{
     }
 
     componentDidMount(){
+        const {currentStatus}=this.props
+        this.setState({currentStatus:currentStatus})
         this.getStates()
         this.isUserLoggedIn()
     }
@@ -915,14 +918,14 @@ export class OdApplicationPreview extends Component{
     }
 
     render(){
-        const {backErr,backErrMsg,isLoading,severity,isAuthToValidate}=this.state
+        const {backErr,backErrMsg,isLoading,severity,isAuthToValidate,currentStatus}=this.state
         return(
             <>  {this.comfirmation()}
                 {this.RenderApplicationForm()}
                 {this.renderMarksLists()}
                 <h1 style={{textAlign:'center'}}>Documents</h1>
                 {this.renderDocs()}
-                {isAuthToValidate?this.approvalButtonContainer():null}
+                {isAuthToValidate && currentStatus==="pending"?this.approvalButtonContainer():null}
                 <LoadingView isLoading={isLoading}/>
                 <Snackbar open={backErr}
                             autoHideDuration={6000} 
@@ -944,7 +947,8 @@ export class OdApplicationPreview extends Component{
 // for certificate_id not 1 
 
 export class ApplicationRequest2 extends Component{
-    state={ isAuthToValidate:false,
+    state={ currentStatus:'',
+            isAuthToValidate:false,
             dependentOf: "",
             dependentName: "",
             street: '',
@@ -983,10 +987,11 @@ export class ApplicationRequest2 extends Component{
             decision:''
             }
 
-
     componentDidMount(){
-       this.viewApplication()
-       this.isUserLoggedIn()
+        const {currentStatus}=this.props
+        this.setState({currentStatus:currentStatus})
+        this.viewApplication()
+        this.isUserLoggedIn()
     }
 
      isUserLoggedIn=()=>{
@@ -1336,15 +1341,15 @@ export class ApplicationRequest2 extends Component{
     }
 
    render(){
-        const {isAuthToValidate,isLoading,backErr,backErrMsg,severity}=this.state
+        const {isAuthToValidate,isLoading,backErr,backErrMsg,severity,currentStatus}=this.state
     return(
         <>
             {this.renderApplication()}
             {this.comfirmation()}
-            {isAuthToValidate?this.approvalButtonContainer():null}
+            {isAuthToValidate && currentStatus==="pending"?this.approvalButtonContainer():null}
                 <LoadingView isLoading={isLoading}/>
                 <Snackbar open={backErr}
-                            autoHideDuration={3000} 
+                            autoHideDuration={1000} 
                             onClose={this.handleClose} 
                             anchorOrigin={{vertical:"top",horizontal:"right"}} 
                             >

@@ -1347,10 +1347,10 @@ export class ApplicationPreview2 extends Component{
             editMenuOpen
         }=this.state
         return(
-            <div style={{display:'flex',flexDirection:"column",width:'90%', border:'1px solid red',marginTop:'20px', padding:'15px'}}>
+            <div style={{display:'flex',flexDirection:"column",width:'90%', boxShadow:"0px 0px 12px 0px silver",marginTop:'20px', padding:'15px'}}>
                 <h1 style={{textAlign:'center'}}>Application Preview</h1>
 {/* student basic Information */}
-                <div style={{display:'flex',flexWrap:'wrap', marginTop:'30px'}}>
+                <div style={{display:'flex',flexWrap:'wrap', marginTop:'30px',padding:'0px 0 0 50px',}}>
                     <p style={{width:'50%',marginTop:'10px', fontWeight:'bold'}}>Student Name : {studentName}</p>
                     <p style={{width:'50%',marginTop:'10px', fontWeight:'bold'}}>Father Name : {dependentName}</p>
                     <p style={{width:'50%',marginTop:'10px', fontWeight:'bold'}}>Degree Type : {progTypeName}</p>
@@ -1363,8 +1363,8 @@ export class ApplicationPreview2 extends Component{
                     <p style={{width:'50%',marginTop:'10px', fontWeight:'bold'}}>Study Type : {studyType==0?" Regular Student":" Private student"}</p>
                     <p style={{width:'50%',marginTop:'10px', fontWeight:'bold'}}>Applying For higher Education : {higherEducation==0?" Yes":' No'}</p>
                 </div>
-                <p style={{marginTop:'50px'}}>Address</p>
-                <div style={{display:'flex',flexDirection:'column',marginTop:'10px'}}>
+                <p style={{marginTop:'50px',padding:'0 0 0 50px',}}>Address</p>
+                <div style={{display:'flex',flexDirection:'column',marginTop:'10px',padding:'0 0 0 50px',}}>
                     <p style={{width:'50%',marginTop:'5px', fontWeight:'bold'}}>{dependentOf} {dependentName}</p>
                     <p style={{width:'50%',marginTop:'5px', fontWeight:'bold'}}>{street}</p>
                     <p style={{width:'50%',marginTop:'5px', fontWeight:'bold'}}>{village}</p>
@@ -1399,7 +1399,7 @@ export class ApplicationPreview2 extends Component{
                         <MenuItem id="requestForm" onClick={this.editRf}>Request Form</MenuItem>
                         <MenuItem id="cmm" onClick={this.editCmm}>CMM</MenuItem>
                     </Menu>
-                    <Button>Proceed</Button>
+                    <Button className='muiButton' onClick={this.proceed}>Proceed</Button>
                 </div>
                 
             </div>

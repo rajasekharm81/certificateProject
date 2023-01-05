@@ -165,7 +165,6 @@ class Odrequest extends Component{
     }
 
     getDistricts=async()=>{
-        this.setState({isLoading:true})
          const {state}=this.state
         try{
             const token = Cookies.get("authToken")
@@ -313,7 +312,6 @@ class Odrequest extends Component{
 
     basicCalls=()=>{
         this.getProgramsOnlyForGetStudentData()
-        this.getDistricts()
         this.setState({isLocked:true})
     }
 
@@ -379,7 +377,7 @@ class Odrequest extends Component{
         const cmm = Degrees.map((each)=>{
             const temp = ''
             if(each.program_id===degree){
-                this.setState({cmmType:each.cmm_type,isLoading:false})
+                this.setState({cmmType:each.cmm_type,isLoading:false},this.getDistricts)
             }
         })
         
@@ -988,8 +986,8 @@ class Odrequest extends Component{
                 </FormControl>
             </form>
             <Button className="muiButton" type='submit' onClick={this.onContinue} style={{margin:"50px 0 10px 0"}} variant="contained" size="medium">Save and Continue</Button>
-            <Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>
-            {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields and check Higher Education section</p>:<p style={{margin:"0 0 30px 0"}}></p>}
+            {/* <Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button> */}
+            {errorExists?<p style={{margin:"0 0 30px 0"}}>Please fill all the Fields</p>:<p style={{margin:"0 0 30px 0"}}></p>}
                 </>)
             case "cmm":
                 return this.cmmForm()

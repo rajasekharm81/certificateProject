@@ -529,7 +529,7 @@ class SignUpFrom extends Component{
                             <Button className="muiButton" onClick={this.reset} variant="contained" color="reset">Reset</Button>
                             <Button className="muiButton" onClick={this.onSubmit} variant="contained" color="success">Register</Button>
                         </div>
-                            <Button className="muiButton" color="lableText" style={{fontSize:"14px",fontWeight:'bold'}} onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button>
+                            {/* <Button className="muiButton" color="lableText" style={{fontSize:"14px",fontWeight:'bold'}} onClick={()=>this.setState({alreadyRegistered:true})}>Registered User??? Click me to sign in</Button> */}
                         </Box>
             )
         }

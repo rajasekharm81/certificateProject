@@ -29,7 +29,7 @@ class LandingPage extends React.Component{
               </div>
               <div style={{display:'flex', justifyContent:'center',flexDirection:"column",height:'100vh', width:'90vw'}}>
                 <h1  style={{color:'#377EF9',padding:'10px'}}>Welcome</h1>
-                <h1 style={{fontSize:'28px',padding:'10px'}}>ANU CDE e-Services</h1>
+                <h1 style={{fontSize:'28px',padding:'10px'}}>ANU e-Services</h1>
                 <Button className="muiButton" onClick={()=>this.setState({signUp:true})} endIcon={<AiOutlineArrowRight style={{fontSize:'22px',color:'white'}}/>} variant='contained' color="approve" style={{fontSize:'16px',fontWeight:'bolder',alignSelf:"flex-start",padding:'10px',margin:'10px'}}>Registration</Button>
                 
               </div>

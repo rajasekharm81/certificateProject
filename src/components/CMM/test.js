@@ -1,5 +1,5 @@
 import {Component} from 'react'
-import {Button,Snackbar,Alert} from '@mui/material';
+import {Button,Snackbar,Alert,IconButton} from '@mui/material';
 import "./test.css"
 
 import LoadingView from '../loadingView';
@@ -7,6 +7,7 @@ import LoadingView from '../loadingView';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 
+import {MdOutlineArrowBackIos} from "react-icons/md"
 
 const tableHeadings = ["Month & Year",1,2,3,4,5,6,7,8,9,'I',"II",'III','IV','V','VI','Sessionals',"Total Marks", "Max Marks"]
 const CmmType1yearBtnData = [{id:1,year:"First Year"},{id:2,year:"Second Year"},{id:3,year:"Third Year"},{id:4,year:"Fourth Year"},]
@@ -80,14 +81,21 @@ export class CmmType1 extends Component{
             </div>
         )
     }
+
     backButton=()=>{
         this.setState((prevState)=>({yearDisplay:prevState.yearDisplay-1}))
     }
-
     FrontButton=async()=>{
+        const {yearDisplay}=this.state
         try{
         await this.uploadData()
-        this.setState((prevState)=>({yearDisplay:prevState.yearDisplay+1}))
+        if(yearDisplay<=3){
+            this.setState((prevState)=>({yearDisplay:prevState.yearDisplay+1}))
+        }
+        if(yearDisplay===4){
+            this.updateMainStatus()
+        }
+        
         }catch(e){
             console.log(e)
         }
@@ -356,7 +364,7 @@ export class CmmType1 extends Component{
             
                             {previewView?null:<Button className="muiButton" style={{marginTop:'10px'}} onClick={this.addRowInFirstYearMarks}>Add row</Button>}
                         </table>
-                    {this.saveAndSubmitBtnComponent()}
+                    {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -382,9 +390,9 @@ export class CmmType1 extends Component{
                             </tr>
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y2.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
-                           {previewView?null:<button className="muiButton" onClick={this.addRowInSecondYearMarks}>Add row</button>}
+                           {previewView?null:<Button className="muiButton" onClick={this.addRowInSecondYearMarks}>Add Row</Button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -411,9 +419,9 @@ export class CmmType1 extends Component{
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y3.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
             
-                            {previewView?null:<button className="muiButton" onClick={this.addRowInThirdYearMarks}>Addrow</button>}
+                            {previewView?null:<Button className="muiButton" onClick={this.addRowInThirdYearMarks}>Add Row</Button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -440,9 +448,9 @@ export class CmmType1 extends Component{
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y4.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
             
-                           {previewView?null:<button className="muiButton" onClick={this.addRowInFourthYearMarks}>Addrow</button>}
+                           {previewView?null:<Button className="muiButton" onClick={this.addRowInFourthYearMarks}>Add Row</Button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -470,17 +478,21 @@ export class CmmType1 extends Component{
     }
 
     render(){    
-        const{isLoading,backErr,backErrMsg,severity}=this.state
-        const {previewView}=this.props
+        const{isLoading,backErr,backErrMsg,severity,yearDisplay}=this.state
+        // const {previewView}=this.props
             return(
-                <div style={{display:'flex',justifyContent:"flex-starts",backgroundColor:"#d9edfd73", overflow:'auto',flexDirection:'column'}}>
+                <div style={{display:'flex',marignLeft:'20px',maxWidth:'95%', justifyContent:"flex-start",backgroundColor:"#d9edfd73", overflow:'auto',flexDirection:'column'}}>
                     {this.screenDisplayer()}
                     {/* {this.yearBtnData()} */}
-                    <div>
-                        <Button onClick={()=>this.backButton()}>Back Button</Button>
-                        <Button onClick={()=>this.FrontButton()}>Front Button</Button>
+                    <div style={{display:'flex',widht:'80%', justifyContent:'center', alignContent:"center",marginBottom:"30px"}}>
+                        <IconButton aria-label="upload picture" style={{backgroundColor:'#d9edfd73'}} component="label">
+                            <input hidden type="button" onClick={this.backButton} />
+                            <MdOutlineArrowBackIos />
+                        </IconButton>
+                        <Button disabled={yearDisplay===1} onClick={this.backButton}>Back</Button>
+                        <Button variant="contained" size='small' onClick={this.FrontButton}>Save and Continue</Button>
                     </div>
-                    {previewView?null:<Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>}
+                    {/* {previewView?null:<Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>} */}
                     <Snackbar open={backErr}
                         autoHideDuration={6000} 
                         onClose={this.handleClose} 
@@ -495,7 +507,6 @@ export class CmmType1 extends Component{
             ) 
     }
     }
-
 
 export class CmmType2 extends Component{
     state={y1:[],
@@ -553,6 +564,27 @@ export class CmmType2 extends Component{
                 {CmmType2yearBtnData.map((each)=><Button className="muiButton" color={each.id==yearDisplay?"secondary":"primary"} variant='contained' id={each.id} onClick={(event)=>this.setState({yearDisplay:Number(event.target.id)})}>{each.year}</Button>)}
             </div>
         )
+    }
+
+
+    backButton=()=>{
+        this.setState((prevState)=>({yearDisplay:prevState.yearDisplay-1}))
+    }
+
+    FrontButton=async()=>{
+        const {yearDisplay}=this.state
+        try{
+        await this.uploadData()
+        if(yearDisplay<=2){
+            this.setState((prevState)=>({yearDisplay:prevState.yearDisplay+1}))
+        }
+        if(yearDisplay===3){
+            this.updateMainStatus()
+        }
+        
+        }catch(e){
+            console.log(e)
+        }
     }
 
     // request form status updating component
@@ -777,9 +809,9 @@ export class CmmType2 extends Component{
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y1.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
             
-                            {previewView?null:<button className="muiButton" onClick={this.addRowInFirstYearMarks}>Add row</button>}
+                            {previewView?null:<Button className="muiButton" onClick={this.addRowInFirstYearMarks}>Add Row</Button>}
                         </table>
-                    {this.saveAndSubmitBtnComponent()}
+                    {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -804,9 +836,9 @@ export class CmmType2 extends Component{
                             </tr>
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y2.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
-                           {previewView?null:<button className="muiButton" onClick={this.addRowInSecondYearMarks}>Add row</button>}
+                           {previewView?null:<Button className="muiButton" onClick={this.addRowInSecondYearMarks}>Add row</Button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -832,9 +864,9 @@ export class CmmType2 extends Component{
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y3.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
             
-                            {previewView?null:<button className="muiButton" onClick={this.addRowInThirdYearMarks}>Addrow</button>}
+                            {previewView?null:<Button className="muiButton" onClick={this.addRowInThirdYearMarks}>Add Row</Button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -856,14 +888,20 @@ export class CmmType2 extends Component{
     }
 
     render(){
-         const{isLoading,backErr,backErrMsg,severity,y1}=this.state 
-         const {previewView}=this.props  
-         console.log(y1) 
+         const{isLoading,backErr,backErrMsg,severity,yearDisplay}=this.state 
             return(
                <div style={{display:'flex',justifyContent:"flex-starts",backgroundColor:"#d9edfd73", overflow:'auto',flexDirection:'column'}}>
                     {this.screenDisplayer()}
-                     {this.yearBtnData()}
-                     {previewView?null:<Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>}
+                     {/* {this.yearBtnData()} */}
+                     {/* {previewView?null:<Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>} */}
+                    <div style={{display:'flex',widht:'80%', justifyContent:'center', alignContent:"center",marginBottom:"30px"}}>
+                        <IconButton aria-label="upload picture" style={{backgroundColor:'#d9edfd73'}} component="label">
+                            <input hidden type="button" onClick={this.backButton} />
+                            <MdOutlineArrowBackIos />
+                        </IconButton>
+                        <Button disabled={yearDisplay===1} onClick={this.backButton}>Back</Button>
+                        <Button variant="contained" size='small' onClick={this.FrontButton}>Save and Continue</Button>
+                    </div>
                     <Snackbar open={backErr}
                         autoHideDuration={6000} 
                         onClose={this.handleClose} 
@@ -878,7 +916,6 @@ export class CmmType2 extends Component{
             ) 
         }
     }
-
 
 export class CmmType3 extends Component{
     state={y1:[],
@@ -939,6 +976,26 @@ export class CmmType3 extends Component{
                 {CmmType1yearBtnData.map((each)=><Button className="muiButton" color={each.id==yearDisplay?"secondary":"primary"} variant='contained' id={each.id} onClick={(event)=>this.setState({yearDisplay:Number(event.target.id)})}>{each.year}</Button>)}
             </div>
         )
+    }
+
+    
+    backButton=()=>{
+        this.setState((prevState)=>({yearDisplay:prevState.yearDisplay-1}))
+    }
+    FrontButton=async()=>{
+        const {yearDisplay}=this.state
+        try{
+        await this.uploadData()
+        if(yearDisplay<=3){
+            this.setState((prevState)=>({yearDisplay:prevState.yearDisplay+1}))
+        }
+        if(yearDisplay===4){
+            this.updateMainStatus()
+        }
+        
+        }catch(e){
+            console.log(e)
+        }
     }
 
     // request form status updating component
@@ -1206,9 +1263,9 @@ export class CmmType3 extends Component{
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y1.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
             
-                            {previewView?null:<button className="muiButton" onClick={this.addRowInFirstYearMarks}>Add row</button>}
+                            {previewView?null:<Button className="muiButton" onClick={this.addRowInFirstYearMarks}>Add Row</Button>}
                         </table>
-                    {this.saveAndSubmitBtnComponent()}
+                    {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -1233,9 +1290,9 @@ export class CmmType3 extends Component{
                             </tr>
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y2.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
-                            {previewView?null:<button className="muiButton" onClick={this.addRowInSecondYearMarks}>Add row</button>}
+                            {previewView?null:<Button className="muiButton" onClick={this.addRowInSecondYearMarks}>Add Row</Button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -1261,9 +1318,9 @@ export class CmmType3 extends Component{
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y3.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
             
-                            {previewView?null:<button className="muiButton" onClick={this.addRowInThirdYearMarks}>Addrow</button>}
+                            {previewView?null:<button className="muiButton" onClick={this.addRowInThirdYearMarks}>Add Row</button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -1289,9 +1346,9 @@ export class CmmType3 extends Component{
                                 {/* eslint-disable-next-line eqeqeq */}
                                 {y4.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled={previewView} id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
             
-                           {previewView?null:<button className="muiButton" onClick={this.addRowInFourthYearMarks}>Addrow</button>}
+                           {previewView?null:<Button className="muiButton" onClick={this.addRowInFourthYearMarks}>Add Row</Button>}
                         </table>
-                        {this.saveAndSubmitBtnComponent()}
+                        {/* {this.saveAndSubmitBtnComponent()} */}
                 </div>
             </div>
             )
@@ -1315,13 +1372,20 @@ export class CmmType3 extends Component{
     }
 
     render(){ 
-        const{isLoading,backErr,backErrMsg,severity}=this.state
-        const {previewView}=this.props 
+        const{isLoading,backErr,backErrMsg,severity,yearDisplay}=this.state
             return(
                 <div style={{display:'flex',justifyContent:"flex-starts",backgroundColor:"#d9edfd73", overflow:'auto',flexDirection:'column'}}>
                     {this.screenDisplayer()}
-                     {this.yearBtnData()}
-                    {previewView?null:<Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>}
+                     {/* {this.yearBtnData()} */}
+                    {/* {previewView?null:<Button className="muiButton" onClick={this.refresh}>REFRESH SCREEN</Button>} */}
+                    <div style={{display:'flex',widht:'80%', justifyContent:'center', alignContent:"center",marginBottom:"30px"}}>
+                        <IconButton aria-label="upload picture" style={{backgroundColor:'#d9edfd73'}} component="label">
+                            <input hidden type="button" onClick={this.backButton} />
+                            <MdOutlineArrowBackIos />
+                        </IconButton>
+                        <Button disabled={yearDisplay===1} onClick={this.backButton}>Back</Button>
+                        <Button variant="contained" size='small' onClick={this.FrontButton}>Save and Continue</Button>
+                    </div>
                     <Snackbar open={backErr}
                         autoHideDuration={6000} 
                         onClose={this.handleClose} 

@@ -18,7 +18,7 @@
     justify-content: space-around;
     align-items: center;
     box-shadow: 0px 0px 10px 0px silver;
-    margin: 10px;
+    margin: auto;
     padding: 50px;
     background-color:white;
     /* opacity: .9; */
@@ -40,18 +40,18 @@
 
 @media print {
     .CertificatesPreviewFormContainer{
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    box-shadow: 0px 0px 10px 0px silver;
-    margin: 10px;
-    padding: 50px;
-    background-color:white;
-    /* opacity: .9; */
-    height: 103vh;
-}
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0px 0px 10px 0px silver;
+        margin: 10px;
+        padding: 50px;
+        background-color:white;
+        /* opacity: .9; */
+        height: 103vh;
+    }
     .printable{
         display: none;
     }
@@ -70,11 +70,10 @@
         flex-direction: column;
         align-items: center;
         width: 40vw;
-        margin:12vh 0 0 0;
+        margin:1vh 0 0 0;
         background-color: #ffffffb9;
         padding: 20px;
         border-radius: 10px;
-        min-height: 50vh;
     }
 }
 

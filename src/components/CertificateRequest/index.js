@@ -16,7 +16,309 @@ import LoadingView from "../loadingView"
 
 import { CmmType1,CmmType2,CmmType3 } from '../CMM/test';
 
+const tableHeadings = ["Month & Year",1,2,3,4,5,6,7,8,9,'I',"II",'III','IV','V','VI','Sessionals',"Total Marks", "Max Marks"]
 
+const DegreeTableHeadings =["Month & Year","1",'2','3','4','5','6','7','8','9','10','11','12','13']
+const thirdDegreeTableHeadings =["Month & Year",'W*','p*','W*','p*','W*','p*','W*','p*','W*','p*','W*','p*','W*','p*','Total']
+
+
+const PgEduAndLawTableHeadings = ["Month & Year","P-1","P-2","P-3","P-4",'P-5','P-6','P-7','P-8','P-9','Pr-1','Pr-2','Pr-3','Pr-4',"Proj/ Viva","Total"]
+const PgEduAndLawBettermentTableHeadings = ["Month & Year","P-1","P-2","P-3","P-4",'P-5','P-6','P-7','P-8','P-9',"Total"]                      
+
+export class CmmPType1 extends Component{
+
+    firstYearMarksForm=()=>{
+        const {y1}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* First Year Marks section */}
+                    
+                    <h1 style={{marginTop:'20px'}}>First Year</h1>        
+                        <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div>
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { tableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y1.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                                </table>
+                </div>
+            </div>
+            )
+    }
+
+    SecondYearMarksForm=()=>{
+        const {y2}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* second Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>Second Year</h1>        
+                        <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div>
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { tableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y2.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    ThirdYearMarksForm=()=>{
+        const {y3}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* Third Year Marks section */}
+                    
+                    <h1 style={{marginTop:'20px'}}>Third Year</h1>        
+                        <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div>
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { tableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y3.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    FourthYearMarksForm=()=>{
+        const {y4}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* Third Year Marks section */}
+                    
+                    <h1 style={{marginTop:'20px'}}>Fourth Year</h1>        
+                        <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div>
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { tableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y4.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    render(){
+        return( <div style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}}>
+                    {this.firstYearMarksForm()}
+                    {this.SecondYearMarksForm()}
+                    {this.ThirdYearMarksForm()}
+                    {this.FourthYearMarksForm()}
+                </div>
+    )
+    }
+}
+
+export class CmmPType2 extends Component{
+    
+
+    firstYearMarksForm=()=>{
+        const {y1}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* First Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>First Year</h1>        
+                        <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"173px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Part I</p>
+                            <p style={{minWidth:"612px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Part II</p>
+                        </div>
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { DegreeTableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y1.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    SecondYearMarksForm=()=>{
+        const {y2}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer' >
+    {/* second Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>Second Year</h1>        
+                        <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"173px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Part I</p>
+                            <p style={{minWidth:"612px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Part II</p>
+                        </div>
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { DegreeTableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y2.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    ThirdYearMarksForm=()=>{
+        const {y3}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* Third Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>Third Year</h1>        
+                        {/* <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div> */}
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { thirdDegreeTableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y3.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+
+    render(){
+        return( <div style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}}>
+                    {this.firstYearMarksForm()}
+                    {this.SecondYearMarksForm()}
+                    {this.ThirdYearMarksForm()}
+                </div>
+    )
+    }
+}
+
+export class CmmPType3 extends Component{
+    firstYearMarksForm=()=>{
+        const {y1}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* First Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>First Year</h1>        
+                        {/* <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div> */}
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { PgEduAndLawTableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y1.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    SecondYearMarksForm=()=>{
+        const {y2}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* second Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>Second Year</h1>        
+                        {/* <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div> */}
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { PgEduAndLawTableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y2.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                    </table>
+                </div>
+            </div>
+            )
+    }
+
+    ThirdYearMarksForm=()=>{
+        const {y3}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* Third Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>Third Year</h1>        
+                        {/* <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div> */}
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { PgEduAndLawTableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y3.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    FourthYearMarksForm=()=>{
+        const {y4}=this.props
+        return(
+            <div className='mainContainer'>
+                <div className='marksContainer'>
+    {/* Fourth Year Marks section */}
+                    <h1 style={{marginTop:'20px'}}>Betterment</h1>        
+                        {/* <div style={{display:"flex",marginLeft:"163px"}}>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver", padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Theory</p>
+                            <p style={{minWidth:"552px",margin:"0px",height:"25px",border:"2px solid silver",padding:"10px 0 0 10px",textAlign:"center",fontWeight:"bolder"}}>Practicals & Projects</p>
+                        </div> */}
+                        <table style={{margin:"0 0 0px 0"}}>
+                            <tr >
+                            { PgEduAndLawBettermentTableHeadings.map((each)=><th style={{border:"1px solid black",maxWidth:'53px',overflow:"auto"}} id={`1st${each}`}>{each}</th>)}
+                            </tr>
+                                {/* eslint-disable-next-line eqeqeq */}
+                                {y4.map((each)=><tr>{each.marks.map((m,index)=><td><input disabled id={m.id} onChange={this.updateMarks} type={index==0?"month":"number"} className='cell' style={index=="0"? {width:"150px",border:"1px solid silver",backgroundColor:"white",padding:"2px"}:{width:"53px",backgroundColor:"white",border:"1px solid silver",padding:"2px"}} value={m.value}/></td>)}</tr>)}
+                        </table>
+                </div>
+            </div>
+            )
+    }
+
+    render(){
+        return( <div style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}}>
+                    {this.firstYearMarksForm()}
+                    {this.SecondYearMarksForm()}
+                    {this.ThirdYearMarksForm()}
+                    {this.FourthYearMarksForm()}
+                </div>
+    )
+    }  
+}
 
 class CeritificateRequest extends Component{
     state={
@@ -90,13 +392,18 @@ class CeritificateRequest extends Component{
         severity:"error",
         isLoading:false,
 // payment
-        proceedForPayment:false,             
+        proceedForPayment:false,   
         confirmToPay:false,
         noOfCopies:1,
         isTatkal:0,
         receivedPaymentDetails:true,       
         paymentDetails:{certificate_fee:0,payment_link:'',processing_fee:0,total_payable:0},
         redirectToPaymentPage:false,
+// Marks
+        y1:[],
+        y2:[],
+        y3:[],
+        y4:[]
     }
 
     componentDidMount(){
@@ -130,6 +437,29 @@ class CeritificateRequest extends Component{
         this.setState({copiesSelect:temp})
     }
 
+    getMarks=async()=>{
+        const token = Cookies.get("authToken")
+        try{
+            const options = {
+            url:`${process.env.REACT_APP_BASEURL}certificate/get-cmm-details/`,
+            method:"POST",
+            headers:{
+                "Authorization":`Bearer ${token}`,
+                "Accept":"application/json"
+            }
+        }
+        const Marks = await axios(options)
+           if(Marks.data.marks.length===4){
+                this.setState({ y1:Marks.data.marks[0],
+                                y2:Marks.data.marks[1],
+                                y3:Marks.data.marks[2],
+                                y4:Marks.data.marks[3],
+                        })
+           }
+        }catch(e){
+            this.setState({backErr:true,backErrMsg:'New User',severity:'success'})
+        }
+    }
 
     getStudentData=async()=>{
         const token = Cookies.get("authToken")
@@ -230,7 +560,7 @@ class CeritificateRequest extends Component{
         const {progId,Degrees}=this.state
         const cmmt = Degrees.filter((each)=>(each.program_id==progId))
         if(cmmt[0]!==undefined){
-            this.setState({cmmtype:cmmt[0].cmm_type})
+            this.setState({cmmtype:cmmt[0].cmm_type},this.getMarks)
         }
         
 
@@ -359,73 +689,6 @@ class CeritificateRequest extends Component{
         }
         
     }
-
-    // getPrograms=async()=>{
-    // this.setState({isLoading:true})
-    // try{
-    //     const token = Cookies.get("authToken")
-    //     const {is_ug}=this.state
-    //     const options = {
-    //         url:`${process.env.REACT_APP_BASEURL}list/programs/?course_category_id=${is_ug}`,
-    //         method:"GET",
-    //         headers:{
-    //              'Authorization': `Bearer ${token}`,
-    //         }
-    //     }
-    //     const Degrees = await axios(options)
-    //     this.setState({Degrees:Degrees.data.data,isLoading:false})
-    //     }catch(e){
-    //         if(e.message==="Network Error"){
-    //              this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
-    //         }
-    //        if(e.response.status===401){
-    //         this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
-    //             setTimeout(() => {
-    //             Cookies.remove("authToken")
-    //             window.location.reload()
-    //             }, 3000);
-    //        }if(e.response.status===422){
-    //         this.setState({backErrMsg:e.message,severity:'error',isLoading:false})
-    //        }else{
-    //         this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
-    //        }
-    //     }
-        
-    // }
-
-    // getBranchs=async()=>{
-    //      this.setState({isLoading:true})
-    //     try{
-    //     const token = Cookies.get("authToken")
-    //     const {progId}=this.state
-    
-    //     const options = {
-    //         url:`${process.env.REACT_APP_BASEURL}list/program-categories/?program_id=${progId}`,
-    //         method:"GET",
-    //         headers:{
-    //              'Authorization': `Bearer ${token}`,
-    //         }
-    //     }
-    //     const Branchs = await axios(options)
-    //     this.setState({Branchs:Branchs.data.data,isLoading:false})
-    //     }catch(e){
-    //         if(e.message==="Network Error"){
-    //              this.setState({backErr:true,backErrMsg:"No Internet Connection...",severity:'error',isLoading:false})
-    //         }
-    //        if(e.response.status===401){
-    //         this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
-    //             setTimeout(() => {
-    //             Cookies.remove("authToken")
-    //             window.location.reload()
-    //             }, 3000);
-    //        }if(e.response.status===422){
-    //         this.setState({backErrMsg:e.message,severity:'error',isLoading:false})
-    //        }else{
-    //         this.setState({backErr:true,backErrMsg:e.message,severity:'error',isLoading:false})
-    //        }
-    //     }
-        
-    // }
 
     previewValidator=()=>{
         const { studentName,
@@ -636,6 +899,20 @@ class CeritificateRequest extends Component{
         }
     }
 
+    cmmPreview=()=>{
+        const{cmmtype,y1,y2,y3,y4}=this.state
+        switch(cmmtype){
+            case 1:
+                return <CmmPType1 y1={y1} y2={y2} y3={y3} y4={y4}/>
+            case 2:
+                return <CmmPType2 y1={y1} y2={y2} y3={y3}/>
+            case 3:
+                return <CmmPType3 y1={y1} y2={y2} y3={y3} y4={y4}/>
+            default:
+                return null
+        }
+    }
+
     updateCertificateId=(event)=>{
         if(event.target.value==2){
             this.setState({certificate_id:event.target.value,disablePreview:true})
@@ -830,7 +1107,7 @@ class CeritificateRequest extends Component{
                                     <p>Ex: 2019-2022</p>
                                 </Grid>
 {/* Stydying status */}
-                                <Grid item xs={2.1}>
+                                <Grid item xs={2.9}>
                                      <FormControl>
                                         <FormLabel id="demo-row-radio-buttons-group-label">Course Status</FormLabel>
                                         <RadioGroup
@@ -847,10 +1124,10 @@ class CeritificateRequest extends Component{
                                     </FormControl>
                                 </Grid> 
 {/* courseCompleted Month year */}
-                                {isStillStudying==0?null:<Grid item xs={3.4}>
+                                {isStillStudying==0?null:<Grid item xs={2.6}>
                                     <label>Degree Completed Month & year</label>
                                     <CssTextField   size='small' 
-                                                    style={{width:'100%'}}
+                                                    style={{width:'100%',marginTop:'5px'}}
                                                     value={degreeCompletionMonthYear}
                                                     onChange={(event)=>this.setState({degreeCompletionMonthYear:event.target.value.toUpperCase()})}
                                                     error={degreeCompletionMonthYearErr}
@@ -1197,15 +1474,15 @@ class CeritificateRequest extends Component{
                     <p style={{textAlign:"left", width:"100%"}}>{studentName}</p>
                     <p style={{textAlign:"left", width:"100%"}}>{hallticketNumber}</p>
                 </div>
-                <div className="printable">
-                    <Button className="muiButton" style={{marginRight:'10px'}} variant="contained" onClick={()=>this.setState({verified:false})}>Edit</Button>
-                    <Button className="muiButton" style={{marginRight:'10px'}} variant="contained" onClick={this.save}>Save</Button>
-                    <ReactToPrint trigger={()=><Button className="muiButton" style={{marginRight:'10px'}} variant="contained">Print</Button>} content={() => this.componentRef}/>
-                </div>
             </Box>
             {certificate_id==2?<Box style={{backgroundColor:'white', padding:'15px'}}>
-                {this.cmmDisplayer()}
+                {this.cmmPreview()}
             </Box>:null}
+                <div style={{display:"flex",width:'100%',flexDirection:'row', justifyContent:'center',alignItems:'center' ,backgroundColor:'white', padding:'15px'}} className="printable">
+                    <Button className="muiButton" style={{marginRight:'10px'}} variant="contained" onClick={()=>this.setState({verified:false})}>Edit</Button>
+                    <Button className="muiButton" style={{marginRight:'10px'}} variant="contained" onClick={this.save}>Save</Button>
+                    {/* <ReactToPrint trigger={()=><Button className="muiButton" style={{marginRight:'10px'}} variant="contained">Print</Button>} content={() => this.componentRef}/> */}
+                </div>
              </>
             ) 
     }
@@ -1269,34 +1546,37 @@ class CeritificateRequest extends Component{
 
         return(
             <div className='certificatePaymentContainer'>
+                <div style={{position:'absolute', top:0}}>
+                    <img style={{height:"150px"}} src={logopng} alt="headerLogo"/>
+                </div>
                 <h1 style={{marginBottom:'30px', fontSize:'24px'}}>Payment</h1>
-                <Grid container spacing={3}>
+                <Grid container spacing={1.5}>
                     <Grid item xs={6}>
-                        <label style={{fontSize:'16px'}}>Student Name</label>
-                        <Paper style={{height:'20px', padding:'15px',fontSize:'18px',marginTop:'5px'}}>{studentName}</Paper>
+                        <label style={{fontSize:'15px'}}>Student Name</label>
+                        <Paper style={{height:'10px', padding:'10px',fontSize:'15px',marginTop:'3px'}}>{studentName}</Paper>
                     </Grid>
                     <Grid item xs={6}>
-                        <label style={{fontSize:'16px'}}>Hall Ticket Number</label>
-                        <Paper style={{height:'20px', padding:'15px',fontSize:'18px',marginTop:'5px'}}>{hallticketNumber}</Paper>
+                        <label style={{fontSize:'15px'}}>Hall Ticket Number</label>
+                        <Paper style={{height:'10px', padding:'10px',fontSize:'15px',marginTop:'3px'}}>{hallticketNumber}</Paper>
                     </Grid> 
                     <Grid item xs={6}>
-                        <label style={{fontSize:'16px'}}>Certificate Name</label>
-                        <Paper style={{height:'20px', padding:'15px',fontSize:'18px',marginTop:'5px'}}>{certificateName}</Paper>
+                        <label style={{fontSize:'15px'}}>Certificate Name</label>
+                        <Paper style={{height:'10px', padding:'10px',fontSize:'15px',marginTop:'3px'}}>{certificateName}</Paper>
                     </Grid> 
                     <Grid item xs={6}>
-                        <label style={{fontSize:'16px'}}>Degree</label>
-                        <Paper style={{height:'20px', padding:'15px',fontSize:'18px',marginTop:'5px'}}>{DegreeName}</Paper>
+                        <label style={{fontSize:'15px'}}>Degree</label>
+                        <Paper style={{height:'10px', padding:'10px',fontSize:'15px',marginTop:'3px'}}>{DegreeName}</Paper>
                     </Grid> 
                     <Grid item xs={6}>
-                        <label style={{fontSize:'16px'}}>Branch</label>
-                        <Paper style={{height:'20px', padding:'15px',fontSize:'18px',marginTop:'5px'}}>{BranchName}</Paper>
+                        <label style={{fontSize:'15px'}}>Branch</label>
+                        <Paper style={{height:'10px', padding:'10px',fontSize:'15px',marginTop:'3px'}}>{BranchName}</Paper>
                     </Grid> 
                     <Grid item xs={6}>
-                        <label style={{fontSize:'16px'}}>College Name</label>
-                        <Paper style={{height:'20px', padding:'15px',fontSize:'18px',marginTop:'5px'}}>{collegeName}</Paper>
+                        <label style={{fontSize:'15px'}}>College Name</label>
+                        <Paper style={{height:'10px', padding:'10px',fontSize:'15px',marginTop:'3px'}}>{collegeName}</Paper>
                     </Grid>
                     <Grid item xs={6}>
-                        <label style={{fontSize:'16px',marginBottom:'20px'}}>Application Type</label>
+                        <label style={{fontSize:'16px',marginBottom:'10px'}}>Application Type</label>
                         <FormControl style={{marginTop:'10px'}}>
                             <RadioGroup
                                 row
@@ -1312,7 +1592,7 @@ class CeritificateRequest extends Component{
                     </Grid> 
                     {certificate_id==3?<Grid item xs={6}>
                         <label style={{fontSize:'16px'}}>No of Copies</label>
-                        <Paper style={{height:'20px', padding:'15px',fontSize:'18px',marginTop:'5px'}}>
+                        <Paper style={{height:'10px', padding:'10px',fontSize:'15px',marginTop:'3px'}}>
                                 <CssSelect
                                     value={noOfCopies}
                                     size='small'
@@ -1320,28 +1600,27 @@ class CeritificateRequest extends Component{
                                     >
                                     {copiesSelect.map((each)=><MenuItem value={each}>{each}</MenuItem>)}
                                 </CssSelect>
-
                         </Paper>
                     </Grid>:null}
                 </Grid>
-                {receivedPaymentDetails?<Grid container spacing={3}>
+                {receivedPaymentDetails?<Grid container spacing={1}>
                     <Grid item xs={12}>
-                        <div style={{display:'flex',alignItems:'center',padding:'20px'}}>
-                            <h1>Certificate Fees : </h1>
+                        <div style={{display:'flex' ,alignItems:'center',padding:'10px'}}>
+                            <h1 style={{fontSize:'15px'}}>Certificate Fees : </h1>
                             <Paper style={{width:'20%',padding:"5px 0 5px 5px",margin:'0 0 0 5px',fontWeight:'bolder'}}>{paymentDetails.certificate_fee}</Paper>
                         </div>
-                        <div style={{display:'flex',alignItems:'center',padding:'20px'}}>
-                            <h1>Processing Fees: </h1>
+                        <div style={{display:'flex' ,alignItems:'center',padding:'10px'}}>
+                            <h1 style={{fontSize:'15px'}}>Processing Fees: </h1>
                             <Paper style={{width:'20%',padding:"5px 0 5px 5px",margin:'0 0 0 5px',fontWeight:'bolder'}}>{paymentDetails.processing_fee}</Paper>
                         </div>
                         <hr style={{width:'80%'}}/>
-                        <div style={{display:'flex',alignItems:'center',padding:'20px'}}>
-                            <h1>Total Payable  &nbsp;&nbsp;&nbsp;: </h1>
+                        <div style={{display:'flex' ,alignItems:'center',padding:'10px'}}>
+                            <h1 style={{fontSize:'15px'}}>Total Payable  &nbsp;&nbsp;&nbsp;: </h1>
                             <Paper style={{width:'20%',padding:"5px 0 5px 5px",margin:'0 0 0 5px',fontWeight:'bolder'}}>{paymentDetails.total_payable}</Paper>
                         </div>
                     </Grid>
                 </Grid>:null}
-                <div style={{marginTop:'30px',border:'1px solid red'}}>
+                <div style={{marginTop:'30px'}}>
                     {confirmToPay?<Button className="muiButton" onClick={()=>this.setState({redirectToPaymentPage:true})} variant='contained'>Proceed To Pay</Button>:<Button className="muiButton" variant='contained' onClick={this.getPaymentUrl}>Get Fee Details</Button>}
                 </div>
             </div>

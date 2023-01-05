@@ -225,7 +225,7 @@ class VerificationDashBoard extends Component{
 
 // body display controller
     renderBodyContent=()=>{
-        const {activeID,selectedApplicationId,appliedFor,certificateId,createdDate}=this.state
+        const {activeID,selectedApplicationId,appliedFor,certificateId,createdDate,getByStatus}=this.state
         switch(activeID){
             case "verifyDash":
                 return this.dashBoardView()
@@ -233,8 +233,8 @@ class VerificationDashBoard extends Component{
                 return this.applicationsView()
             case "applicationView":
                 if(certificateId===1){
-                    return <OdApplicationPreview reload={this.refresh} certificateName={appliedFor} id={selectedApplicationId}/>
-                } return <ApplicationRequest2 reload={this.refresh} certificateName={appliedFor} id={selectedApplicationId} date={createdDate}/>
+                    return <OdApplicationPreview reload={this.refresh} currentStatus={getByStatus} certificateName={appliedFor} id={selectedApplicationId}/>
+                } return <ApplicationRequest2 reload={this.refresh} currentStatus={getByStatus} certificateName={appliedFor} id={selectedApplicationId} date={createdDate}/>
             default:
                 return null;
         }
@@ -275,7 +275,7 @@ class VerificationDashBoard extends Component{
                         size="large" 
                         id='verifyDash' 
                         className={activeID==="verifyDash"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"} 
-                        onClick={(event)=>this.setState({activeID:event.target.id})}
+                        onClick={(event)=>this.setState({activeID:event.target.id,isInview:false})}
                         startIcon={<FaChartArea />}>
                         {showSideNav? "Dash Board":""}
                     </Button>
@@ -367,7 +367,6 @@ class VerificationDashBoard extends Component{
                         </TableHead>
                         <TableBody style={{width:'100%'}}>
                         {applicationsList.map((row,index) => (
-                            
                             <StyledTableRow className='rowOnHover' key={row.application_id}>
                                 <StyledTableCell component="th" scope="row">
                                     {index+1+offset}
@@ -377,7 +376,7 @@ class VerificationDashBoard extends Component{
                                 <StyledTableCell align="left">{row.certificate_name}</StyledTableCell>
                                 <StyledTableCell align="left">{row.created_date}</StyledTableCell>
                                 <StyledTableCell align="left">{row.status_message}</StyledTableCell>
-                                {getByStatus==="pending"?<StyledTableCell align="left"><Button className="muiButton" id={row.application_id} date={row.created_date} onClick={this.switchToCheckApplication}><AiOutlineEye id={row.application_id} onClick={this.switchToCheckApplication}/></Button></StyledTableCell>:<p> </p>}
+                                <StyledTableCell align="left"><Button className="muiButton" id={row.application_id} date={row.created_date} onClick={this.switchToCheckApplication}><AiOutlineEye id={row.application_id} onClick={this.switchToCheckApplication}/></Button></StyledTableCell>
                             </StyledTableRow>
                         ))}
                         </TableBody>
@@ -407,7 +406,6 @@ class VerificationDashBoard extends Component{
     profileMenuClose=()=>{
         this.setState({menu:false})
     }
-
     
     render(){
         const{role,menu,validUser,showSideNav,changePasword,isInview,username,profileOptionEl}=this.state
