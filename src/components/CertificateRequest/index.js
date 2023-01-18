@@ -981,6 +981,9 @@ class CeritificateRequest extends Component{
         }=this.state
         return(
             <div className='CertificatesRequestFormContainer'>
+                    <div style={{position:'absolute', top:0,left:"30vw"}}>
+                        <img style={{height:"150px"}} src={logopng} alt="headerLogo"/>
+                    </div>
                     <h1 style={{paddingLeft:"5vw",textAlign:'center', fontSize:'18px',width:'90%'}}>Enter Details for Requesting a Certificate</h1>
                     <Box style={{padding:"20px 0 0 5vw",maxWidth:'100%'}}>
                         <div>
@@ -1006,7 +1009,7 @@ class CeritificateRequest extends Component{
                                         fullWidth
                                         error={certificate_idErr}
                                         size='small'
-                                        style={{border:'.5px solid black'}}
+                                        style={{border:'.5px solid grey'}}
                                     >
                                         {certificateData.map((each)=><MenuItem value={each.certificate_id}>{each.name}</MenuItem>)}
                                     </CssSelect>
@@ -1057,7 +1060,7 @@ class CeritificateRequest extends Component{
                                         fullWidth
                                         error={is_ugErr}
                                         size='small'
-                                        style={{border:'.5px solid black'}}
+                                        style={{border:'.5px solid grey'}}
                                         disabled={isLocked}
                                     >
                                         {courseTypes.map((each)=><MenuItem id={each.course_category_name} value={each.course_category_id}>{each.course_category_name}</MenuItem>)}
@@ -1072,7 +1075,7 @@ class CeritificateRequest extends Component{
                                         fullWidth
                                         error={progIdErr}
                                         size='small'
-                                        style={{border:'.5px solid black'}}
+                                        style={{border:'.5px solid grey'}}
                                         disabled={isLocked}
                                     >
                                       {Degrees.map((each)=><MenuItem cmmT={each} value={each.program_id}>{each.program_name}</MenuItem>)}
@@ -1087,7 +1090,7 @@ class CeritificateRequest extends Component{
                                         error={studentBranchIdErr}
                                         fullWidth
                                         size='small'
-                                        style={{border:'.5px solid black'}}
+                                        style={{border:'.5px solid grey'}}
                                         disabled={isLocked}
                                     >
                                         {Branchs.map((each)=><MenuItem id={each.name} value={each.program_category_id}>{each.name}</MenuItem>)}
@@ -1148,7 +1151,7 @@ class CeritificateRequest extends Component{
                                             onChange={(event)=>this.setState({dependentOf:event.target.value.toUpperCase()})}
                                             error={dependentOfErr}
                                             size='small'
-                                            style={{border:'.5px solid black',width:'15%'}}
+                                            style={{border:'.5px solid grey',width:'15%'}}
                                         >
                                         <MenuItem value="S/O">S/O</MenuItem>
                                         <MenuItem value="D/O">D/O</MenuItem>
@@ -1204,7 +1207,7 @@ class CeritificateRequest extends Component{
                                         fullWidth
                                         error={stateErr}
                                         size='small'
-                                        style={{border:'.5px solid black'}}
+                                        style={{border:'.5px solid grey'}}
                                     >
                                         {stateData.map((each)=><MenuItem key={each.state_id} value={each.state_id}>{each.state_name}</MenuItem>)}
                                     </CssSelect>
@@ -1219,7 +1222,7 @@ class CeritificateRequest extends Component{
                                         fullWidth
                                         error={districtErr}
                                         size='small'
-                                        style={{border:'.5px solid black'}}
+                                        style={{border:'.5px solid grey'}}
                                     >
                                         {districtData.map((each)=>(<MenuItem key={each.district_name} value={each.district_id}>{each.district_name}</MenuItem>))}
                                     </CssSelect>
@@ -1526,7 +1529,6 @@ class CeritificateRequest extends Component{
            }
         }
     }
-
 
     RenderPaymentView=()=>{
         const{ studentName,

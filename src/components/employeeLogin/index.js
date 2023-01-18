@@ -135,6 +135,7 @@ class EmployeeSigninForm extends React.Component{
                   value={enrollNo}
                   error={enrollNoErr}
                   autofill="false"
+                  s
                   fullWidth
                   />
 

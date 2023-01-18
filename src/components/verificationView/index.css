@@ -12,12 +12,13 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-self: flex-start;
     height: 100vh;
+    transition: 0.3s;
 }
 
 .verificationSideNavShort{
-    width: 100px;
+    width: 80px;
     background-color: #FFFFFF;
     opacity: .9;
     display: flex;
@@ -25,6 +26,7 @@
     justify-content: flex-start;
     align-items: flex-start;
     height: 100vh;
+    transition: 0.1s;
 }
 
 .verificationDashContainer{
@@ -35,12 +37,14 @@
 }
 
 .verificationSideNavButton{
-    width: 90%;
+    margin-left:15% !important;
     height: 40px;
-    border: none;
+    width: auto;
+    align-self: flex-start !important;
     border-radius:10px ;
     font-weight: bolder;
     color: #1b1b1b!important;
+
 }
 
 .activeButton{

@@ -1,7 +1,8 @@
 import {Component} from 'react'
 import {FaChartArea} from 'react-icons/fa'
-import {GiHamburgerMenu} from "react-icons/gi"
-import {AiOutlineEye} from "react-icons/ai"
+import {AiOutlineEye,AiOutlineArrowLeft,AiOutlineArrowRight,AiOutlineUserAdd} from "react-icons/ai"
+import {GiByzantinTemple,GiCash} from 'react-icons/gi'
+import {FiLogOut} from 'react-icons/fi'
 import {MdManageAccounts} from 'react-icons/md'
 import {Button,
         Avatar,
@@ -20,6 +21,7 @@ import {Button,
         Menu,
         ListItemIcon
     } from "@mui/material"
+
 import {Logout,Desk} from '@mui/icons-material'
 
 import logopng from "../../assects/logopng.png"
@@ -30,21 +32,25 @@ import { InView } from 'react-intersection-observer';
 
 import axios from 'axios'
 
-import { StyledTableCell,
-        StyledTableRow,CssSelect, CssTextField } from "../customizedComponents"
-// import {FaRegThumbsUp} from "react-icons/fa"
-// import {MdOutlinePendingActions,MdOutlineError} from "react-icons/md"    
-
+import { StyledTableCell,StyledTableRow,CssSelect, CssTextField } from "../customizedComponents"
 import Cookies from "js-cookie"
 
 import "./index.css" 
 import {OdApplicationPreview,ApplicationRequest2} from "../verificationApplicationViewer"
+import {CreateUser} from "../Users"
+import {Colleges} from "../Colleges"
+import {Transactions} from "../Transactions"
 
 const bgColors = ["#5F71E3","#5F71E3","#11CBEF","#1173EF","#F5375B","#F55F37","#1a1a4d","#1a1a4d"]
 
 const tableHeadings=["S.No","Hall Ticket Number","Name","Certificate Name","Applied On","Status","Actions"]
 
 const statusHeadings=[{name:"All",value:""},{name:"Approved",value:"approved"},{name:"Pending",value:"pending"},{name:"Redirected",value:"redirected"},{name:"Rejected",value:"rejected"}]
+
+const Auth_Roles_To_CreateUser = ["SUPERADMIN"]     // includes 1. creating/modifying user, 
+                                                    //          2. creating/modifying new college
+
+const Auth_Roles_CollegeData=["SUPERADMIN","ADMIN"] // includes 1. creating/modifying new college
 
 
 
@@ -86,7 +92,6 @@ class VerificationDashBoard extends Component{
         this.userDetails()
         this.getAllApplications()
         this.applicationsCount()
-        console.log("rendered")
     }
 
 // saving login user details
@@ -222,6 +227,12 @@ class VerificationDashBoard extends Component{
         window.location.reload()
     }
 
+// inviewHandler
+
+    isInview=(inView, entry)=>{
+        this.setState({isInview:inView})
+    }
+
 
 // body display controller
     renderBodyContent=()=>{
@@ -233,8 +244,14 @@ class VerificationDashBoard extends Component{
                 return this.applicationsView()
             case "applicationView":
                 if(certificateId===1){
-                    return <OdApplicationPreview reload={this.refresh} currentStatus={getByStatus} certificateName={appliedFor} id={selectedApplicationId}/>
-                } return <ApplicationRequest2 reload={this.refresh} currentStatus={getByStatus} certificateName={appliedFor} id={selectedApplicationId} date={createdDate}/>
+                    return <OdApplicationPreview inViewHandler={this.isInview} reload={this.refresh} currentStatus={getByStatus} certificateName={appliedFor} id={selectedApplicationId}/>
+                } return <ApplicationRequest2 inViewHandler={this.isInview} reload={this.refresh} currentStatus={getByStatus} certificateName={appliedFor} id={selectedApplicationId} date={createdDate}/>
+            case "Create User":
+                return <CreateUser/>
+            case "Colleges":
+                return <Colleges/>
+            case "Payments":
+                return <Transactions/>
             default:
                 return null;
         }
@@ -247,46 +264,78 @@ class VerificationDashBoard extends Component{
     }
 
     sideNavContainer=()=>{
-        const {activeID,username,showSideNav}=this.state
+        const {activeID,username,showSideNav,role}=this.state
         return(<nav className={showSideNav?'verificationSideNav':'verificationSideNavShort'}>
 {/* top section */} 
                     <div style={{display:"flex" ,
                                  justifyContent:showSideNav?"space-between":"space-around",
-                                 width:showSideNav?"95%":"100px",
+                                 width:showSideNav?"95%":"100%",
                                  alignItems:"center", 
                                  margin:"30px 0 30px 10px",
                                  }}>
                         {showSideNav?<img alt="logo" className='navBarLogo' src='https://anucde.org/assets/img/brand/logo.png'/>:null}
                         <Button className="muiButton" 
                         size="large" 
-                        id='hamburgerMenuExpanded' 
-                        startIcon={<GiHamburgerMenu style={{fontSize:'20px'}} onClick={this.sideNavHandler} />}>
+                        id='hamburgerMenuExpanded'
+                        onClick={this.sideNavHandler} 
+                        startIcon={showSideNav?<AiOutlineArrowLeft style={{fontSize:'20px',zIndex:2,pointerEvents:'none'}} />:<AiOutlineArrowRight style={{fontSize:'20px',pointerEvents:'none'}} />}>
                     </Button>
                     </div>
 {/* profile card section */}
                     <div>
-                        <div className='profileContainer' style={showSideNav?{width:'16vw'}:{width:"100%"}}>
+                        <div className='profileContainer' style={showSideNav?{width:'16vw'}:{width:"60%"}}>
                             <Avatar>{username[0]}</Avatar>
                             {showSideNav?<h1 style={{fontStyle:"auto"}}>{username}</h1>:null}
                         </div> 
                     </div>
 {/* options section */}
-                    <Button 
-                        size="large" 
-                        id='verifyDash' 
-                        className={activeID==="verifyDash"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"} 
-                        onClick={(event)=>this.setState({activeID:event.target.id,isInview:false})}
-                        startIcon={<FaChartArea />}>
-                        {showSideNav? "Dash Board":""}
-                    </Button>
-                    <Button 
-                        size="large" 
-                        id='verifyApplications' 
-                        className={activeID==="verifyApplications"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"}  
-                        onClick={(event)=>this.setState({activeID:event.target.id})}
-                        startIcon={ <Desk/>}>
-                        {showSideNav? "Applications":""}
-                    </Button> 
+                    <div style={{width:'80%',display:'flex',flexDirection:'column',justifyContent:'flex-start',alignItems:'flex-start'}}>
+    {/* Dash Board */}
+                        <Button 
+                            size="large"
+                            id='verifyDash' 
+                            className={activeID==="verifyDash"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"} 
+                            onClick={(event)=>this.setState({activeID:event.target.id,isInview:false})}
+                            startIcon={<FaChartArea id='verifyDash' onClick={(event)=>this.setState({activeID:event.target.id,isInview:false})} />}>
+                            {showSideNav? "Dash Board":""}
+                        </Button>
+    {/* Applications */}
+                        <Button 
+                            size="large" 
+                            id='verifyApplications' 
+                            className={activeID==="verifyApplications"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"}  
+                            onClick={(event)=>this.setState({activeID:event.target.id})}
+                            startIcon={ <Desk id='verifyApplications' onClick={(event)=>this.setState({activeID:event.target.id})}/>}>
+                            {showSideNav? "Applications":""}
+                        </Button> 
+    {/* Users */}
+                        {Auth_Roles_To_CreateUser.includes(role)?<Button 
+                            size="large" 
+                            id='Create User' 
+                            className={activeID==="Create User"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"}  
+                            onClick={(event)=>this.setState({activeID:event.target.id})}
+                            startIcon={ <AiOutlineUserAdd id='Create User' onClick={(event)=>this.setState({activeID:event.target.id})} />}>
+                            {showSideNav? "Users":""}
+                        </Button>:null}
+    {/* Colleges */}
+                        {Auth_Roles_CollegeData.includes(role)?<Button 
+                            size="large" 
+                            id='Colleges' 
+                            className={activeID==="Colleges"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"}  
+                            onClick={(event)=>this.setState({activeID:event.target.id})}
+                            startIcon={ <GiByzantinTemple id='Colleges' onClick={(event)=>this.setState({activeID:event.target.id})} />}>
+                            {showSideNav? "Colleges":""}
+                        </Button>:null}
+    {/* Payments */}
+                        {Auth_Roles_CollegeData.includes(role)?<Button 
+                            size="large" 
+                            id='Payments' 
+                            className={activeID==="Payments"?'verificationSideNavButton activeButton muiButton':"verificationSideNavButton muiButton"}  
+                            onClick={(event)=>this.setState({activeID:event.target.id})}
+                            startIcon={ <GiCash id='Payments' onClick={(event)=>this.setState({activeID:event.target.id})} />}>
+                            {showSideNav? "Payments":""}
+                        </Button>:null}
+                    </div>
                  </nav>)
     }
   
@@ -376,14 +425,14 @@ class VerificationDashBoard extends Component{
                                 <StyledTableCell align="left">{row.certificate_name}</StyledTableCell>
                                 <StyledTableCell align="left">{row.created_date}</StyledTableCell>
                                 <StyledTableCell align="left">{row.status_message}</StyledTableCell>
-                                <StyledTableCell align="left"><Button className="muiButton" id={row.application_id} date={row.created_date} onClick={this.switchToCheckApplication}><AiOutlineEye id={row.application_id} onClick={this.switchToCheckApplication}/></Button></StyledTableCell>
+                                <StyledTableCell align="left"><Button className="muiButton" id={row.application_id} date={row.created_date} onClick={this.switchToCheckApplication}><AiOutlineEye id={row.application_id} style={{pointerEvents:'none'}}/></Button></StyledTableCell>
                             </StyledTableRow>
                         ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
                 <div style={{display:'flex',justifyContent:'center',alignItems:"center",width:'100%'}}>
-                    <InView as="div" onChange={(inView, entry) => this.setState({isInview:inView})}>
+                    <InView as="div" onChange={this.isInview}>
                         <TablePagination
                             component="div"
                             count={applicationsList.length}
@@ -408,7 +457,7 @@ class VerificationDashBoard extends Component{
     }
     
     render(){
-        const{role,menu,validUser,showSideNav,changePasword,isInview,username,profileOptionEl}=this.state
+        const{role,menu,validUser,showSideNav,changePasword,isInview,profileOptionEl}=this.state
         return(
             validUser?<div className='verificationDashMainCont'>
                 {changePasword?<Navigate to="/employee/changePassword"/>:null}
@@ -437,7 +486,7 @@ class VerificationDashBoard extends Component{
                                     aria-haspopup="true"
                                     aria-expanded={menu ? 'true' : undefined}
                                 >
-                                    <Avatar sx={{ width: 32, height: 32 }}>{username[0]}</Avatar>
+                                    <FiLogOut style={{fontSize:'30px'}} />
                                 </IconButton>
                                 </Tooltip>
                         </Box>
@@ -490,15 +539,8 @@ class VerificationDashBoard extends Component{
                                 </MenuItem>
                         </Menu>
                     </div>}
-                    
-
-
-                        
-
-
-
-{/* body Container */}
-                    {this.renderBodyContent()}
+{/* body Container */} 
+                        {this.renderBodyContent()}                    
                 </div>
             </div>:<Navigate to='/employeelogin/'/>
         )

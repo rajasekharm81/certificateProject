@@ -33,6 +33,7 @@
     "react-otp-field": "^3.0.1",
     "react-router-dom": "^6.4.5",
     "react-scripts": "5.0.1",
+    "react-scroll-up": "^1.4.0",
     "react-simple-image-viewer": "^1.2.2",
     "react-spreadsheet": "^0.7.7",
     "react-to-print": "^2.14.10",

@@ -489,8 +489,9 @@ class SignUpFrom extends Component{
                                 id="reg-student-mobile"
                                 placeholder="Mobile"
                                 style={{margin:"5px 0 0 0"}}
-                                type="tel"
+                                type="number"
                                 pattern="[0-9]{10}"
+                                title="Numbers only"
                                 value={mobileNo}
                                 onChange={this.updateMobilenumber}
                                 error={mobileNoErr}

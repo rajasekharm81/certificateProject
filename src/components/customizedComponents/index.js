@@ -1,5 +1,5 @@
 import { styled,TextField } from '@mui/material';
-import {createTheme,Select} from '@mui/material';
+import {createTheme,Select,Paper} from '@mui/material';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 
@@ -65,23 +65,25 @@ export const CssTextField = styled(TextField)({
     fontSize:'14px',
     color:'black',
     '& fieldset': {
-      border:'2px solid black',
+      border:'1px solid grey',
       color:"black",
       fontSize:'29px',
     },
     '&:hover fieldset': {
-      border:'3px solid black'
+      border:'2px solid grey'
     },
     '&.Mui-focused fieldset': {
-      border: '3px solid black',
+      border: '2px solid grey',
     },
+    "& .Mui-error": {
+        border: '2px solid red',
+      },
   },
 });
 
 export const CssSelect = styled(Select)({
-  '& ..MuiSelect-select': {
-      border:'1px solid red',
-      backgroundColor:"red",
+  '& .MuiSelect-select': {
+      border:'1px solid grey'
   }
 });
 
@@ -103,4 +105,12 @@ export const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:last-child td, &:last-child th': {
     border: 0,
   },
+}));
+
+export const StyledItem = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
 }));

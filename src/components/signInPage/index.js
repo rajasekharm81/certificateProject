@@ -127,7 +127,7 @@ class SigninForm extends React.Component{
         {isEmployee?<Navigate to='/employeelogin'/>:null}
 
         <div className='AuthPageSignin'>
-           <img style={{height:'150px'}} className='authLogo' alt="Logo" src={logopng}/>
+              <img style={{height:'150px'}} className='authLogo' alt="Logo" src={logopng}/>
            <div style={{position:"absolute", right:'10px', top:"10px", fontWeight:"bold"}}>
               <Button className="muiButton" color="black" style={{fontSize:"16px",fontWeight:'bold'}} onClick={this.role}>Employee Login</Button>
            </div>
@@ -141,8 +141,8 @@ class SigninForm extends React.Component{
                   onChange={(event)=>this.setState({enrollNo:event.target.value.toUpperCase()})}
                   value={enrollNo}
                   error={enrollNoErr}
-                  autofill="false"
                   fullWidth
+                  size='small'
                   />
             <FormControl  style={{margin:"30px 0 0 0"}} variant="outlined">
               <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
@@ -150,6 +150,7 @@ class SigninForm extends React.Component{
                 id="outlined-adornment-password"
                 value={password}
                 error={passwordErr}
+                size='small'
                 type={passwordVisable ? 'text' : 'password'}
                 onChange={(event)=>this.setState({password:event.target.value})}
                 endAdornment={

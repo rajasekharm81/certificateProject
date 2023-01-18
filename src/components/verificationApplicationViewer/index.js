@@ -3,8 +3,22 @@
 /* eslint-disable eqeqeq */
 
 import {Component} from 'react'
-import { Snackbar,Alert,Button, ThemeProvider,Box,Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle} from '@mui/material'
+import {    Snackbar,
+            Alert,
+            Button,
+            ThemeProvider,
+            Box,
+            Dialog,
+            DialogActions,
+            DialogContent,
+            DialogContentText,
+            DialogTitle,
+            TextField
+        } from '@mui/material'
 import LoadingView from "../loadingView"
+
+import { InView } from 'react-intersection-observer';
+import ScrollToTop from "react-scroll-up"
 
 import ImageViewer from 'react-simple-image-viewer';
 
@@ -30,8 +44,8 @@ export class CmmPType1 extends Component{
     firstYearMarksForm=()=>{
         const {y1}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div>
+                <div>
     {/* First Year Marks section */}
                     
                     <h1 style={{marginTop:'20px'}}>First Year</h1>        
@@ -54,8 +68,8 @@ export class CmmPType1 extends Component{
     SecondYearMarksForm=()=>{
         const {y2}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div >
+                <div >
     {/* second Year Marks section */}
                     <h1 style={{marginTop:'20px'}}>Second Year</h1>        
                         <div style={{display:"flex",marginLeft:"163px"}}>
@@ -77,8 +91,8 @@ export class CmmPType1 extends Component{
     ThirdYearMarksForm=()=>{
         const {y3}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div >
+                <div >
     {/* Third Year Marks section */}
                     
                     <h1 style={{marginTop:'20px'}}>Third Year</h1>        
@@ -101,8 +115,8 @@ export class CmmPType1 extends Component{
     FourthYearMarksForm=()=>{
         const {y4}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div >
+                <div >
     {/* Third Year Marks section */}
                     
                     <h1 style={{marginTop:'20px'}}>Fourth Year</h1>        
@@ -123,7 +137,8 @@ export class CmmPType1 extends Component{
     }
 
     render(){
-        return( <div style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}}>
+        return( <div>        
+            {/* style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}} */}
                     {this.firstYearMarksForm()}
                     {this.SecondYearMarksForm()}
                     {this.ThirdYearMarksForm()}
@@ -139,8 +154,8 @@ export class CmmPType2 extends Component{
     firstYearMarksForm=()=>{
         const {y1}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div>
+                <div>
     {/* First Year Marks section */}
                     <h1 style={{marginTop:'20px'}}>First Year</h1>        
                         <div style={{display:"flex",marginLeft:"163px"}}>
@@ -185,8 +200,8 @@ export class CmmPType2 extends Component{
     ThirdYearMarksForm=()=>{
         const {y3}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div>
+                <div>
     {/* Third Year Marks section */}
                     <h1 style={{marginTop:'20px'}}>Third Year</h1>        
                         {/* <div style={{display:"flex",marginLeft:"163px"}}>
@@ -204,10 +219,9 @@ export class CmmPType2 extends Component{
             </div>
             )
     }
-
-
     render(){
-        return( <div style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}}>
+        return( <div>
+             {/* style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}} */}
                     {this.firstYearMarksForm()}
                     {this.SecondYearMarksForm()}
                     {this.ThirdYearMarksForm()}
@@ -220,8 +234,8 @@ export class CmmPType3 extends Component{
     firstYearMarksForm=()=>{
         const {y1}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div >
+                <div >
     {/* First Year Marks section */}
                     <h1 style={{marginTop:'20px'}}>First Year</h1>        
                         {/* <div style={{display:"flex",marginLeft:"163px"}}>
@@ -244,8 +258,8 @@ export class CmmPType3 extends Component{
     SecondYearMarksForm=()=>{
         const {y2}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div>
+                <div>
     {/* second Year Marks section */}
                     <h1 style={{marginTop:'20px'}}>Second Year</h1>        
                         {/* <div style={{display:"flex",marginLeft:"163px"}}>
@@ -267,8 +281,8 @@ export class CmmPType3 extends Component{
     ThirdYearMarksForm=()=>{
         const {y3}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div>
+                <div>
     {/* Third Year Marks section */}
                     <h1 style={{marginTop:'20px'}}>Third Year</h1>        
                         {/* <div style={{display:"flex",marginLeft:"163px"}}>
@@ -290,8 +304,8 @@ export class CmmPType3 extends Component{
     FourthYearMarksForm=()=>{
         const {y4}=this.props
         return(
-            <div className='mainContainer'>
-                <div className='marksContainer'>
+            <div>
+                <div>
     {/* Fourth Year Marks section */}
                     <h1 style={{marginTop:'20px'}}>Betterment</h1>        
                         {/* <div style={{display:"flex",marginLeft:"163px"}}>
@@ -311,7 +325,8 @@ export class CmmPType3 extends Component{
     }
 
     render(){
-        return( <div style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}}>
+        return( <div>
+             {/* style={{width:'100%', overflow:'auto',backgroundColor:'white',display:'flex',justifyContent:'center',alignItems:'center',flexDirection:'column',padding:'20px'}} */}
                     {this.firstYearMarksForm()}
                     {this.SecondYearMarksForm()}
                     {this.ThirdYearMarksForm()}
@@ -354,6 +369,7 @@ export class OdApplicationPreview extends Component{
         higherEducation:'',
         Docfiles:[],
         appliedFor:'',
+        reason:'',
 // student marks details
         y1:[],
         y2:[],
@@ -748,7 +764,7 @@ export class OdApplicationPreview extends Component{
 
     renderDocs=()=>{
         const{year1docs,year2docs,year3docs,year4docs,currentImage,isViewerOpen1,isViewerOpen2,isViewerOpen3,isViewerOpen4}=this.state
-       return   <div style={{minHeight:'100%',width:'100%',border:'1px solid grey',padding:'30px'}}>
+       return   <div style={{minHeight:'100%',width:'95 %',border:'1px solid grey',padding:'30px'}}>
                     <div>
                         <h1>First Year</h1>
                         {year1docs.map((each,index)=><img className='docsImage' key={`y1${index}`} src={each} onClick={()=>{this.setState({isViewerOpen1:true,currentImage:index})}} alt='year1memo'/>)}
@@ -809,7 +825,7 @@ export class OdApplicationPreview extends Component{
     }
 
     comfirmation=()=>{
-        const{confirmDilogueBoxOpen,decision}=this.state
+        const{confirmDilogueBoxOpen,decision,reason}=this.state
 
         let ConfirmationMessage=''
 
@@ -841,14 +857,28 @@ export class OdApplicationPreview extends Component{
                     {"Confirmation..."}
                     </DialogTitle>
                     <DialogContent>
-                    <DialogContentText style={{fontSize:"22px"}} id="alert-dialog-description">
-                        {ConfirmationMessage}
-                    </DialogContentText>
+                        <DialogContentText style={{fontSize:"22px"}} id="alert-dialog-description">
+                            {ConfirmationMessage}
+                        </DialogContentText>
+                        {decision==="redirected" || decision==="rejected"?<>
+                            <lable>Reason for {decision}</lable>
+                            <TextField
+                                autoFocus
+                                multiline
+                                minRows={4}
+                                margin="dense"
+                                id="reason"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                onChange={(event)=>this.setState({reason:event.target.value})}
+                            />
+                        </>:null}
                     </DialogContent>
                     <DialogActions>
                          <ThemeProvider theme={theme}>
                             <Button className='muiButton' color="hold" variant="contained" style={{fontSize:'18px'}} onClick={this.closeDilogueBox}>close</Button>
-                            <Button className='muiButton' color="approve" variant="contained" style={{fontSize:'18px'}} onClick={this.submitAuthDecision} autoFocus>
+                            <Button disabled={(decision==="redirected" || decision==="rejected") && reason===""} className='muiButton' color="approve" variant="contained" style={{fontSize:'18px'}} onClick={this.submitAuthDecision} autoFocus>
                                 Confirm
                             </Button>
                             </ThemeProvider>
@@ -917,14 +947,25 @@ export class OdApplicationPreview extends Component{
         this.setState({backErr:false})
     }
 
+    handleHeader=(inView, entry)=>{
+        const {inViewHandler}=this.props
+        inViewHandler(inView, entry)
+    }
+
     render(){
         const {backErr,backErrMsg,isLoading,severity,isAuthToValidate,currentStatus}=this.state
         return(
-            <>  {this.comfirmation()}
+            <>  
+                {this.comfirmation()}
                 {this.RenderApplicationForm()}
-                {this.renderMarksLists()}
+                <InView as="div" onChange={this.handleHeader}>
+                    <h1 style={{width:'100%',backgroundColor:'white',textAlign:'center'}}>Marks Details</h1>
+                <div style={{backgroundColor:'white',display:'flex',justifyContent:'flex-start',alignItems:'flex-start',overflow:'auto',paddingLeft:'20px'}}>
+                    {this.renderMarksLists()}
+                </div>
                 <h1 style={{textAlign:'center'}}>Documents</h1>
                 {this.renderDocs()}
+                </InView>
                 {isAuthToValidate && currentStatus==="pending"?this.approvalButtonContainer():null}
                 <LoadingView isLoading={isLoading}/>
                 <Snackbar open={backErr}
@@ -970,6 +1011,7 @@ export class ApplicationRequest2 extends Component{
             AcademicYear:'',
             hallticketNumber:'',
             note:'',
+            reason:'',          // incase of rejected or redirected
 // names
             stateName:'',
             districtName:'',
@@ -994,7 +1036,7 @@ export class ApplicationRequest2 extends Component{
         this.isUserLoggedIn()
     }
 
-     isUserLoggedIn=()=>{
+    isUserLoggedIn=()=>{
         const Token = Cookies.get("staffAuthToken")
         if(Token===undefined){
                 window.location.reload()
@@ -1229,7 +1271,7 @@ export class ApplicationRequest2 extends Component{
     }
 
     comfirmation=()=>{
-        const{confirmDilogueBoxOpen,decision}=this.state
+        const{confirmDilogueBoxOpen,decision,reason}=this.state
 
         let ConfirmationMessage=''
         switch(decision){
@@ -1259,18 +1301,30 @@ export class ApplicationRequest2 extends Component{
                     <DialogTitle style={{fontSize:"26px"}} id="alert-dialog-title">
                     {"Confirmation..."}
                     </DialogTitle>
-                    <DialogContent>
-                    <DialogContentText style={{fontSize:"22px"}} id="alert-dialog-description">
-                        {ConfirmationMessage}
-                    </DialogContentText>
-                    </DialogContent>
+                        <DialogContent>
+                            <DialogContentText style={{fontSize:"22px"}} id="alert-dialog-description">
+                                {ConfirmationMessage}
+                            </DialogContentText>
+                            {decision==="redirected" || decision==="rejected"?<>
+                            <lable>Reason for {decision}</lable>
+                            <TextField
+                                autoFocus
+                                multiline
+                                minRows={4}
+                                margin="dense"
+                                id="reason"
+                                type="text"
+                                fullWidth
+                                variant="outlined"
+                                onChange={(event)=>this.setState({reason:event.target.value})}
+                            />
+                        </>:null}
+                        </DialogContent>
                     <DialogActions>
-                         <ThemeProvider theme={theme}>
-                            <Button className='muiButton' color="hold" variant="contained" style={{fontSize:'18px'}} onClick={this.closeDilogueBox}>close</Button>
-                            <Button className='muiButton' color="approve" variant="contained" style={{fontSize:'18px'}} onClick={this.submitAuthDecision} autoFocus>
-                                Confirm
-                            </Button>
-                            </ThemeProvider>
+                        <ThemeProvider theme={theme}>
+                            <Button size='small' className='muiButton' color="hold" variant="contained" style={{fontSize:'18px'}} onClick={this.closeDilogueBox}>close</Button>
+                            <Button disabled={(decision==="redirected" || decision==="rejected") && reason===""} size='small' className='muiButton' color="approve" variant="contained" style={{fontSize:'18px'}} onClick={this.submitAuthDecision} autoFocus>Confirm</Button>
+                        </ThemeProvider>
                     </DialogActions>
                 </Dialog>
                     )
@@ -1278,7 +1332,7 @@ export class ApplicationRequest2 extends Component{
 
     submitAuthDecision=async()=>{
         this.closeDilogueBox()
-        const{decision}=this.state
+        const{decision,reason}=this.state
         const {id,reload}=this.props
         const token = Cookies.get("staffAuthToken") 
         this.setState({isLoading:true})
@@ -1335,9 +1389,13 @@ export class ApplicationRequest2 extends Component{
         )
     }
 
-
     handleClose=()=>{
         this.setState({backErr:false})
+    }
+
+     handleHeader=(inView, entry)=>{
+        const {inViewHandler}=this.props
+        inViewHandler(inView, entry)
     }
 
    render(){

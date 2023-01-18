@@ -23,6 +23,13 @@ const ChangePassword = lazy(()=>import ("./components/changePassword"))
 
 
 class App extends Component {
+
+  componentDidMount() {
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+  };
+  
 render(){
   return (
    <BrowserRouter>

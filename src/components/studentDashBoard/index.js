@@ -16,11 +16,13 @@ import {Button,
         Typography,
         Tooltip,
         IconButton,
-        Avatar,
         ListItemIcon,    
     } from "@mui/material"
 import {FaChartArea} from 'react-icons/fa'
-import {GiHamburgerMenu} from "react-icons/gi"
+import {BsBoxArrowInLeft,BsBoxArrowInRight} from "react-icons/bs"
+import {FiLogOut} from "react-icons/fi"
+
+
 import {Navigate} from "react-router-dom"
 import Cookies from "js-cookie"
 import {Logout} from '@mui/icons-material'
@@ -83,12 +85,9 @@ state = {activeID:"",
     wecomeBodyContent=()=>{
         // const {userName} = this.state
         return (
-            <div className="StudentDashBoardBody">
-                {/* <div style={{display:'flex'}}>
-                    <Greet fSize="32px" style={{paddingLeft:'40px'}}/>
-                    <h1 style={{fontSize:"32px",paddingLeft:"20px"}}>{userName},</h1>
-                </div> */}
-                <h1 style={{textAlign:"center",fontSize:"35px",paddingTop:"20vh"}}>Welcome to ANU e-Services</h1>
+            <div style={{lineSpacing:'10px',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',height:'73vh'}} className="StudentDashBoardBody">
+                <h1 style={{fontSize:"35px"}}>Welcome to ANU e-Services</h1>
+                <h2>Now Applying For Ceritificates In ANU become very Easy.</h2>
             </div>
         )
     }
@@ -128,9 +127,9 @@ state = {activeID:"",
     applicationCheckView=()=>{
         const {applicationData}=this.state
         return(
-            <div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center', marginTop:'15vh', padding:'20px'}}>
-                <h1>List of Applications You submitted</h1>
-                <TableContainer style={{margin:"20px 0 0 0",height:'60vh'}} component={Paper}>
+            <div style={{display:'flex',flexDirection:"column",justifyContent:'center',alignItems:'center', marginTop:'160px', padding:'20px'}}>
+                <h1>List of Applications You Requested</h1>
+                <TableContainer style={{margin:"20px 0 0 0",height:'60vh',width:'90%'}} component={Paper}>
                     <Table sx={{ width: '100%' }} aria-label="customized table">
                         <TableHead>
                         <TableRow >
@@ -180,8 +179,12 @@ state = {activeID:"",
     }
 
     closeMenu=(event)=>{
-        this.setState({isOpen:false,activeID:"newApplication"})
-        Cookies.set("form",event.target.id,{expires:1})
+        if(event.target.id==="OD Request" || event.target.id==="Certificates"){
+            this.setState({isOpen:false,activeID:"newApplication"})
+            Cookies.set("form",event.target.id,{expires:1})
+        }else{
+            this.setState({isOpen:false})
+        }
     }
 
     profileMenuOpen=(event)=>{
@@ -193,7 +196,7 @@ state = {activeID:"",
     }
 
     renderInitialContent=()=>{
-         const{activeID,menu,navShort,isOpen,anchorEl,userName,profileOptionEl}=this.state
+         const{activeID,menu,navShort,isOpen,anchorEl,profileOptionEl}=this.state
         return(
             <div className='verificationDashMainCont'>
 {/* NavBarContainer */}
@@ -211,7 +214,7 @@ state = {activeID:"",
                         onClick={this.toggleNavShort}
                         size="large" 
                         id='hamburgerMenuExpanded' 
-                        startIcon={<GiHamburgerMenu />}>
+                        startIcon={navShort?<BsBoxArrowInRight />:<BsBoxArrowInLeft />}>
                     </Button>
                     </div>
 {/* options section */}
@@ -255,13 +258,14 @@ state = {activeID:"",
                                  justifyContent:"space-between",
                                  alignItems:"center",
                                  paddingRight:"30px",
-                                 height:"100px", 
-                                 backgroundColor:"#f8f8f8d3",
+                                 height:"150px", 
+                                 backgroundColor:"#f4fffzd3",
                                  position:"absolute",
                                  top:"0",
-                                 width:navShort?"97%":'80%',
+                                 width:navShort?"92%":'75%',
+
                                  }}>
-                        <img style={{height:"95px",paddingLeft:"10px",margin:'auto'}} src={logopng} alt="logo"/>
+                        <img style={{height:"150px",paddingLeft:"10px",margin:'auto'}} src={logopng} alt="logo"/>
                         <div>
                             <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center', marginRight:'25px' }}>
                                 <Typography sx={{ minWidth: 100,fontWeight:'bolder',fontSize:'16px' }}>{this.state.role}</Typography>
@@ -273,7 +277,7 @@ state = {activeID:"",
                                     aria-haspopup="true"
                                     aria-expanded={menu ? 'true' : undefined}
                                 >
-                                    <Avatar sx={{ width: 32, height: 32 }}>{userName[0]}</Avatar>
+                                    <FiLogOut style={{fontSize:'30px'}} />
                                 </IconButton>
                                 </Tooltip>
                             </Box>
@@ -322,7 +326,9 @@ state = {activeID:"",
                         </div>
                     </div>
 {/* body Container */}
-                    {this.navigator()}
+                    <div style={{overflow:'auto'}}>
+                        {this.navigator()}
+                    </div>
                 </div>
             </div>
         )
